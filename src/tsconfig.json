@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"sourceMap": true,
+        "sourceRoot": "../src",
+		"rootDir": "src",
+		"declaration": true,
+        "outFile": "../build/app.js",
+        "diagnostics": true
+	}
+}

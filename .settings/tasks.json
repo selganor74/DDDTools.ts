@@ -1,0 +1,34 @@
+{
+    "version": "0.1.1",
+    "command": "grunt",
+    "isShellCommand": true,
+    "tasks": [
+        {
+            "taskName": "build",
+            "args": [],
+            "isBuildCommand": true,
+            "isWatching": true,
+            "problemMatcher": [
+                "$lessCompile",
+                "$tsc",
+                "$jshint"
+            ]
+        },
+        {
+            "taskName": "run-tests",
+            "args": [],
+            "isWatching": false,
+            "problemMatcher": [
+                "$lessCompile",
+                "$tsc",
+                "$jshint"
+            ]
+        },
+        {
+            "taskName": "run",
+            "args": [],
+            "isBuildCommand": false,
+            "isWatching": false
+        }
+    ]
+}
