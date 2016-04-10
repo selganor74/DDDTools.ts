@@ -1,11 +1,12 @@
-/// <reference path="../BaseValueObject.ts"/>
-
+/// <reference path="../BaseValueObject.ts" />
+/// <reference path="../IKeyValueObject.ts" />
 
 namespace DDDTools.ValueObjects {
 
-	export class Guid extends BaseValueObject<Guid> {
+	export class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
 
 		public __typeName = "DDDTools.ValueObjects.Guid";
+        public __typeVersion = "v1";
 
 		private guid: string;
 
@@ -34,6 +35,7 @@ namespace DDDTools.ValueObjects {
 			return guidRegexp.test(this.guid);
 		}
         
+        // ValueObjects used as key MUST implement a toString method that returns the key as string.
         public toString() {
             return this.guid;
         }

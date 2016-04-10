@@ -44,11 +44,89 @@ var DDDTools;
 (function (DDDTools) {
     var StatefulObject;
     (function (StatefulObject) {
+        var BaseErrors = DDDTools.BaseErrors;
+        var UpgraderErrors = (function (_super) {
+            __extends(UpgraderErrors, _super);
+            function UpgraderErrors() {
+                _super.apply(this, arguments);
+            }
+            UpgraderErrors.TypeNotInstatiable = "Type in not instantiable";
+            UpgraderErrors.UpgradePathNotFound = "Upgrade Path not Found";
+            UpgraderErrors.IncorrectVersionFormat = "Incorrect Version Format";
+            UpgraderErrors.WrongVersionInUpgradedInstance = "Wrong Version in Upgraded Instance";
+            return UpgraderErrors;
+        }(BaseErrors));
+        StatefulObject.UpgraderErrors = UpgraderErrors;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var StatefulObject;
+    (function (StatefulObject) {
+        var Errors = StatefulObject.UpgraderErrors;
+        var StatefulObjectUpgrader = (function () {
+            function StatefulObjectUpgrader() {
+            }
+            StatefulObjectUpgrader.buildVersionMapForType = function (typeName) {
+                if (StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
+                    return;
+                }
+                try {
+                    var tmpInstance = StatefulObject.StatefulObjectFactory.createTypeInstance(typeName);
+                    StatefulObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
+                }
+                catch (e) {
+                    Errors.Throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
+                }
+                StatefulObjectUpgrader.isVersionMapBuilt[typeName] = true;
+            };
+            StatefulObjectUpgrader.isLatestVersionForType = function (typeName, typeVersion) {
+                if (!StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
+                    StatefulObjectUpgrader.buildVersionMapForType(typeName);
+                }
+                if (StatefulObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
+                    return true;
+                }
+                return false;
+            };
+            StatefulObjectUpgrader.upgrade = function (instanceFrom) {
+                if (!StatefulObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
+                    return instanceFrom;
+                }
+                var nextVersion = StatefulObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
+                var upgraderInstance = StatefulObject.StatefulObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
+                var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
+                if (upgraded.__typeVersion != nextVersion) {
+                    Errors.Throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion);
+                }
+                return StatefulObjectUpgrader.upgrade(upgraded);
+            };
+            StatefulObjectUpgrader.computeNextVersion = function (typeVersion) {
+                var versionRe = new RegExp("^v[0-9]+");
+                if (!versionRe.test(typeVersion)) {
+                    Errors.Throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
+                }
+                var version = Number(typeVersion.substr(1));
+                version = version + 1;
+                var nextVersion = "v" + version;
+                return nextVersion;
+            };
+            StatefulObjectUpgrader.latestTypeVersionMap = {};
+            StatefulObjectUpgrader.isVersionMapBuilt = {};
+            return StatefulObjectUpgrader;
+        }());
+        StatefulObject.StatefulObjectUpgrader = StatefulObjectUpgrader;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var StatefulObject;
+    (function (StatefulObject) {
         var Errors = DDDTools.StatefulObject.StatefulObjectErrors;
         var StatefulObjectFactory = (function () {
             function StatefulObjectFactory() {
             }
-            StatefulObjectFactory.instantiateType = function (typeName, typeVersion) {
+            StatefulObjectFactory.createTypeInstance = function (typeName, typeVersion) {
                 var toReturn;
                 if (typeVersion) {
                 }
@@ -56,27 +134,24 @@ var DDDTools;
                     toReturn = eval("new " + typeName + "()");
                 }
                 catch (e) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "Impossibile istanziare il tipo " + typeName + " " + e.message);
+                    Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
                 }
                 return toReturn;
             };
             StatefulObjectFactory.createObjectsFromState = function (state) {
                 if (state === undefined) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "state non può essere 'undefined'");
+                    Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
                 }
                 if (state === null) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "state non può essere 'null'");
+                    Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
                 }
                 if (typeof state === 'object') {
                     if (StatefulObjectFactory.isStatefulObject(state)) {
                         var stateful;
-                        if (StatefulObjectFactory.needsUpgrade(state.__typeName, state.__typeVersion)) {
-                        }
-                        else {
-                            stateful = StatefulObjectFactory.instantiateType(state.__typeName);
-                            stateful.setState(state);
-                            return stateful;
-                        }
+                        stateful = StatefulObjectFactory.createTypeInstance(state.__typeName);
+                        stateful.setState(state);
+                        var upgradedStateful = StatefulObject.StatefulObjectUpgrader.upgrade(stateful);
+                        return upgradedStateful;
                     }
                     var toReturn = Array.isArray(state) ? [] : {};
                     for (var currentElement in state) {
@@ -88,7 +163,7 @@ var DDDTools;
                 return state;
             };
             StatefulObjectFactory.needsUpgrade = function (typeName, typeVersion) {
-                var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeNameFromVersion(typeName, typeVersion);
+                var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
                 if (StatefulObjectFactory.isTypeInstantiable(fqtn)) {
                     return true;
                 }
@@ -102,21 +177,21 @@ var DDDTools;
                 if (!casted.__typeName || casted.__typeName === "") {
                     return false;
                 }
-                if (!casted.__typeVersion || casted.__typeVersion) {
+                if (!casted.__typeVersion || casted.__typeVersion === "") {
                     return false;
                 }
                 return true;
             };
             StatefulObjectFactory.isTypeInstantiable = function (fullyQualifiedTypeName) {
                 try {
-                    var tmpType = StatefulObjectFactory.instantiateType(fullyQualifiedTypeName);
+                    var tmpType = StatefulObjectFactory.createTypeInstance(fullyQualifiedTypeName);
                 }
                 catch (e) {
                     return false;
                 }
                 return true;
             };
-            StatefulObjectFactory.computeFullyQualifiedTypeNameFromVersion = function (typeName, typeVersion) {
+            StatefulObjectFactory.computeFullyQualifiedTypeName = function (typeName, typeVersion) {
                 var fqtnPartsArray = typeName.split(".");
                 var className = fqtnPartsArray.pop();
                 fqtnPartsArray.push(typeVersion);
@@ -197,7 +272,7 @@ var DDDTools;
     var BaseValueObject = (function (_super) {
         __extends(BaseValueObject, _super);
         function BaseValueObject() {
-            _super.apply(this, arguments);
+            _super.call(this);
         }
         BaseValueObject.prototype.equals = function (item) {
             var foreign = JSON.stringify(item);
@@ -277,6 +352,7 @@ var DDDTools;
             function Guid(guid) {
                 _super.call(this);
                 this.__typeName = "DDDTools.ValueObjects.Guid";
+                this.__typeVersion = "v1";
                 if (guid) {
                     this.guid = guid;
                 }
@@ -397,63 +473,6 @@ var DDDTools;
         }(DDDTools.BaseErrors));
         Locking.LockingErrors = LockingErrors;
     })(Locking = DDDTools.Locking || (DDDTools.Locking = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var BaseErrors = DDDTools.BaseErrors;
-        var UpgraderErrors = (function (_super) {
-            __extends(UpgraderErrors, _super);
-            function UpgraderErrors() {
-                _super.apply(this, arguments);
-            }
-            UpgraderErrors.TypeNotInstatiable = "Type in not instantiable";
-            UpgraderErrors.UpgradePathNotFound = "Upgrade Path not Found";
-            return UpgraderErrors;
-        }(BaseErrors));
-        StatefulObject.UpgraderErrors = UpgraderErrors;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var Errors = StatefulObject.UpgraderErrors;
-        var StatefulObjectUpgrader = (function () {
-            function StatefulObjectUpgrader() {
-            }
-            StatefulObjectUpgrader.registerUpgradePath = function (typeName, upgrader) {
-                if (StatefulObject.StatefulObjectFactory.isTypeInstantiable(typeName)) {
-                    StatefulObjectUpgrader.pathRepository[typeName] = upgrader;
-                }
-                Errors.Throw(Errors.TypeNotInstatiable, "Il tipo " + typeName + " non risulta instanziabile. Verificare che il namespace ed il nome del tipo siano corretti. I tipi 'Upgradabili' devono essere 'export' dei loro moduli/namespace.");
-            };
-            StatefulObjectUpgrader.getUpgradePathForType = function (typeName) {
-                if (StatefulObjectUpgrader.pathRepository[typeName]) {
-                    return StatefulObjectUpgrader.pathRepository[typeName];
-                }
-                Errors.Throw(Errors.UpgradePathNotFound, "Impossibile trovare un upgrade path for type " + typeName);
-            };
-            return StatefulObjectUpgrader;
-        }());
-        StatefulObject.StatefulObjectUpgrader = StatefulObjectUpgrader;
-        var BaseUpgradePath = (function () {
-            function BaseUpgradePath(managedFullyQualifiedTypeName) {
-                this.managedFullyQualifiedTypeName = managedFullyQualifiedTypeName;
-            }
-            BaseUpgradePath.prototype.addUpgraderMethod = function (typeFrom, upgraderMethod) {
-                this.convertersRepository[typeFrom] = upgraderMethod;
-            };
-            ;
-            BaseUpgradePath.prototype.upgrade = function (instance) {
-                return null;
-            };
-            ;
-            return BaseUpgradePath;
-        }());
-        StatefulObject.BaseUpgradePath = BaseUpgradePath;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
 })(DDDTools || (DDDTools = {}));
 var CdC;
 (function (CdC) {
@@ -876,8 +895,8 @@ var CdC;
 (function (CdC) {
     var Tests;
     (function (Tests) {
-        var BaseUpgradePath;
-        (function (BaseUpgradePath) {
+        var BaseStatefulObject;
+        (function (BaseStatefulObject) {
             var v1;
             (function (v1) {
                 var BaseEntity = DDDTools.BaseEntity;
@@ -885,65 +904,75 @@ var CdC;
                     __extends(TestEntity, _super);
                     function TestEntity() {
                         _super.apply(this, arguments);
-                        this.__typeName = "CdC.Tests.BaseUpgradePath.TestEntity";
+                        this.__typeName = "CdC.Tests.BaseStatefulObject.TestEntity";
                         this.__typeVersion = "v1";
                     }
                     return TestEntity;
                 }(BaseEntity));
                 v1.TestEntity = TestEntity;
-            })(v1 = BaseUpgradePath.v1 || (BaseUpgradePath.v1 = {}));
-        })(BaseUpgradePath = Tests.BaseUpgradePath || (Tests.BaseUpgradePath = {}));
+            })(v1 = BaseStatefulObject.v1 || (BaseStatefulObject.v1 = {}));
+        })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
 (function (CdC) {
     var Tests;
     (function (Tests) {
-        var BaseUpgradePath;
-        (function (BaseUpgradePath_1) {
-            var BaseUpgradePath = DDDTools.StatefulObject.BaseUpgradePath;
+        var BaseStatefulObject;
+        (function (BaseStatefulObject) {
             var BaseEntity = DDDTools.BaseEntity;
-            var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
-            var TestUpgradePath = (function (_super) {
-                __extends(TestUpgradePath, _super);
-                function TestUpgradePath() {
-                    _super.apply(this, arguments);
-                }
-                return TestUpgradePath;
-            }(BaseUpgradePath));
+            var StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
             var TestEntity = (function (_super) {
                 __extends(TestEntity, _super);
                 function TestEntity() {
                     _super.apply(this, arguments);
-                    this.__typeName = "CdC.Tests.BaseUpgradePath.TestEntity";
+                    this.__typeName = "CdC.Tests.BaseStatefulObject.TestEntity";
                     this.__typeVersion = "v2";
                 }
+                TestEntity.prototype.getUpgradedInstance = function (fromInstance) {
+                    var state = fromInstance.getState();
+                    state.aNewProperty = "upgrader was here";
+                    state.__typeVersion = "v2";
+                    this.setState(state);
+                    return this;
+                };
                 return TestEntity;
             }(BaseEntity));
-            BaseUpgradePath_1.TestEntity = TestEntity;
-            describe("BaseUpgradePath", function () {
-                it("computeFullyQualifiedTypeNameFromVersion deve restituire il valore corretto del namespace", function () {
-                    pending();
-                    var tbup = new TestUpgradePath("CdC.Tests.BaseUpgradePath.TestEntity");
+            BaseStatefulObject.TestEntity = TestEntity;
+            var TestEntityNonUpgradable = (function (_super) {
+                __extends(TestEntityNonUpgradable, _super);
+                function TestEntityNonUpgradable() {
+                    _super.apply(this, arguments);
+                    this.__typeName = "CdC.Tests.BaseStatefulObject.TestEntityNonUpgradable";
+                    this.__typeVersion = "v1";
+                }
+                return TestEntityNonUpgradable;
+            }(BaseEntity));
+            BaseStatefulObject.TestEntityNonUpgradable = TestEntityNonUpgradable;
+            describe("BaseStatefulObjectUpgrader", function () {
+                it("computeNextVersion deve restituire il valore corretto della versione successiva", function () {
+                    var computed = StatefulObjectUpgrader.computeNextVersion("v1");
+                    expect(computed).toEqual("v2");
                 });
-                it("Deve essere possibile upgradare un'istanza del tipo 'v1' in 'v2'", function () {
-                    pending();
-                    var typeName = "CdC.Tests.BaseUpgradePath.TestEntity";
-                    var typeVersionTo = "v2";
-                    var typeVersionFrom = "v1";
-                    var tbup = new TestUpgradePath(typeName);
-                    tbup.addUpgraderMethod("v1", function (from) {
-                        var to;
-                        var casted = from;
-                        to = StatefulObjectFactory.instantiateType(typeName, typeVersionTo);
-                        var fromState = casted.getState();
-                        to.setState(fromState);
-                        to.__typeVersion = typeVersionTo;
-                        return to;
-                    });
+                it("needsUpgrade deve restituire false per gli oggetti che non hanno versioni oltre alla prima", function () {
+                    var te = new TestEntityNonUpgradable();
+                    var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
+                    expect(needsUpgrade).toBeFalsy("needsUpgrade should have returned false!");
+                });
+                it("needsUpgrade deve restituire true per gli oggetti che hanno versioni oltre alla prima", function () {
+                    var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
+                    var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
+                    expect(needsUpgrade).toBeTruthy("needsUpgrade should have returned true!");
+                });
+                it("upgrade must be able to upgrade a StatefulObject to its latest version", function () {
+                    var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
+                    expect(te.__typeVersion).toEqual("v1");
+                    var upgraded = StatefulObjectUpgrader.upgrade(te);
+                    expect(upgraded.__typeVersion).toEqual("v2");
+                    expect(upgraded.aNewProperty).toEqual("upgrader was here");
                 });
             });
-        })(BaseUpgradePath = Tests.BaseUpgradePath || (Tests.BaseUpgradePath = {}));
+        })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
@@ -1080,7 +1109,7 @@ var CdC;
                 return TestLockManager;
             }(Locking.InMemoryEntityLockManager));
             describe("InMemoryItemLocker", function () {
-                it("Deve essere possibilie gestire una Entity nel suo lock manager.", function () {
+                it("Deve essere possibile gestire una Entity nel suo lock manager.", function () {
                     var item = new TestEntity();
                     var lockKey = new LockKey();
                     var lockManager = new TestLockManager(item, lockKey);

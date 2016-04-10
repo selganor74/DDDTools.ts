@@ -8,6 +8,6 @@ namespace DDDTools.StatefulObject {
         static StateIsNotAnObject = "State is not an Object";
         static TypeNameNotSet = "TypeName not set";
         static TypeVersionNotSet = "TypeVersion not set";
-        static UnableToInstantiateType = "Unable to Instantiate Type";     
+        static UnableToInstantiateType = "Unable to Instantiate Type";
     }
 }

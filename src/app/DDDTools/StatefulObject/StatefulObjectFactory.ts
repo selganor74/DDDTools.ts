@@ -1,72 +1,82 @@
 /// <reference path="IStateful.ts" />
+/// <reference path="StatefulObjectUpgrader.ts" />
 
 namespace DDDTools.StatefulObject {
-    
+
     import Errors = DDDTools.StatefulObject.StatefulObjectErrors;
-    
+
     export class StatefulObjectFactory {
-        public static instantiateType(typeName: string, typeVersion?: string): IStateful {
+        /**
+         * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
+         * Latest available version is the one whose FQTN matches the one specified by typeName.
+         */
+        public static createTypeInstance(typeName: string, typeVersion?: string): IStateful {
 
             var toReturn: IStateful;
 
             if (typeVersion) {
-                
+
             }
-            
+
             try {
                 toReturn = <IStateful>eval("new " + typeName + "()");
             } catch (e) {
-                Errors.Throw(Errors.UnableToInstantiateType, "Impossibile istanziare il tipo " + typeName + " " + e.message );
+                Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
             }
             return toReturn;
         }
-        
+
+        /**
+         * Creates an object instance from its state. Will always return the latest version possible of the object
+         */
         public static createObjectsFromState(state: any): any {
-            if (state === undefined ) {
-                Errors.Throw(Errors.UnableToInstantiateType, "state non può essere 'undefined'");
+            if (state === undefined) {
+                Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
             }
 
-            if (state === null ) {
-                Errors.Throw(Errors.UnableToInstantiateType, "state non può essere 'null'");
+            if (state === null) {
+                Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
             }
-            
+
             if (typeof state === 'object') {
                 if (StatefulObjectFactory.isStatefulObject(state)) {
-                    
+
                     var stateful: IStateful;
 
-                    // Verifica se il tipo ha bisogno di upgrade
-                    if (StatefulObjectFactory.needsUpgrade(state.__typeName, state.__typeVersion)) {
-                        
-                    } else {
-                        stateful = StatefulObjectFactory.instantiateType( state.__typeName );
-                        stateful.setState( state );
-                        return stateful;                        
-                    }                    
-                    
+                    stateful = StatefulObjectFactory.createTypeInstance(state.__typeName);
+                    stateful.setState(state);
+                    // This warranties that a type is always returned at its latest version.
+                    var upgradedStateful = StatefulObjectUpgrader.upgrade(stateful);
+                    return upgradedStateful;
                 }
-                // Se non è un oggetto "stateful" può essere un oggetto o un array, e va ricostruito.
+                // If it is not a statefulObject can be an Array or an Object and must be reconstituted
                 var toReturn: any = Array.isArray(state) ? [] : {};
                 for (var currentElement in state) {
                     var thisElement = state[currentElement];
                     toReturn[currentElement] = StatefulObjectFactory.createObjectsFromState(thisElement);
                 }
                 return toReturn;
-            }   
-            // se è un tipo primitivo lo si ritorna così com'è.
+            }
+            // "Primitive"" types are returned as they are
             return state;
         }
 
-        public static needsUpgrade( typeName: string, typeVersion: string) {
-            var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeNameFromVersion( typeName, typeVersion);
+        /**
+         * Checks if typeVersion is the latest available fro typeName.
+         */
+        private static needsUpgrade(typeName: string, typeVersion: string) {
+            var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
             // se il tipo è instanziabile a partire dal namespace di "versione", allora ha biesogno di essere upgradato 
-            if ( StatefulObjectFactory.isTypeInstantiable(fqtn) ) {
+            if (StatefulObjectFactory.isTypeInstantiable(fqtn)) {
                 return true;
             }
             return false;
         }
 
-        public static isStatefulObject(objectToTest: any): boolean {
+        /**
+         * Checks if an object implements the "IStateful" interface.
+         */
+        private static isStatefulObject(objectToTest: any): boolean {
 
             if (typeof objectToTest !== 'object') {
                 return false;
@@ -77,35 +87,35 @@ namespace DDDTools.StatefulObject {
                 return false;
             }
 
-            if (!casted.__typeVersion || casted.__typeVersion) {
+            if (!casted.__typeVersion || casted.__typeVersion === "") {
                 return false;
             }
 
             return true;
         }
-        
+
         /**
-         * Verifica che un tipo sia effettiviamente istanziabile. 
+         * Checks if a type can be instatiated (at its latest version). 
          */
-        public static isTypeInstantiable(fullyQualifiedTypeName: string): boolean {
+        private static isTypeInstantiable(fullyQualifiedTypeName: string): boolean {
             try {
-                var tmpType = StatefulObjectFactory.instantiateType(fullyQualifiedTypeName);
+                var tmpType = StatefulObjectFactory.createTypeInstance(fullyQualifiedTypeName);
             } catch (e) {
                 return false;
             }
             return true;
         }
-        
+
         /**
-         * Restituisce il "Fully Qualified TypeName" del tipo typeName a partire dalla sua versione.
-         * Nell'implementazione standard, il FQTN viene costruito prendendo il managedTypeName ed aggiungendo la stringa di
+         * Returns the "Fully Qualified TypeName" of type "typeName" for the supplied "version".
+         * FQTN is computed from typeName adding the version string in the right place.
          * versione prima del nome della classe.
-         * Ad esempio 
+         * Example
          * typeName: Application.Model.Offerta
          * version: v2
-         * FQTN: Application.Model.v2.Offerta
+         * return: Application.Model.v2.Offerta
          */
-        public static computeFullyQualifiedTypeNameFromVersion(typeName: string, typeVersion: string) : string {
+        private static computeFullyQualifiedTypeName(typeName: string, typeVersion: string): string {
             var fqtnPartsArray = typeName.split(".");
             var className = fqtnPartsArray.pop();
             fqtnPartsArray.push(typeVersion);

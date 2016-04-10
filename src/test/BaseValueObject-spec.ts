@@ -1,10 +1,10 @@
 /// <reference path="../../typings/main.d.ts"/>
 
 namespace CdC.Tests.BaseValueObject {
-	
+
     import DDD = DDDTools;
     import Guid = DDDTools.ValueObjects.Guid;
-    
+
     class TestValueObject extends DDD.BaseValueObject<TestValueObject> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject";
         __typeVersion = "v1";
@@ -62,39 +62,39 @@ namespace CdC.Tests.BaseValueObject {
                 "Genova",
                 "xxxxx"
             )
-            
-            expect( vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-            expect( vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+
+            expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
+            expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
         });
 
         it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Array", () => {
             var vo1 = new TestValueObject_Array(
-                [{p1: 3, p2: 42}, {p1: 6, p3: 96}]
+                [{ p1: 3, p2: 42 }, { p1: 6, p3: 96 }]
             );
             var vo2 = new TestValueObject_Array(
-                [{p1: 3, p2: 42}, {p1: 6, p3: 96}]
+                [{ p1: 3, p2: 42 }, { p1: 6, p3: 96 }]
             );
             var vo3 = new TestValueObject_Array(
-                [{p1: 6, p3: 96}, {p1: 3, p2: 42}]
+                [{ p1: 6, p3: 96 }, { p1: 3, p2: 42 }]
             )
-            
-            expect( vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-            expect( vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+
+            expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
+            expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
         });
 
         it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Object", () => {
             var vo1 = new TestValueObject_Object(
-                {p1: 3, p2: 42}
+                { p1: 3, p2: 42 }
             );
             var vo2 = new TestValueObject_Object(
-                {p1: 3, p2: 42}
+                { p1: 3, p2: 42 }
             );
             var vo3 = new TestValueObject_Object(
-                {p1: 6, p3: 96}
+                { p1: 6, p3: 96 }
             )
-            
-            expect( vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-            expect( vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+
+            expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
+            expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
         });
     });
 }

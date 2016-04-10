@@ -54,7 +54,7 @@ namespace CdC.Tests.InMemoryItemLocker {
 
         __typeName = "CdC.Tests.InMemoryItemLocker.TestEntity";
         __typeVersion = "v1";
-        
+
         public arrayOfEntities: ChildEntity[] = [];
         public anonymousObject: any = {};
         // Le due property qui sotto vengono usate per testare che i riferimenti agli stessi oggetti vengano ricostituiti correttamente.
@@ -77,7 +77,7 @@ namespace CdC.Tests.InMemoryItemLocker {
 
     describe("InMemoryItemLocker", () => {
 
-        it("Deve essere possibilie gestire una Entity nel suo lock manager.", () => {
+        it("Deve essere possibile gestire una Entity nel suo lock manager.", () => {
             var item = new TestEntity();
             var lockKey = new LockKey();
 
@@ -96,7 +96,7 @@ namespace CdC.Tests.InMemoryItemLocker {
             var anotherLockKey = new LockKey();
             var anotherLockManager = new TestLockManager(item, anotherLockKey);
             var anotherLock = new Lock(anotherLockKey);
-            expect(() => { anotherLockManager.lock(anotherLock) }).toThrow( new Error(LockingErrors.EntityLockedBySomeoneElse));
+            expect(() => { anotherLockManager.lock(anotherLock) }).toThrow(new Error(LockingErrors.EntityLockedBySomeoneElse));
         });
     })
 }

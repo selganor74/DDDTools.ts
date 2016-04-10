@@ -1,72 +1,69 @@
 /// <reference path="IStateful.ts" />
 /// <reference path="UpgraderErrors.ts" />
+/// <reference path="StatefulObjectFactory.ts" />
 
 namespace DDDTools.StatefulObject {
 
     import Errors = StatefulObject.UpgraderErrors;
 
-    export interface IUpgraderMethod {
-        /**
-         * Un "ConverterMethod" prende un oggetto del tipo "x", in una versione "y" e lo trasforma in un altro del tipo "x" ma versione "z" 
-         */
-        (from: any): any
-    }
-
-    export interface IUpgradePath {
-        /**
-         * Aggiunge un metodo "converter" all'upgrade path
-         */
-        addUpgraderMethod(typeVersionFrom: string, upgraderMethod: IUpgraderMethod);
-
-        /**
-         * Aggiorna un'istanza da un tipo di una versione "vecchia" all'ultimo sgaggio chiamando tutti i converter registrati
-         */
-        upgrade<T>(instance: IStateful): T;
-        
-    }
-
-    /**
-     * Pseudo factory per l'aggiornamento di un oggetto stateful, all'ultimo sgaggio.
-     */
     export class StatefulObjectUpgrader {
+        
+        // Contains the latest version possible for each type. 
+        private static latestTypeVersionMap: { [typeName: string]: string } = {};
+        // Contains flags to determine if latstTypeVersionMap for a specific type has been calculated
+        private static isVersionMapBuilt: { [typeName: string]: boolean } = {};
 
-        private static pathRepository: { [typeName: string]: IUpgradePath }
-
-        public static registerUpgradePath(typeName: string, upgrader: IUpgradePath) {
-            // verifica che il tipo sia registrato
-            if (StatefulObjectFactory.isTypeInstantiable(typeName)) {
-                StatefulObjectUpgrader.pathRepository[typeName] = upgrader;
+        private static buildVersionMapForType(typeName: string): void {
+            if (StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
+                return;
             }
-            Errors.Throw(Errors.TypeNotInstatiable, "Il tipo " + typeName + " non risulta instanziabile. Verificare che il namespace ed il nome del tipo siano corretti. I tipi 'Upgradabili' devono essere 'export' dei loro moduli/namespace.");
-
+            try {
+                var tmpInstance = StatefulObjectFactory.createTypeInstance(typeName);
+                StatefulObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
+                // console.log("Latest possible version for " + typeName + " is " + tmpInstance.__typeVersion);
+            } catch (e) {
+                Errors.Throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
+            }
+            StatefulObjectUpgrader.isVersionMapBuilt[typeName] = true;
         }
 
-        public static getUpgradePathForType(typeName: string): IUpgradePath {
-            if (StatefulObjectUpgrader.pathRepository[typeName]) {
-                return StatefulObjectUpgrader.pathRepository[typeName];
+        public static isLatestVersionForType(typeName: string, typeVersion: string): boolean {
+            // Looks for the latest version, if not already done.
+            if (!StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
+                StatefulObjectUpgrader.buildVersionMapForType(typeName);
             }
-            Errors.Throw(Errors.UpgradePathNotFound, "Impossibile trovare un upgrade path for type " + typeName);
+            // If the version supplied doesn't match the latest version in the map, the instance must be upgraded.
+            if (StatefulObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
+                return true;
+            }
+            return false;
         }
-    }
-    
-    export abstract class BaseUpgradePath implements IUpgradePath {
 
-        private convertersRepository: { [typeVersionFrom: string] : any }
+        public static upgrade(instanceFrom: IStateful): IStateful {
+            // If object doesn't need to upgrade, then we are done!
+            if (!StatefulObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
+                return instanceFrom;
+            }
+            var nextVersion = StatefulObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
+            var upgraderInstance = StatefulObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
+            var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
+            // Verifies that version is effectively upgraded
+            if(upgraded.__typeVersion != nextVersion){
+                Errors.Throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion );
+            }
+            return StatefulObjectUpgrader.upgrade(upgraded);
+        }
 
-        constructor(
-            /**
-             * Rappresenta "l'ultima" versione del tipo gestito da questo Upgrade Path
-             */
-            private managedFullyQualifiedTypeName: string
-        ) {}
-        
-        addUpgraderMethod(typeFrom: string, upgraderMethod: IUpgraderMethod) {
-            this.convertersRepository[typeFrom] = upgraderMethod;
-        };
-
-        
-        public upgrade<T>(instance: IStateful): T {
-            return null;
-        };
+        public static computeNextVersion(typeVersion: string): string {
+            // Version must be in the form vN where v is a constant and N is an integer.
+            var versionRe = new RegExp("^v[0-9]+");
+            if (!versionRe.test(typeVersion)) {
+                Errors.Throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
+            }
+            var version = Number(typeVersion.substr(1));
+            version = version + 1;
+            var nextVersion = "v" + version;
+            return nextVersion;
+        }
     }
 }

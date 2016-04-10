@@ -4,7 +4,7 @@
 
 namespace DDDTools {
 	
-	export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IValueObject<TKey>> 
+	export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> 
 			extends BaseStatefulObject {
 				
         private key: TKey;
