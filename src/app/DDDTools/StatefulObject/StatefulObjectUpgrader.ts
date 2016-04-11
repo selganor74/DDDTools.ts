@@ -6,6 +6,13 @@ namespace DDDTools.StatefulObject {
 
     import Errors = StatefulObject.UpgraderErrors;
 
+    /**
+     * The StatefulObjectUpgrader is an helper class to automate the "upgrade process" of an object's state.
+     * The Upgrader is found on these principles:
+     *  * The latest version FQTN must match the one specified by the property __typeName, which is in the form namespace.objectName.
+     *  * Older versions of a StatefulObject MUST have a FQTN in the form namespace.<version>.objectName.
+     *  * __typeVersion MUST be specified as v<versionNumber> where version is an integer.  
+     */
     export class StatefulObjectUpgrader {
         
         // Contains the latest version possible for each type. 
