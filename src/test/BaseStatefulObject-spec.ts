@@ -20,7 +20,7 @@ namespace CdC.Tests.BaseStatefulObject {
     import Guid = DDDTools.ValueObjects.Guid;
     import StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
     import StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
-
+    import Errors = DDDTools.StatefulObject.UpgraderErrors;
 
     export class TestEntity extends BaseEntity<TestEntity, Guid> {
         __typeName = "CdC.Tests.BaseStatefulObject.TestEntity";
@@ -53,6 +53,16 @@ namespace CdC.Tests.BaseStatefulObject {
             var computed = StatefulObjectUpgrader.computeNextVersion("v1");
 
             expect(computed).toEqual("v2");
+        });
+
+        it("computeNextVersion deve restituire un errore se la versione non è corretta.", () => {
+            
+            var expectedError = new Error(Errors.IncorrectVersionFormat);
+            expectedError.message = "Specified version m15 is in incorrect format. Must be in the form v<n> where n is an integer.";
+
+            expect( () => { var computed = StatefulObjectUpgrader.computeNextVersion("m15"); }).toThrow(expectedError);
+
+            
         });
 
         it("needsUpgrade deve restituire false per gli oggetti che non hanno versioni oltre alla prima", () => {

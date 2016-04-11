@@ -927,6 +927,7 @@ var CdC;
         (function (BaseStatefulObject) {
             var BaseEntity = DDDTools.BaseEntity;
             var StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
+            var Errors = DDDTools.StatefulObject.UpgraderErrors;
             var TestEntity = (function (_super) {
                 __extends(TestEntity, _super);
                 function TestEntity() {
@@ -958,6 +959,11 @@ var CdC;
                 it("computeNextVersion deve restituire il valore corretto della versione successiva", function () {
                     var computed = StatefulObjectUpgrader.computeNextVersion("v1");
                     expect(computed).toEqual("v2");
+                });
+                it("computeNextVersion deve restituire un errore se la versione non è corretta.", function () {
+                    var expectedError = new Error(Errors.IncorrectVersionFormat);
+                    expectedError.message = "Specified version m15 is in incorrect format. Must be in the form v<n> where n is an integer.";
+                    expect(function () { var computed = StatefulObjectUpgrader.computeNextVersion("m15"); }).toThrow(expectedError);
                 });
                 it("needsUpgrade deve restituire false per gli oggetti che non hanno versioni oltre alla prima", function () {
                     var te = new TestEntityNonUpgradable();
