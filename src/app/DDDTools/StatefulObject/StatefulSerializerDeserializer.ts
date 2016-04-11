@@ -64,7 +64,7 @@ namespace DDDTools.StatefulObject {
         /**
          * Preprocess the object tree to be serialized to find and replace Date objects with something different...
          */
-        public static preprocessForFakeSubstitution(sourceObject: any) {
+        private static preprocessForFakeSubstitution(sourceObject: any) {
             for (var idx in sourceObject) {
                 var current = sourceObject[idx];
                 if (current instanceof Date) {
@@ -88,7 +88,7 @@ namespace DDDTools.StatefulObject {
         /**
          * Postprocess the object tree to be serialized to find and replace FakeDate objects with Dates again...
          */
-        public static postprocessForFakeSubstitution(sourceObject: any) {
+        private static postprocessForFakeSubstitution(sourceObject: any) {
             for (var idx in sourceObject) {
                 var current = sourceObject[idx];
                 if (current instanceof FakeDate) {
