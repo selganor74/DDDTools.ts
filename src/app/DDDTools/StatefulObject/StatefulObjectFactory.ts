@@ -77,18 +77,6 @@ namespace DDDTools.StatefulObject {
         }
 
         /**
-         * Checks if typeVersion is the latest available for typeName.
-         */
-        private static needsUpgrade(typeName: string, typeVersion: string) {
-            var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
-            // se il tipo è instanziabile a partire dal namespace di "versione", allora ha biesogno di essere upgradato 
-            if (StatefulObjectFactory.isTypeInstantiable(fqtn)) {
-                return true;
-            }
-            return false;
-        }
-
-        /**
          * Checks if an object implements the "IStateful" interface.
          */
         private static isStatefulObject(objectToTest: any): boolean {

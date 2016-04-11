@@ -174,13 +174,6 @@ var DDDTools;
                 }
                 return state;
             };
-            StatefulObjectFactory.needsUpgrade = function (typeName, typeVersion) {
-                var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
-                if (StatefulObjectFactory.isTypeInstantiable(fqtn)) {
-                    return true;
-                }
-                return false;
-            };
             StatefulObjectFactory.isStatefulObject = function (objectToTest) {
                 if (typeof objectToTest !== 'object') {
                     return false;
