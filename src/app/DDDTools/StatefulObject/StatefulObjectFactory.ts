@@ -85,12 +85,12 @@ namespace DDDTools.StatefulObject {
                 return false;
             }
 
-            var casted = <IStateful>objectToTest;
-            if (!casted.__typeName || casted.__typeName === "") {
+            var stateful = <IStateful>objectToTest;
+            if (!stateful.__typeName || stateful.__typeName === "") {
                 return false;
             }
 
-            if (!casted.__typeVersion || casted.__typeVersion === "") {
+            if (!stateful.__typeVersion || stateful.__typeVersion === "") {
                 return false;
             }
 
