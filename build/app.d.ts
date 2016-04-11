@@ -79,8 +79,8 @@ declare namespace DDDTools.StatefulObject {
         private static idToObjectMap;
         static serialize(toSerialize: any): string;
         static deserialize(toDeserialize: string): any;
-        static preprocessForFakeSubstitution(sourceObject: any): any;
-        static postprocessForFakeSubstitution(sourceObject: any): any;
+        private static preprocessForFakeSubstitution(sourceObject);
+        private static postprocessForFakeSubstitution(sourceObject);
         private static cleanup();
         private static customSerializer(key, value);
         private static customReviver(key, value);
@@ -171,9 +171,7 @@ declare namespace DDDTools.ValueObjects {
         __typeVersion: string;
         private guid;
         constructor(guid?: string);
-        private static s4();
         static generate(): Guid;
-        private isValid();
         toString(): string;
     }
 }

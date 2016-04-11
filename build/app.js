@@ -549,6 +549,7 @@ var DDDTools;
 (function (DDDTools) {
     var ValueObjects;
     (function (ValueObjects) {
+        var SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
         var Guid = (function (_super) {
             __extends(Guid, _super);
             function Guid(guid) {
@@ -559,18 +560,8 @@ var DDDTools;
                     this.guid = guid;
                 }
             }
-            Guid.s4 = function () {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            };
             Guid.generate = function () {
-                return new Guid('{' + Guid.s4() + Guid.s4() + '-' + Guid.s4() + '-' + Guid.s4() + '-' +
-                    Guid.s4() + '-' + Guid.s4() + Guid.s4() + Guid.s4() + '}');
-            };
-            Guid.prototype.isValid = function () {
-                var guidRegexp = new RegExp("^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$");
-                return guidRegexp.test(this.guid);
+                return new Guid(SimpleGuid.generate());
             };
             Guid.prototype.toString = function () {
                 return this.guid;
