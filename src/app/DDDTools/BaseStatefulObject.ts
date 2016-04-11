@@ -16,7 +16,6 @@ namespace DDDTools {
             return this.__typeName;
         };
 
-
         public getState(): any {
             if (this.__typeName === "") {
                 Errors.Throw(Errors.TypeNameNotSet, "La property __typeName non è impostata!");
