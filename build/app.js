@@ -214,10 +214,6 @@ var DDDTools;
             this.__typeName = "";
             this.__typeVersion = "";
         }
-        BaseStatefulObject.prototype.getTypeName = function () {
-            return this.__typeName;
-        };
-        ;
         BaseStatefulObject.prototype.getState = function () {
             if (this.__typeName === "") {
                 Errors.Throw(Errors.TypeNameNotSet, "La property __typeName non è impostata!");
@@ -336,12 +332,18 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var EntityDecorator = (function () {
-        function EntityDecorator() {
+    var BaseKeyValueObject = (function (_super) {
+        __extends(BaseKeyValueObject, _super);
+        function BaseKeyValueObject() {
+            _super.call(this);
         }
-        return EntityDecorator;
-    }());
-    DDDTools.EntityDecorator = EntityDecorator;
+        BaseKeyValueObject.prototype.toString = function () {
+            var state = this.getState();
+            return JSON.stringify(state);
+        };
+        return BaseKeyValueObject;
+    }(DDDTools.BaseValueObject));
+    DDDTools.BaseKeyValueObject = BaseKeyValueObject;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -406,6 +408,9 @@ var DDDTools;
                 this.__typeName = "DDDTools.Locking.SimpleLockKey";
                 this.key = key || Guid.generate();
             }
+            SimpleLockKey.prototype.toString = function () {
+                return this.key.toString();
+            };
             return SimpleLockKey;
         }(DDDTools.BaseValueObject));
         Locking.SimpleLockKey = SimpleLockKey;

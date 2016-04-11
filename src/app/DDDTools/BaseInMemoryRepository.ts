@@ -11,7 +11,7 @@ namespace DDDTools {
     import IStateful = StatefulObject.IStateful;
     import StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
     
-    export abstract class BaseInMemoryRepository<T extends BaseEntity<T, TKey>, TKey extends BaseValueObject<TKey>> implements IRepository<T, TKey> {
+    export abstract class BaseInMemoryRepository<T extends BaseEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
         
         private storage: { [ id: string ]: IStateful };
         

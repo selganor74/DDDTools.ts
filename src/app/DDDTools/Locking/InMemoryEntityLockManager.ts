@@ -6,7 +6,7 @@ namespace DDDTools.Locking {
 
     import Guid = DDDTools.ValueObjects.Guid;
 
-    // Una classe di Lock di esempio usata dall'InMemoryLockManager
+    // Simple locking class used by InMemoryLockManager
     export class SimpleLock extends BaseValueObject<SimpleLock> implements ILock<SimpleLockKey>{
         public __typeName: string = "DDDTools.Locking.SimpleLock";
 
@@ -25,14 +25,18 @@ namespace DDDTools.Locking {
         }
     }
 
-    // Una classe "Chiave" di esempio usata dall'InMemoryLockManager
-    export class SimpleLockKey extends BaseValueObject<SimpleLockKey> {
+    // A sample key class used by InMemoryLockManager
+    export class SimpleLockKey extends BaseValueObject<SimpleLockKey> implements IKeyValueObject<SimpleLockKey> {
         public __typeName: string = "DDDTools.Locking.SimpleLockKey"
         private key: Guid;
 
         constructor(key?: Guid) {
             super();
             this.key = key || Guid.generate();
+        }
+        
+        public toString() {
+            return this.key.toString();
         }
     }
     
@@ -56,7 +60,7 @@ namespace DDDTools.Locking {
             return keyAsString;
         }
         
-        // L'oggetto di Lock usato per lockare l'istanza. L'oggetto di lock può avere informazioni utili da presentare all'utente.
+        // A lock object. A lock object can contain informations about the lock to display to the user.
         getLock(): TLock {
             var keyAsString = this.getKeyAsString();
             return InMemoryEntityLockManager.keyring[keyAsString] || null; 
@@ -74,7 +78,7 @@ namespace DDDTools.Locking {
             var currentLock = this.getLock();
             if (currentLock != null) {
                 if ( currentLock.isLockedByTheSameKey( locker ) ){
-                    // ho già un lock da questo client, per cui lo lascio invariato.
+                    // If we already have a lock, we'll leave the original
                     return;
                 } else {
                     LockingErrors.Throw(LockingErrors.EntityLockedBySomeoneElse);
@@ -92,7 +96,5 @@ namespace DDDTools.Locking {
             var keyAsString = this.getKeyAsString();
             InMemoryEntityLockManager.keyring[keyAsString] = undefined;
         };
-        
-        
     }
 }

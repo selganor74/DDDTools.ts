@@ -62,7 +62,7 @@ namespace DDDTools.StatefulObject {
         }
 
         /**
-         * Checks if typeVersion is the latest available fro typeName.
+         * Checks if typeVersion is the latest available for typeName.
          */
         private static needsUpgrade(typeName: string, typeVersion: string) {
             var fqtn = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);

@@ -12,10 +12,6 @@ namespace DDDTools {
         public __typeName: string = "";
         public __typeVersion: string = "";
 
-        public getTypeName(): string {
-            return this.__typeName;
-        };
-
         public getState(): any {
             if (this.__typeName === "") {
                 Errors.Throw(Errors.TypeNameNotSet, "La property __typeName non è impostata!");

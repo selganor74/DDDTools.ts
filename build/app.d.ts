@@ -19,7 +19,6 @@ declare namespace DDDTools.StatefulObject {
         __typeName: string;
         __typeVersion: string;
         getUpgradedInstance?(fromInstance: IStateful): IStateful;
-        getTypeName(): any;
         getState(): any;
         setState(state: any): any;
     }
@@ -73,7 +72,6 @@ declare namespace DDDTools {
     abstract class BaseStatefulObject implements IStateful {
         __typeName: string;
         __typeVersion: string;
-        getTypeName(): string;
         getState(): any;
         setState(state: any): void;
     }
@@ -108,7 +106,7 @@ declare namespace DDDTools.Repository {
 }
 declare namespace DDDTools {
     import IRepository = Repository.IRepository;
-    abstract class BaseInMemoryRepository<T extends BaseEntity<T, TKey>, TKey extends BaseValueObject<TKey>> implements IRepository<T, TKey> {
+    abstract class BaseInMemoryRepository<T extends BaseEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
         private _managedTypeName;
         private storage;
         constructor(_managedTypeName: string);
@@ -118,11 +116,13 @@ declare namespace DDDTools {
     }
 }
 declare namespace DDDTools {
-    class EntityDecorator {
+    interface IKeyValueObject<T> extends IValueObject<T> {
+        toString(): string;
     }
 }
 declare namespace DDDTools {
-    interface IKeyValueObject<T> extends IValueObject<T> {
+    abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T> {
+        constructor();
         toString(): string;
     }
 }
@@ -160,10 +160,11 @@ declare namespace DDDTools.Locking {
         canBeUnlockedByKey(key: SimpleLockKey): boolean;
         isLockedByTheSameKey(otherLock: SimpleLock): boolean;
     }
-    class SimpleLockKey extends BaseValueObject<SimpleLockKey> {
+    class SimpleLockKey extends BaseValueObject<SimpleLockKey> implements IKeyValueObject<SimpleLockKey> {
         __typeName: string;
         private key;
         constructor(key?: Guid);
+        toString(): string;
     }
     class InMemoryEntityLockManager<TLockableEntity extends BaseEntity<TLockableEntity, TUniqueId>, TUniqueId extends BaseValueObject<TUniqueId>, TLockKey extends BaseValueObject<TLockKey>, TLock extends ILock<TLockKey>> implements ILockManager<TLockKey, TLock> {
         private item;
