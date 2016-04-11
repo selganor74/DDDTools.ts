@@ -178,11 +178,11 @@ var DDDTools;
                 if (typeof objectToTest !== 'object') {
                     return false;
                 }
-                var casted = objectToTest;
-                if (!casted.__typeName || casted.__typeName === "") {
+                var stateful = objectToTest;
+                if (!stateful.__typeName || stateful.__typeName === "") {
                     return false;
                 }
-                if (!casted.__typeVersion || casted.__typeVersion === "") {
+                if (!stateful.__typeVersion || stateful.__typeVersion === "") {
                     return false;
                 }
                 return true;
@@ -212,8 +212,159 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
+    var StatefulObject;
+    (function (StatefulObject) {
+        var SimpleGuid = (function () {
+            function SimpleGuid() {
+            }
+            SimpleGuid.isValid = function (guid) {
+                var guidRegexp = new RegExp("^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$");
+                return guidRegexp.test(guid);
+            };
+            SimpleGuid.s4 = function () {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };
+            SimpleGuid.generate = function () {
+                var newSimpleGuid = "{" + SimpleGuid.s4() + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" +
+                    SimpleGuid.s4() + "-" + SimpleGuid.s4() + SimpleGuid.s4() + SimpleGuid.s4() + "}";
+                if (SimpleGuid.isValid(newSimpleGuid)) {
+                    return newSimpleGuid;
+                }
+                throw new Error("Should Never Happen! The generated guid is not valid!");
+            };
+            return SimpleGuid;
+        }());
+        StatefulObject.SimpleGuid = SimpleGuid;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var StatefulObject;
+    (function (StatefulObject) {
+        var StatefulSerializerDeserializer = (function () {
+            function StatefulSerializerDeserializer() {
+            }
+            StatefulSerializerDeserializer.serialize = function (toSerialize) {
+                return JSON.stringify(toSerialize, StatefulSerializerDeserializer.customSerializer);
+            };
+            StatefulSerializerDeserializer.deserialize = function (toDeserialize) {
+                var toReturn = JSON.parse(toDeserialize, StatefulSerializerDeserializer.customReviver);
+                StatefulSerializerDeserializer.cleanup();
+                return toReturn;
+            };
+            StatefulSerializerDeserializer.cleanup = function () {
+                for (var item in StatefulSerializerDeserializer.idToObjectMap) {
+                    if (StatefulSerializerDeserializer.idToObjectMap[item].__objectInstanceId) {
+                        delete StatefulSerializerDeserializer.idToObjectMap[item].__objectInstanceId;
+                    }
+                    delete StatefulSerializerDeserializer.idToObjectMap[item];
+                }
+                StatefulSerializerDeserializer.idToObjectMap = {};
+            };
+            StatefulSerializerDeserializer.customSerializer = function (key, value) {
+                if (typeof value === "object") {
+                    if (!StatefulSerializerDeserializer.hasBeenTouched(value)) {
+                        StatefulSerializerDeserializer.touch(value);
+                    }
+                    value = StatefulSerializerDeserializer.RegExpSerializer(value);
+                }
+                value = StatefulSerializerDeserializer.DateSerializer(value);
+                return value;
+            };
+            StatefulSerializerDeserializer.customReviver = function (key, value) {
+                if (typeof value === "object") {
+                    if (StatefulSerializerDeserializer.hasBeenTouched(value)) {
+                        if (StatefulSerializerDeserializer.isInIdentityMapById(value.__objectInstanceId)) {
+                            return StatefulSerializerDeserializer.getFromIdentityMapById(value.__objectInstanceId);
+                        }
+                        else {
+                            value = StatefulSerializerDeserializer.RegExpDeserializer(value);
+                            StatefulSerializerDeserializer.addToIdentityMapById(value.__objectInstanceId, value);
+                        }
+                    }
+                }
+                value = StatefulSerializerDeserializer.DateDeserializer(value);
+                return value;
+            };
+            StatefulSerializerDeserializer.hasBeenTouched = function (object) {
+                var casted = object;
+                if (casted.__objectInstanceId) {
+                    return true;
+                }
+                return false;
+            };
+            StatefulSerializerDeserializer.touch = function (object) {
+                if (typeof object === "object") {
+                    var newId = StatefulObject.SimpleGuid.generate();
+                    object.__objectInstanceId = newId;
+                }
+            };
+            StatefulSerializerDeserializer.isInIdentityMapById = function (id) {
+                if (StatefulSerializerDeserializer.idToObjectMap[id]) {
+                    return true;
+                }
+                return false;
+            };
+            StatefulSerializerDeserializer.getFromIdentityMapById = function (id) {
+                if (StatefulSerializerDeserializer.isInIdentityMapById(id)) {
+                    return StatefulSerializerDeserializer.idToObjectMap[id];
+                }
+                return null;
+            };
+            StatefulSerializerDeserializer.addToIdentityMapById = function (id, object) {
+                StatefulSerializerDeserializer.idToObjectMap[id] = object;
+            };
+            StatefulSerializerDeserializer.RegExpSerializer = function (value) {
+                if (value instanceof RegExp) {
+                    value.__typeName = "RegExp";
+                    value.__typeVersion = "v1";
+                    value.__regularExpression = value.toString();
+                }
+                return value;
+            };
+            StatefulSerializerDeserializer.RegExpDeserializer = function (value) {
+                if (value.__typeName) {
+                    if (value.__typeName === "RegExp") {
+                        value = new RegExp(value.__regularExpression || "");
+                    }
+                }
+                return value;
+            };
+            StatefulSerializerDeserializer.DateSerializer = function (value) {
+                if (typeof value === "string") {
+                    var dateTimeRegExp = new RegExp("^[0-9]{4}[-][0-9]{2}[-][0-9]{2}[T][0-9]{2}[:][0-9]{2}[:][0-9]{2}[.][0-9]{3}[Z]$");
+                    if (dateTimeRegExp.test(value)) {
+                        var tmpValue = {
+                            __typeName: "Date",
+                            __typeVersion: "v1",
+                            __date: value + "_dummy_to_avoid_loops"
+                        };
+                        value = tmpValue;
+                    }
+                }
+                return value;
+            };
+            StatefulSerializerDeserializer.DateDeserializer = function (value) {
+                if (value.__typeName) {
+                    if (value.__typeName === "Date") {
+                        value = new Date(value.__date.replace("_dummy_to_avoid_loops", ""));
+                    }
+                }
+                return value;
+            };
+            StatefulSerializerDeserializer.idToObjectMap = {};
+            return StatefulSerializerDeserializer;
+        }());
+        StatefulObject.StatefulSerializerDeserializer = StatefulSerializerDeserializer;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
     var Errors = DDDTools.StatefulObject.StatefulObjectErrors;
     var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
+    var StatefulIdentityMap = DDDTools.StatefulObject.StatefulSerializerDeserializer;
     var BaseStatefulObject = (function () {
         function BaseStatefulObject() {
             this.__typeName = "";
@@ -226,8 +377,8 @@ var DDDTools;
             if (this.__typeVersion === "") {
                 Errors.Throw(Errors.TypeVersionNotSet);
             }
-            var toReconstitute = JSON.stringify(this);
-            var reconstituted = JSON.parse(toReconstitute);
+            var toReconstitute = StatefulIdentityMap.serialize(this);
+            var reconstituted = StatefulIdentityMap.deserialize(toReconstitute);
             return reconstituted;
         };
         BaseStatefulObject.prototype.setState = function (state) {
@@ -874,17 +1025,20 @@ var CdC;
                 expect(reloaded.anonymousObject.aNumberType).toEqual(42, "La property aNumberType non è stata ricostituita correttamente.");
             });
             it("Riferimenti alla stessa istanza devono essere ricostituiti correttamente", function () {
-                pending("Feature non ancora sviluppata");
                 var repo = new TestRepository();
                 var numberOfElementsToAdd = 10;
                 var item = new TestEntity();
                 var key = new Key();
                 item.setKey(key);
                 var anObjectReferencedInMoreThanOneProperty = {
-                    aProperty: "Prima del test"
+                    aProperty: "A test value",
+                    aCompositeProperty: {
+                        aProperty: "Another test value"
+                    }
                 };
                 item.anObjectReference = anObjectReferencedInMoreThanOneProperty;
                 item.anotherObjectReference = anObjectReferencedInMoreThanOneProperty;
+                expect(item.anObjectReference).toEqual(item.anotherObjectReference);
                 try {
                     repo.save(item);
                     var reloaded = repo.getById(key);
@@ -892,11 +1046,7 @@ var CdC;
                 catch (e) {
                     expect(false).toBeTruthy("Eccezione nel salvataggio o nel recupero dell'item. " + e.message);
                 }
-                expect(reloaded.anObjectReference.aProperty).toEqual("Prima del test");
-                expect(reloaded.anotherObjectReference.aProperty).toEqual("Prima del test");
-                reloaded.anObjectReference.aProperty = "Dopo del test";
-                expect(reloaded.anObjectReference.aProperty).toEqual("Dopo del test", "anObjectReference.aProperty non è cambiata dopo la modifica.");
-                expect(reloaded.anotherObjectReference.aProperty).toEqual("Dopo del test", "anotherObjectReference.aProperty non è cambiata dopo la modifica.");
+                expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
             });
         });
     })(Tests = CdC.Tests || (CdC.Tests = {}));
@@ -1017,6 +1167,16 @@ var CdC;
                 return TestEntityNonUpgradable;
             }(BaseEntity));
             BaseStatefulObject.TestEntityNonUpgradable = TestEntityNonUpgradable;
+            var AClassWithManyTypes = (function (_super) {
+                __extends(AClassWithManyTypes, _super);
+                function AClassWithManyTypes() {
+                    _super.apply(this, arguments);
+                    this.__typeName = "CdC.Tests.BaseStatefulObject.AClassWithManyTypes";
+                    this.__typeVersion = "v1";
+                }
+                return AClassWithManyTypes;
+            }(BaseEntity));
+            BaseStatefulObject.AClassWithManyTypes = AClassWithManyTypes;
             describe("BaseStatefulObjectUpgrader", function () {
                 it("computeNextVersion deve restituire il valore corretto della versione successiva", function () {
                     var computed = StatefulObjectUpgrader.computeNextVersion("v1");
@@ -1027,15 +1187,15 @@ var CdC;
                     expectedError.message = "Specified version m15 is in incorrect format. Must be in the form v<n> where n is an integer.";
                     expect(function () { var computed = StatefulObjectUpgrader.computeNextVersion("m15"); }).toThrow(expectedError);
                 });
-                it("needsUpgrade deve restituire false per gli oggetti che non hanno versioni oltre alla prima", function () {
+                it("isLatestVersionForType deve restituire false per gli oggetti che non hanno versioni oltre alla prima", function () {
                     var te = new TestEntityNonUpgradable();
                     var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
-                    expect(needsUpgrade).toBeFalsy("needsUpgrade should have returned false!");
+                    expect(needsUpgrade).toBeFalsy("isLatestVersionForType should have returned false!");
                 });
-                it("needsUpgrade deve restituire true per gli oggetti che hanno versioni oltre alla prima", function () {
+                it("isLatestVersionForType deve restituire true per gli oggetti che hanno versioni oltre alla prima", function () {
                     var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
                     var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
-                    expect(needsUpgrade).toBeTruthy("needsUpgrade should have returned true!");
+                    expect(needsUpgrade).toBeTruthy("isLatestVersionForType should have returned true!");
                 });
                 it("upgrade must be able to upgrade a StatefulObject to its latest version [2 steps]", function () {
                     var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
@@ -1051,6 +1211,24 @@ var CdC;
                     expect(upgraded.__typeVersion).toEqual("v3");
                     expect(upgraded.aNewProperty).toEqual("upgrader was here");
                     expect(upgraded.aNewNewProperty).toEqual("upgrader was here");
+                });
+                it("getState must be able to copy RegExp types", function () {
+                    var te = new CdC.Tests.BaseStatefulObject.AClassWithManyTypes();
+                    var testRegExp = "/^v[0-9]+";
+                    var testString = "v123";
+                    te.aRegExp = new RegExp(testRegExp);
+                    var regExpResult = te.aRegExp.test(testString);
+                    var state = te.getState();
+                    expect(state.aRegExp instanceof RegExp).toBeTruthy("aRegExp is not a RegExp instance");
+                    expect(state.aRegExp.test("v123")).toEqual(regExpResult, "aRegExp non si comporta come la RegularExpression originale");
+                });
+                it("getState must be able to copy Date types", function () {
+                    var te = new CdC.Tests.BaseStatefulObject.AClassWithManyTypes();
+                    var testDate = new Date();
+                    te.aDate = testDate;
+                    var state = te.getState();
+                    expect(state.aDate instanceof Date).toBeTruthy("aDate is not a Date instance");
+                    expect(state.aDate.toString()).toEqual(testDate.toString(), "aDate non è stata ripristinata come Date");
                 });
             });
         })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));

@@ -1,5 +1,6 @@
-/// <reference path="IValueObject.ts"/>
 /// <reference path="BaseStatefulObject.ts"/>
+/// <reference path="IValueObject.ts"/>
+
 
 namespace DDDTools {
 

@@ -1,12 +1,15 @@
 /// <reference path="StatefulObject/IStateful.ts" />
 /// <reference path="StatefulObject/StatefulObjectErrors.ts" />
 /// <reference path="StatefulObject/StatefulObjectFactory.ts" />
+/// <reference path="StatefulObject/StatefulSerializerDeserializer.ts" />
 
 namespace DDDTools {
 
     import IStateful = StatefulObject.IStateful;
     import Errors = StatefulObject.StatefulObjectErrors;
     import StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
+    import StatefulIdentityMap = StatefulObject.StatefulSerializerDeserializer;
+    
     export abstract class BaseStatefulObject implements IStateful {
 
         public __typeName: string = "";
@@ -21,11 +24,12 @@ namespace DDDTools {
                 Errors.Throw(Errors.TypeVersionNotSet);
             }
 
-            var toReconstitute = JSON.stringify(this);
-            var reconstituted = JSON.parse(toReconstitute);
+            var toReconstitute = StatefulIdentityMap.serialize(this);
+            var reconstituted = StatefulIdentityMap.deserialize(toReconstitute);
 
             return reconstituted;
         }
+
 
         public setState(state: any) {
 
