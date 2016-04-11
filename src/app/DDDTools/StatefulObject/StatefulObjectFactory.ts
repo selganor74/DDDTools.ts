@@ -5,6 +5,10 @@ namespace DDDTools.StatefulObject {
 
     import Errors = DDDTools.StatefulObject.StatefulObjectErrors;
 
+    /**
+     * StatefulObjectFactory is an helper class to create and reconstitute statfeul objects.
+     * It gurantees that a statful object is always created or reconstituted to its latest version.  
+     */
     export class StatefulObjectFactory {
         /**
          * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
