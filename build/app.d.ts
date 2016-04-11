@@ -79,6 +79,8 @@ declare namespace DDDTools.StatefulObject {
         private static idToObjectMap;
         static serialize(toSerialize: any): string;
         static deserialize(toDeserialize: string): any;
+        static preprocessForFakeSubstitution(sourceObject: any): any;
+        static postprocessForFakeSubstitution(sourceObject: any): any;
         private static cleanup();
         private static customSerializer(key, value);
         private static customReviver(key, value);
@@ -87,10 +89,8 @@ declare namespace DDDTools.StatefulObject {
         private static isInIdentityMapById(id);
         private static getFromIdentityMapById(id);
         private static addToIdentityMapById(id, object);
-        private static RegExpSerializer(value);
-        private static RegExpDeserializer(value);
-        private static DateSerializer(value);
-        private static DateDeserializer(value);
+        private static FakeRegExpDeserializer(value);
+        private static FakeDateDeserializer(value);
     }
 }
 declare namespace DDDTools {

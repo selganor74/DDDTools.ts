@@ -243,16 +243,84 @@ var DDDTools;
 (function (DDDTools) {
     var StatefulObject;
     (function (StatefulObject) {
+        var FakeDate = (function () {
+            function FakeDate(date) {
+                this.__typeName = "Date";
+                this.__typeVersion = "v1";
+                this.__dateAsString = date.toISOString();
+            }
+            FakeDate.prototype.getDate = function () {
+                return new Date(this.__dateAsString);
+            };
+            return FakeDate;
+        }());
+        var FakeRegExp = (function () {
+            function FakeRegExp(regExp) {
+                this.__typeName = "RegExp";
+                this.__typeVersion = "v1";
+                this.__regularExpression = regExp.toString();
+            }
+            FakeRegExp.prototype.getRegExp = function () {
+                return new RegExp(this.__regularExpression);
+            };
+            return FakeRegExp;
+        }());
         var StatefulSerializerDeserializer = (function () {
             function StatefulSerializerDeserializer() {
             }
             StatefulSerializerDeserializer.serialize = function (toSerialize) {
-                return JSON.stringify(toSerialize, StatefulSerializerDeserializer.customSerializer);
+                var toReturn;
+                toSerialize = StatefulSerializerDeserializer.preprocessForFakeSubstitution(toSerialize);
+                try {
+                    toReturn = JSON.stringify(toSerialize, StatefulSerializerDeserializer.customSerializer);
+                }
+                finally {
+                    StatefulSerializerDeserializer.postprocessForFakeSubstitution(toSerialize);
+                }
+                return toReturn;
             };
             StatefulSerializerDeserializer.deserialize = function (toDeserialize) {
                 var toReturn = JSON.parse(toDeserialize, StatefulSerializerDeserializer.customReviver);
                 StatefulSerializerDeserializer.cleanup();
                 return toReturn;
+            };
+            StatefulSerializerDeserializer.preprocessForFakeSubstitution = function (sourceObject) {
+                for (var idx in sourceObject) {
+                    var current = sourceObject[idx];
+                    if (current instanceof Date) {
+                        var newFakeDate = new FakeDate(current);
+                        sourceObject[idx] = newFakeDate;
+                        continue;
+                    }
+                    if (current instanceof RegExp) {
+                        var newFakeRegExp = new FakeRegExp(current);
+                        sourceObject[idx] = newFakeRegExp;
+                        continue;
+                    }
+                    if (typeof current === 'object' || Array.isArray(current)) {
+                        sourceObject[idx] = StatefulSerializerDeserializer.preprocessForFakeSubstitution(current);
+                        continue;
+                    }
+                }
+                return sourceObject;
+            };
+            StatefulSerializerDeserializer.postprocessForFakeSubstitution = function (sourceObject) {
+                for (var idx in sourceObject) {
+                    var current = sourceObject[idx];
+                    if (current instanceof FakeDate) {
+                        sourceObject[idx] = current.getDate();
+                        continue;
+                    }
+                    if (current instanceof FakeRegExp) {
+                        sourceObject[idx] = current.getRegExp();
+                        continue;
+                    }
+                    if (typeof current === 'object' || Array.isArray(current)) {
+                        sourceObject[idx] = StatefulSerializerDeserializer.postprocessForFakeSubstitution(current);
+                        continue;
+                    }
+                }
+                return sourceObject;
             };
             StatefulSerializerDeserializer.cleanup = function () {
                 for (var item in StatefulSerializerDeserializer.idToObjectMap) {
@@ -268,9 +336,7 @@ var DDDTools;
                     if (!StatefulSerializerDeserializer.hasBeenTouched(value)) {
                         StatefulSerializerDeserializer.touch(value);
                     }
-                    value = StatefulSerializerDeserializer.RegExpSerializer(value);
                 }
-                value = StatefulSerializerDeserializer.DateSerializer(value);
                 return value;
             };
             StatefulSerializerDeserializer.customReviver = function (key, value) {
@@ -280,12 +346,12 @@ var DDDTools;
                             return StatefulSerializerDeserializer.getFromIdentityMapById(value.__objectInstanceId);
                         }
                         else {
-                            value = StatefulSerializerDeserializer.RegExpDeserializer(value);
+                            value = StatefulSerializerDeserializer.FakeRegExpDeserializer(value);
+                            value = StatefulSerializerDeserializer.FakeDateDeserializer(value);
                             StatefulSerializerDeserializer.addToIdentityMapById(value.__objectInstanceId, value);
                         }
                     }
                 }
-                value = StatefulSerializerDeserializer.DateDeserializer(value);
                 return value;
             };
             StatefulSerializerDeserializer.hasBeenTouched = function (object) {
@@ -316,15 +382,7 @@ var DDDTools;
             StatefulSerializerDeserializer.addToIdentityMapById = function (id, object) {
                 StatefulSerializerDeserializer.idToObjectMap[id] = object;
             };
-            StatefulSerializerDeserializer.RegExpSerializer = function (value) {
-                if (value instanceof RegExp) {
-                    value.__typeName = "RegExp";
-                    value.__typeVersion = "v1";
-                    value.__regularExpression = value.toString();
-                }
-                return value;
-            };
-            StatefulSerializerDeserializer.RegExpDeserializer = function (value) {
+            StatefulSerializerDeserializer.FakeRegExpDeserializer = function (value) {
                 if (value.__typeName) {
                     if (value.__typeName === "RegExp") {
                         value = new RegExp(value.__regularExpression || "");
@@ -332,24 +390,10 @@ var DDDTools;
                 }
                 return value;
             };
-            StatefulSerializerDeserializer.DateSerializer = function (value) {
-                if (typeof value === "string") {
-                    var dateTimeRegExp = new RegExp("^[0-9]{4}[-][0-9]{2}[-][0-9]{2}[T][0-9]{2}[:][0-9]{2}[:][0-9]{2}[.][0-9]{3}[Z]$");
-                    if (dateTimeRegExp.test(value)) {
-                        var tmpValue = {
-                            __typeName: "Date",
-                            __typeVersion: "v1",
-                            __date: value + "_dummy_to_avoid_loops"
-                        };
-                        value = tmpValue;
-                    }
-                }
-                return value;
-            };
-            StatefulSerializerDeserializer.DateDeserializer = function (value) {
+            StatefulSerializerDeserializer.FakeDateDeserializer = function (value) {
                 if (value.__typeName) {
                     if (value.__typeName === "Date") {
-                        value = new Date(value.__date.replace("_dummy_to_avoid_loops", ""));
+                        value = new Date(value.__dateAsString);
                     }
                 }
                 return value;
