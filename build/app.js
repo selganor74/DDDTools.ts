@@ -129,6 +129,18 @@ var DDDTools;
             StatefulObjectFactory.createTypeInstance = function (typeName, typeVersion) {
                 var toReturn;
                 if (typeVersion) {
+                    var typeToInstatiate = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
+                    try {
+                        toReturn = eval("new " + typeToInstatiate + "()");
+                        return toReturn;
+                    }
+                    catch (e) {
+                    }
+                    toReturn = StatefulObjectFactory.createTypeInstance(typeName);
+                    if (toReturn.__typeVersion != typeVersion) {
+                        Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);
+                    }
+                    return toReturn;
                 }
                 try {
                     toReturn = eval("new " + typeName + "()");
@@ -216,10 +228,10 @@ var DDDTools;
         }
         BaseStatefulObject.prototype.getState = function () {
             if (this.__typeName === "") {
-                Errors.Throw(Errors.TypeNameNotSet, "La property __typeName non è impostata!");
+                Errors.Throw(Errors.TypeNameNotSet);
             }
             if (this.__typeVersion === "") {
-                Errors.Throw(Errors.TypeVersionNotSet, "La property __typeVersion non è impostata!");
+                Errors.Throw(Errors.TypeVersionNotSet);
             }
             var toReconstitute = JSON.stringify(this);
             var reconstituted = JSON.parse(toReconstitute);
@@ -902,6 +914,36 @@ var CdC;
     (function (Tests) {
         var BaseStatefulObject;
         (function (BaseStatefulObject) {
+            var v2;
+            (function (v2) {
+                var BaseEntity = DDDTools.BaseEntity;
+                var A3StepUpgradableItem = (function (_super) {
+                    __extends(A3StepUpgradableItem, _super);
+                    function A3StepUpgradableItem() {
+                        _super.apply(this, arguments);
+                        this.__typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+                        this.__typeVersion = "v2";
+                    }
+                    A3StepUpgradableItem.prototype.getUpgradedInstance = function (fromInstance) {
+                        var state = fromInstance.getState();
+                        state.aNewProperty = "upgrader was here";
+                        state.__typeVersion = "v2";
+                        this.setState(state);
+                        return this;
+                    };
+                    return A3StepUpgradableItem;
+                }(BaseEntity));
+                v2.A3StepUpgradableItem = A3StepUpgradableItem;
+            })(v2 = BaseStatefulObject.v2 || (BaseStatefulObject.v2 = {}));
+        })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
+    })(Tests = CdC.Tests || (CdC.Tests = {}));
+})(CdC || (CdC = {}));
+var CdC;
+(function (CdC) {
+    var Tests;
+    (function (Tests) {
+        var BaseStatefulObject;
+        (function (BaseStatefulObject) {
             var v1;
             (function (v1) {
                 var BaseEntity = DDDTools.BaseEntity;
@@ -915,6 +957,16 @@ var CdC;
                     return TestEntity;
                 }(BaseEntity));
                 v1.TestEntity = TestEntity;
+                var A3StepUpgradableItem = (function (_super) {
+                    __extends(A3StepUpgradableItem, _super);
+                    function A3StepUpgradableItem() {
+                        _super.apply(this, arguments);
+                        this.__typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+                        this.__typeVersion = "v1";
+                    }
+                    return A3StepUpgradableItem;
+                }(BaseEntity));
+                v1.A3StepUpgradableItem = A3StepUpgradableItem;
             })(v1 = BaseStatefulObject.v1 || (BaseStatefulObject.v1 = {}));
         })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
@@ -928,6 +980,23 @@ var CdC;
             var BaseEntity = DDDTools.BaseEntity;
             var StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
             var Errors = DDDTools.StatefulObject.UpgraderErrors;
+            var A3StepUpgradableItem = (function (_super) {
+                __extends(A3StepUpgradableItem, _super);
+                function A3StepUpgradableItem() {
+                    _super.apply(this, arguments);
+                    this.__typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+                    this.__typeVersion = "v3";
+                }
+                A3StepUpgradableItem.prototype.getUpgradedInstance = function (fromInstance) {
+                    var state = fromInstance.getState();
+                    state.aNewNewProperty = "upgrader was here";
+                    state.__typeVersion = "v3";
+                    this.setState(state);
+                    return this;
+                };
+                return A3StepUpgradableItem;
+            }(BaseEntity));
+            BaseStatefulObject.A3StepUpgradableItem = A3StepUpgradableItem;
             var TestEntity = (function (_super) {
                 __extends(TestEntity, _super);
                 function TestEntity() {
@@ -975,12 +1044,20 @@ var CdC;
                     var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
                     expect(needsUpgrade).toBeTruthy("needsUpgrade should have returned true!");
                 });
-                it("upgrade must be able to upgrade a StatefulObject to its latest version", function () {
+                it("upgrade must be able to upgrade a StatefulObject to its latest version [2 steps]", function () {
                     var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
                     expect(te.__typeVersion).toEqual("v1");
                     var upgraded = StatefulObjectUpgrader.upgrade(te);
                     expect(upgraded.__typeVersion).toEqual("v2");
                     expect(upgraded.aNewProperty).toEqual("upgrader was here");
+                });
+                it("upgrade must be able to upgrade a StatefulObject to its latest version [3 steps]", function () {
+                    var te = new CdC.Tests.BaseStatefulObject.v1.A3StepUpgradableItem();
+                    expect(te.__typeVersion).toEqual("v1");
+                    var upgraded = StatefulObjectUpgrader.upgrade(te);
+                    expect(upgraded.__typeVersion).toEqual("v3");
+                    expect(upgraded.aNewProperty).toEqual("upgrader was here");
+                    expect(upgraded.aNewNewProperty).toEqual("upgrader was here");
                 });
             });
         })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));

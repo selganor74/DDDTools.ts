@@ -19,7 +19,18 @@ namespace DDDTools.StatefulObject {
             var toReturn: IStateful;
 
             if (typeVersion) {
-
+                var typeToInstatiate = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
+                try {
+                    toReturn = <IStateful>eval("new " + typeToInstatiate + "()");
+                    return toReturn;
+                } catch (e) {
+                    // This failure is expected if we are asking for the latest version available
+                }
+                toReturn = StatefulObjectFactory.createTypeInstance(typeName);
+                if (toReturn.__typeVersion != typeVersion) {
+                    Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);    
+                }                   
+                return toReturn;
             }
 
             try {

@@ -2,6 +2,27 @@
 /// <reference path="../app/DDDTools/StatefulObject/StatefulObjectUpgrader.ts" />
 /// <reference path="../app/DDDTools/StatefulObject/StatefulObjectFactory.ts" />
 
+namespace CdC.Tests.BaseStatefulObject.v2 {
+    import BaseEntity = DDDTools.BaseEntity;
+    import Guid = DDDTools.ValueObjects.Guid;
+
+    export class A3StepUpgradableItem extends BaseEntity<TestEntity, Guid> {
+        __typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+        __typeVersion = "v2";
+
+        public aNewProperty : string;
+        
+        getUpgradedInstance(fromInstance: CdC.Tests.BaseStatefulObject.v1.A3StepUpgradableItem): A3StepUpgradableItem {
+            var state = fromInstance.getState();
+            state.aNewProperty = "upgrader was here";
+            state.__typeVersion = "v2"
+            this.setState(state);
+            return this;
+        }
+    }
+
+}
+
 namespace CdC.Tests.BaseStatefulObject.v1 {
 
     import BaseEntity = DDDTools.BaseEntity;
@@ -12,6 +33,10 @@ namespace CdC.Tests.BaseStatefulObject.v1 {
         __typeVersion = "v1";
     }
 
+    export class A3StepUpgradableItem extends BaseEntity<TestEntity, Guid> {
+        __typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+        __typeVersion = "v1";
+    }
 }
 
 namespace CdC.Tests.BaseStatefulObject {
@@ -21,6 +46,23 @@ namespace CdC.Tests.BaseStatefulObject {
     import StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
     import StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
     import Errors = DDDTools.StatefulObject.UpgraderErrors;
+
+    export class A3StepUpgradableItem extends BaseEntity<TestEntity, Guid> {
+        __typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+        __typeVersion = "v3";
+        
+        public aNewProperty : string;
+        public aNewNewProperty : string;
+        
+        getUpgradedInstance(fromInstance: CdC.Tests.BaseStatefulObject.v2.A3StepUpgradableItem): A3StepUpgradableItem {
+            var state = fromInstance.getState();
+            state.aNewNewProperty = "upgrader was here";
+            state.__typeVersion = "v3"
+            this.setState(state);
+            return this;
+        }
+
+    }
 
     export class TestEntity extends BaseEntity<TestEntity, Guid> {
         __typeName = "CdC.Tests.BaseStatefulObject.TestEntity";
@@ -81,7 +123,8 @@ namespace CdC.Tests.BaseStatefulObject {
             expect(needsUpgrade).toBeTruthy("needsUpgrade should have returned true!");
         });
 
-        it("upgrade must be able to upgrade a StatefulObject to its latest version", () => {
+        it("upgrade must be able to upgrade a StatefulObject to its latest version [2 steps]", () => {
+            
             var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
 
             expect(te.__typeVersion).toEqual("v1");
@@ -92,5 +135,17 @@ namespace CdC.Tests.BaseStatefulObject {
             expect(upgraded.aNewProperty).toEqual("upgrader was here");
         });
 
+        it("upgrade must be able to upgrade a StatefulObject to its latest version [3 steps]", () => {
+            
+            var te = new CdC.Tests.BaseStatefulObject.v1.A3StepUpgradableItem();
+
+            expect(te.__typeVersion).toEqual("v1");
+
+            var upgraded = <A3StepUpgradableItem>StatefulObjectUpgrader.upgrade(te);
+
+            expect(upgraded.__typeVersion).toEqual("v3");
+            expect(upgraded.aNewProperty).toEqual("upgrader was here");
+            expect(upgraded.aNewNewProperty).toEqual("upgrader was here");
+        });
     });
 }

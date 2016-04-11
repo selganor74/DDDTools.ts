@@ -12,7 +12,7 @@ namespace DDDTools.StatefulObject {
      *  * The latest version FQTN must match the one specified by the property __typeName, which is in the form namespace.objectName.
      *  * Older versions of a StatefulObject MUST have a FQTN in the form namespace.<version>.objectName.
      *  * __typeVersion MUST be specified as v<versionNumber> where version is an integer.
-     *  * All object's versions (excluding v1) MUST provide an getUpgradedInstance method that know how to modify state to go from 
+     *  * All object's versions (excluding v1) MUST provide an getUpgradedInstance method that knows how to modify state to go from 
      *    version v<n - 1> to v<n>, where n is the version of the object containing the getUpgradedInstance method.   
      */
     export class StatefulObjectUpgrader {

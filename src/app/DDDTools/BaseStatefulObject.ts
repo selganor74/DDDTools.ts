@@ -14,11 +14,11 @@ namespace DDDTools {
 
         public getState(): any {
             if (this.__typeName === "") {
-                Errors.Throw(Errors.TypeNameNotSet, "La property __typeName non è impostata!");
+                Errors.Throw(Errors.TypeNameNotSet);
             }
 
             if (this.__typeVersion === "") {
-                Errors.Throw(Errors.TypeVersionNotSet, "La property __typeVersion non è impostata!");
+                Errors.Throw(Errors.TypeVersionNotSet);
             }
 
             var toReconstitute = JSON.stringify(this);
