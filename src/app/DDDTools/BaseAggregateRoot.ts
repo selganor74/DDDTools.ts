@@ -11,7 +11,7 @@ namespace DDDTools {
         TKey extends IKeyValueObject<TKey>
         >
         extends BaseEntity<T, TKey>
-        implements IAggregateRoot<T, TKey>
+        implements IAggregateRoot
     {
         public raise(event: IDomainEvent) {
             Dispatcher.dispatch(event);
