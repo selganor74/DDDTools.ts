@@ -75,8 +75,21 @@ declare namespace DDDTools.StatefulObject {
     }
 }
 declare namespace DDDTools.StatefulObject {
+    class SimpleIdentityMap {
+        private idToObjectMap;
+        constructor();
+        isTracked(id: string): boolean;
+        getById(id: string): any;
+        add(id: string, object: any): any;
+        getIds(): {
+            [id: string]: boolean;
+        };
+        deleteById(id: string): void;
+    }
+}
+declare namespace DDDTools.StatefulObject {
     class StatefulSerializerDeserializer {
-        private static idToObjectMap;
+        private static identityMap;
         static serialize(toSerialize: any): string;
         static deserialize(toDeserialize: string): any;
         private static preprocessForFakeSubstitution(sourceObject);
@@ -86,9 +99,7 @@ declare namespace DDDTools.StatefulObject {
         private static customReviver(key, value);
         private static hasBeenTouched(object);
         private static touch(object);
-        private static isInIdentityMapById(id);
-        private static getFromIdentityMapById(id);
-        private static addToIdentityMapById(id, object);
+        private static untouch(object);
         private static FakeRegExpDeserializer(value);
         private static FakeDateDeserializer(value);
     }

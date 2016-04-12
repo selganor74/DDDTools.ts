@@ -1,4 +1,5 @@
 /// <reference path="SimpleGuid.ts" />
+/// <reference path="SimpleIdentityMap.ts" />
 
 namespace DDDTools.StatefulObject {
 
@@ -36,7 +37,7 @@ namespace DDDTools.StatefulObject {
         /**
          * This is needed to track object instances to achieve correct reconstruction of the object tree.
          */
-        private static idToObjectMap: { [id: string]: any } = {};
+        private static identityMap: SimpleIdentityMap;
 
         /**
          * Serializes an object to a JSON string, keepeing track of the instances of the objects serialized
@@ -56,6 +57,7 @@ namespace DDDTools.StatefulObject {
          * Desesializes an object from a JSON string.
          */
         public static deserialize(toDeserialize: string): any {
+            StatefulSerializerDeserializer.identityMap = new SimpleIdentityMap();
             var toReturn = JSON.parse(toDeserialize, StatefulSerializerDeserializer.customReviver);
             StatefulSerializerDeserializer.cleanup();
             return toReturn;
@@ -105,7 +107,6 @@ namespace DDDTools.StatefulObject {
                 }
             }
             return sourceObject;
-
         }
 
         /**
@@ -113,41 +114,58 @@ namespace DDDTools.StatefulObject {
          * and empties the IdentityMap.
          */
         private static cleanup() {
-            for (var item in StatefulSerializerDeserializer.idToObjectMap) {
-                if (StatefulSerializerDeserializer.idToObjectMap[item].__objectInstanceId) {
-                    delete StatefulSerializerDeserializer.idToObjectMap[item].__objectInstanceId;
-                }
+            var sThis = StatefulSerializerDeserializer;
+            var idMap = sThis.identityMap;
+            var untouch = sThis.untouch;
+            
+            for (var item in idMap.getIds()) {
+                var currentItem = idMap.getById(item);
+                untouch(currentItem);
                 // This should leave the instances "garbageable"... how to test ?    
-                delete StatefulSerializerDeserializer.idToObjectMap[item];
+                idMap.deleteById(item);
             }
-            // Reinitialezes the IdentityMap
-            StatefulSerializerDeserializer.idToObjectMap = {};
         }
 
+        /**
+         * It's duty is to "touch" every object processe to add an __objectInstanceId property.
+         * This function will be called by JSON.stringify
+         */
         private static customSerializer(key: string, value: any) {
+            var sThis = StatefulSerializerDeserializer;
+            
             if (typeof value === "object") {
-                if (!StatefulSerializerDeserializer.hasBeenTouched(value)) {
-                    StatefulSerializerDeserializer.touch(value);
+                if (!sThis.hasBeenTouched(value)) {
+                    sThis.touch(value);
                 }
             }
             return value;
         }
 
+        /**
+         * It handles Fake* instances uses __objectInstanceId to rebuild a correct object tree. 
+         * This function will be called by JSON.parse
+         */
         private static customReviver(key: string, value: any) {
+            var sThis = StatefulSerializerDeserializer;
+            var idMap = sThis.identityMap;
+
             if (typeof value === "object") {
-                if (StatefulSerializerDeserializer.hasBeenTouched(value)) {
-                    if (StatefulSerializerDeserializer.isInIdentityMapById(value.__objectInstanceId)) {
-                        return StatefulSerializerDeserializer.getFromIdentityMapById(value.__objectInstanceId)
+                if (sThis.hasBeenTouched(value)) {
+                    if (idMap.isTracked(value.__objectInstanceId)) {
+                        return idMap.getById(value.__objectInstanceId)
                     } else {
-                        value = StatefulSerializerDeserializer.FakeRegExpDeserializer(value);
-                        value = StatefulSerializerDeserializer.FakeDateDeserializer(value);
-                        StatefulSerializerDeserializer.addToIdentityMapById(value.__objectInstanceId, value);
+                        value = sThis.FakeRegExpDeserializer(value);
+                        value = sThis.FakeDateDeserializer(value);
+                        idMap.add(value.__objectInstanceId, value);
                     }
                 }
             }
             return value;
         }
 
+        /**
+         * checks for the presence of an __objectInstanceId property
+         */
         private static hasBeenTouched(object: any): boolean {
             var casted = <IStateful>object;
             if (casted.__objectInstanceId) {
@@ -156,6 +174,9 @@ namespace DDDTools.StatefulObject {
             return false;
         }
 
+        /**
+         * adds an __objectInstanceId property to an object
+         */
         private static touch(object: any): void {
             if (typeof object === "object") {
                 var newId = SimpleGuid.generate();
@@ -163,22 +184,13 @@ namespace DDDTools.StatefulObject {
             }
         }
 
-        private static isInIdentityMapById(id: string): boolean {
-            if (StatefulSerializerDeserializer.idToObjectMap[id]) {
-                return true;
+        /**
+         * removes the __objectInstanceId property from an object
+         */
+        private static untouch(object: any): void {
+            if (object.__objectInstanceId) {
+                delete object.__objectInstanceId;
             }
-            return false;
-        }
-
-        private static getFromIdentityMapById(id: string): any {
-            if (StatefulSerializerDeserializer.isInIdentityMapById(id)) {
-                return StatefulSerializerDeserializer.idToObjectMap[id];
-            }
-            return null;
-        }
-
-        private static addToIdentityMapById(id: string, object: any): any {
-            StatefulSerializerDeserializer.idToObjectMap[id] = object;
         }
 
         /**
@@ -193,6 +205,9 @@ namespace DDDTools.StatefulObject {
             return value;
         }
 
+        /**
+         * Manages Date Deserialization
+         */
         private static FakeDateDeserializer(value: any): any {
             if (value.__typeName) {
                 if (value.__typeName === "Date") {

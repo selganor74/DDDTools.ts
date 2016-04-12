@@ -243,6 +243,44 @@ var DDDTools;
 (function (DDDTools) {
     var StatefulObject;
     (function (StatefulObject) {
+        var SimpleIdentityMap = (function () {
+            function SimpleIdentityMap() {
+                this.idToObjectMap = {};
+            }
+            SimpleIdentityMap.prototype.isTracked = function (id) {
+                if (this.idToObjectMap[id]) {
+                    return true;
+                }
+                return false;
+            };
+            SimpleIdentityMap.prototype.getById = function (id) {
+                if (this.isTracked(id)) {
+                    return this.idToObjectMap[id];
+                }
+                return null;
+            };
+            SimpleIdentityMap.prototype.add = function (id, object) {
+                this.idToObjectMap[id] = object;
+            };
+            SimpleIdentityMap.prototype.getIds = function () {
+                var toReturn = {};
+                for (var element in this.idToObjectMap) {
+                    toReturn[element] = true;
+                }
+                return toReturn;
+            };
+            SimpleIdentityMap.prototype.deleteById = function (id) {
+                delete this.idToObjectMap[id];
+            };
+            return SimpleIdentityMap;
+        }());
+        StatefulObject.SimpleIdentityMap = SimpleIdentityMap;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var StatefulObject;
+    (function (StatefulObject) {
         var FakeDate = (function () {
             function FakeDate(date) {
                 this.__typeName = "Date";
@@ -280,6 +318,7 @@ var DDDTools;
                 return toReturn;
             };
             StatefulSerializerDeserializer.deserialize = function (toDeserialize) {
+                StatefulSerializerDeserializer.identityMap = new StatefulObject.SimpleIdentityMap();
                 var toReturn = JSON.parse(toDeserialize, StatefulSerializerDeserializer.customReviver);
                 StatefulSerializerDeserializer.cleanup();
                 return toReturn;
@@ -323,32 +362,36 @@ var DDDTools;
                 return sourceObject;
             };
             StatefulSerializerDeserializer.cleanup = function () {
-                for (var item in StatefulSerializerDeserializer.idToObjectMap) {
-                    if (StatefulSerializerDeserializer.idToObjectMap[item].__objectInstanceId) {
-                        delete StatefulSerializerDeserializer.idToObjectMap[item].__objectInstanceId;
-                    }
-                    delete StatefulSerializerDeserializer.idToObjectMap[item];
+                var sThis = StatefulSerializerDeserializer;
+                var idMap = sThis.identityMap;
+                var untouch = sThis.untouch;
+                for (var item in idMap.getIds()) {
+                    var currentItem = idMap.getById(item);
+                    untouch(currentItem);
+                    idMap.deleteById(item);
                 }
-                StatefulSerializerDeserializer.idToObjectMap = {};
             };
             StatefulSerializerDeserializer.customSerializer = function (key, value) {
+                var sThis = StatefulSerializerDeserializer;
                 if (typeof value === "object") {
-                    if (!StatefulSerializerDeserializer.hasBeenTouched(value)) {
-                        StatefulSerializerDeserializer.touch(value);
+                    if (!sThis.hasBeenTouched(value)) {
+                        sThis.touch(value);
                     }
                 }
                 return value;
             };
             StatefulSerializerDeserializer.customReviver = function (key, value) {
+                var sThis = StatefulSerializerDeserializer;
+                var idMap = sThis.identityMap;
                 if (typeof value === "object") {
-                    if (StatefulSerializerDeserializer.hasBeenTouched(value)) {
-                        if (StatefulSerializerDeserializer.isInIdentityMapById(value.__objectInstanceId)) {
-                            return StatefulSerializerDeserializer.getFromIdentityMapById(value.__objectInstanceId);
+                    if (sThis.hasBeenTouched(value)) {
+                        if (idMap.isTracked(value.__objectInstanceId)) {
+                            return idMap.getById(value.__objectInstanceId);
                         }
                         else {
-                            value = StatefulSerializerDeserializer.FakeRegExpDeserializer(value);
-                            value = StatefulSerializerDeserializer.FakeDateDeserializer(value);
-                            StatefulSerializerDeserializer.addToIdentityMapById(value.__objectInstanceId, value);
+                            value = sThis.FakeRegExpDeserializer(value);
+                            value = sThis.FakeDateDeserializer(value);
+                            idMap.add(value.__objectInstanceId, value);
                         }
                     }
                 }
@@ -367,20 +410,10 @@ var DDDTools;
                     object.__objectInstanceId = newId;
                 }
             };
-            StatefulSerializerDeserializer.isInIdentityMapById = function (id) {
-                if (StatefulSerializerDeserializer.idToObjectMap[id]) {
-                    return true;
+            StatefulSerializerDeserializer.untouch = function (object) {
+                if (object.__objectInstanceId) {
+                    delete object.__objectInstanceId;
                 }
-                return false;
-            };
-            StatefulSerializerDeserializer.getFromIdentityMapById = function (id) {
-                if (StatefulSerializerDeserializer.isInIdentityMapById(id)) {
-                    return StatefulSerializerDeserializer.idToObjectMap[id];
-                }
-                return null;
-            };
-            StatefulSerializerDeserializer.addToIdentityMapById = function (id, object) {
-                StatefulSerializerDeserializer.idToObjectMap[id] = object;
             };
             StatefulSerializerDeserializer.FakeRegExpDeserializer = function (value) {
                 if (value.__typeName) {
@@ -398,7 +431,6 @@ var DDDTools;
                 }
                 return value;
             };
-            StatefulSerializerDeserializer.idToObjectMap = {};
             return StatefulSerializerDeserializer;
         }());
         StatefulObject.StatefulSerializerDeserializer = StatefulSerializerDeserializer;
@@ -1023,9 +1055,7 @@ var CdC;
                 }
                 try {
                     repo.save(item);
-                    console.log("Salvato");
                     var reloaded = repo.getById(key);
-                    console.log("Recuperato");
                 }
                 catch (e) {
                     expect(false).toBeTruthy("Eccezione nel salvataggio o nel recupero dell'item. " + e.message);
