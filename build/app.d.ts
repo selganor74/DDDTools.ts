@@ -81,9 +81,7 @@ declare namespace DDDTools.StatefulObject {
         isTracked(id: string): boolean;
         getById(id: string): any;
         add(id: string, object: any): any;
-        getIds(): {
-            [id: string]: boolean;
-        };
+        getIds(): string[];
         deleteById(id: string): void;
     }
 }

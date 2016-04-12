@@ -29,10 +29,10 @@ namespace DDDTools.StatefulObject {
         /**
          * Returns all the ids in the map
          */
-        public getIds(): { [id: string]: boolean } {
-            var toReturn: { [id: string]: boolean } = {};
+        public getIds(): string[] {
+            var toReturn: string[] = [];
             for (var element in this.idToObjectMap) {
-                toReturn[element] = true;
+                toReturn.push(element);
             }
             return toReturn;
         }

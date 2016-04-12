@@ -118,7 +118,7 @@ namespace DDDTools.StatefulObject {
             var idMap = sThis.identityMap;
             var untouch = sThis.untouch;
             
-            for (var item in idMap.getIds()) {
+            for (var item of idMap.getIds()) {
                 var currentItem = idMap.getById(item);
                 untouch(currentItem);
                 // This should leave the instances "garbageable"... how to test ?    

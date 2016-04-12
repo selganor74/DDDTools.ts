@@ -263,9 +263,9 @@ var DDDTools;
                 this.idToObjectMap[id] = object;
             };
             SimpleIdentityMap.prototype.getIds = function () {
-                var toReturn = {};
+                var toReturn = [];
                 for (var element in this.idToObjectMap) {
-                    toReturn[element] = true;
+                    toReturn.push(element);
                 }
                 return toReturn;
             };
@@ -365,7 +365,8 @@ var DDDTools;
                 var sThis = StatefulSerializerDeserializer;
                 var idMap = sThis.identityMap;
                 var untouch = sThis.untouch;
-                for (var item in idMap.getIds()) {
+                for (var _i = 0, _a = idMap.getIds(); _i < _a.length; _i++) {
+                    var item = _a[_i];
                     var currentItem = idMap.getById(item);
                     untouch(currentItem);
                     idMap.deleteById(item);
