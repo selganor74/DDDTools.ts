@@ -120,9 +120,9 @@ namespace CdC.Tests {
             }
             try {
                 repo.save(item);
-                console.log("Salvato");
+                // console.log("Salvato");
                 var reloaded = repo.getById(key);
-                console.log("Recuperato");
+                // console.log("Recuperato");
             } catch (e) {
                 expect(false).toBeTruthy("Eccezione nel salvataggio o nel recupero dell'item. " + e.message)
             }
