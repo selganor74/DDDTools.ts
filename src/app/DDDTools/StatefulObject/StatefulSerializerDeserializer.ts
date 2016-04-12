@@ -4,15 +4,52 @@ namespace DDDTools.StatefulObject {
 
     import Guid = DDDTools.ValueObjects.Guid;
 
-    export class StatefulSerializerDeserializer {
+    class FakeDate {
+        __typeName: string = "Date";
+        __typeVersion: string = "v1";
+        __dateAsString: string;
 
+        constructor(date: Date) {
+            this.__dateAsString = date.toISOString();
+        }
+
+        getDate(): Date {
+            return new Date(this.__dateAsString);
+        }
+    }
+
+    class FakeRegExp {
+        __typeName: string = "RegExp";
+        __typeVersion: string = "v1";
+        __regularExpression: string;
+
+        constructor(regExp: RegExp) {
+            this.__regularExpression = regExp.toString();
+        }
+
+        getRegExp(): RegExp {
+            return new RegExp(this.__regularExpression);
+        }
+    }
+
+    export class StatefulSerializerDeserializer {
+        /**
+         * This is needed to track object instances to achieve correct reconstruction of the object tree.
+         */
         private static idToObjectMap: { [id: string]: any } = {};
 
         /**
          * Serializes an object to a JSON string, keepeing track of the instances of the objects serialized
          */
         public static serialize(toSerialize: any): string {
-            return JSON.stringify(toSerialize, StatefulSerializerDeserializer.customSerializer);
+            var toReturn;
+            toSerialize = StatefulSerializerDeserializer.preprocessForFakeSubstitution(toSerialize);
+            try {
+                toReturn = JSON.stringify(toSerialize, StatefulSerializerDeserializer.customSerializer);
+            } finally {
+                StatefulSerializerDeserializer.postprocessForFakeSubstitution(toSerialize);
+            }
+            return toReturn;
         }
 
         /**
@@ -22,6 +59,53 @@ namespace DDDTools.StatefulObject {
             var toReturn = JSON.parse(toDeserialize, StatefulSerializerDeserializer.customReviver);
             StatefulSerializerDeserializer.cleanup();
             return toReturn;
+        }
+
+        /**
+         * Preprocess the object tree to be serialized to find and replace Date objects with something different...
+         */
+        private static preprocessForFakeSubstitution(sourceObject: any) {
+            for (var idx in sourceObject) {
+                var current = sourceObject[idx];
+                if (current instanceof Date) {
+                    var newFakeDate = new FakeDate(current);
+                    sourceObject[idx] = newFakeDate;
+                    continue;
+                }
+                if (current instanceof RegExp) {
+                    var newFakeRegExp = new FakeRegExp(current);
+                    sourceObject[idx] = newFakeRegExp;
+                    continue;
+                }
+                if (typeof current === 'object' || Array.isArray(current)) {
+                    sourceObject[idx] = StatefulSerializerDeserializer.preprocessForFakeSubstitution(current);
+                    continue;
+                }
+            }
+            return sourceObject;
+        }
+
+        /**
+         * Postprocess the object tree to be serialized to find and replace FakeDate objects with Dates again...
+         */
+        private static postprocessForFakeSubstitution(sourceObject: any) {
+            for (var idx in sourceObject) {
+                var current = sourceObject[idx];
+                if (current instanceof FakeDate) {
+                    sourceObject[idx] = (<FakeDate>current).getDate();
+                    continue;
+                }
+                if (current instanceof FakeRegExp) {
+                    sourceObject[idx] = (<FakeRegExp>current).getRegExp();
+                    continue;
+                }
+                if (typeof current === 'object' || Array.isArray(current)) {
+                    sourceObject[idx] = StatefulSerializerDeserializer.postprocessForFakeSubstitution(current);
+                    continue;
+                }
+            }
+            return sourceObject;
+
         }
 
         /**
@@ -45,10 +129,7 @@ namespace DDDTools.StatefulObject {
                 if (!StatefulSerializerDeserializer.hasBeenTouched(value)) {
                     StatefulSerializerDeserializer.touch(value);
                 }
-                value = StatefulSerializerDeserializer.RegExpSerializer(value);
             }
-            // Dates are treated like strings by JSON.stringify!
-            value = StatefulSerializerDeserializer.DateSerializer(value);
             return value;
         }
 
@@ -58,12 +139,12 @@ namespace DDDTools.StatefulObject {
                     if (StatefulSerializerDeserializer.isInIdentityMapById(value.__objectInstanceId)) {
                         return StatefulSerializerDeserializer.getFromIdentityMapById(value.__objectInstanceId)
                     } else {
-                        value = StatefulSerializerDeserializer.RegExpDeserializer(value);
+                        value = StatefulSerializerDeserializer.FakeRegExpDeserializer(value);
+                        value = StatefulSerializerDeserializer.FakeDateDeserializer(value);
                         StatefulSerializerDeserializer.addToIdentityMapById(value.__objectInstanceId, value);
                     }
                 }
             }
-            value = StatefulSerializerDeserializer.DateDeserializer(value);
             return value;
         }
 
@@ -100,16 +181,10 @@ namespace DDDTools.StatefulObject {
             StatefulSerializerDeserializer.idToObjectMap[id] = object;
         }
 
-        private static RegExpSerializer(value: any): any {
-            if (value instanceof RegExp) {
-                value.__typeName = "RegExp";
-                value.__typeVersion = "v1";
-                value.__regularExpression = value.toString();
-            }
-            return value;
-        }
-
-        private static RegExpDeserializer(value: any): any {
+        /**
+         * Manages RegExp Deserialization
+         */
+        private static FakeRegExpDeserializer(value: any): any {
             if (value.__typeName) {
                 if (value.__typeName === "RegExp") {
                     value = new RegExp(value.__regularExpression || "");
@@ -118,25 +193,10 @@ namespace DDDTools.StatefulObject {
             return value;
         }
 
-        private static DateSerializer(value: any): any {
-            if (typeof value === "string") {
-                var dateTimeRegExp = new RegExp("^[0-9]{4}[-][0-9]{2}[-][0-9]{2}[T][0-9]{2}[:][0-9]{2}[:][0-9]{2}[.][0-9]{3}[Z]$");
-                if (dateTimeRegExp.test(value)) {
-                    var tmpValue = {
-                        __typeName: "Date",
-                        __typeVersion: "v1",
-                        __date: value + "_dummy_to_avoid_loops"
-                    };
-                    value = tmpValue;
-                }
-            }
-            return value;
-        }
-
-        private static DateDeserializer(value: any): any {
+        private static FakeDateDeserializer(value: any): any {
             if (value.__typeName) {
                 if (value.__typeName === "Date") {
-                    value = new Date((<string>value.__date).replace("_dummy_to_avoid_loops", ""));
+                    value = new Date((<FakeDate>value).__dateAsString);
                 }
             }
             return value;
