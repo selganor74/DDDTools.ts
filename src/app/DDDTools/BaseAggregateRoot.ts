@@ -5,6 +5,7 @@
 namespace DDDTools {
 
     import Dispatcher = DomainEvents.Dispatcher;
+    import IEventHandler = DomainEvents.IEventHandler;
 
     export abstract class BaseAggregateRoot<
         T extends IEntity<T, TKey>,
@@ -13,13 +14,21 @@ namespace DDDTools {
         extends BaseEntity<T, TKey>
         implements IAggregateRoot
     {
-        public raise(event: IDomainEvent) {
+        public raiseEvent(event: IDomainEvent) {
             Dispatcher.dispatch(event);
         };
 
-        public abstract registerEvents();
+        public registerEventHandler(eventTypeName: string, eventHandler: IEventHandler) {
+            Dispatcher.registerHandler(eventTypeName, eventHandler);
+        }
+        
+        public unregisterEventHandler(eventTypeName: string, eventHandler: IEventHandler) {
+            Dispatcher.unregisterHandler(eventTypeName, eventHandler);
+        }
 
-        public abstract unregisterEvents();
+        public abstract registerEventHandlers();
+
+        public abstract unregisterEventHandlers();
 
     }
 }

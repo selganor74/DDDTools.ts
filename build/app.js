@@ -50,6 +50,18 @@ var DDDTools;
                     sThis.delegatesRegistry[eventTypeName].push(handler);
                 }
             };
+            Dispatcher.unregisterHandler = function (eventTypeName, handler) {
+                var sThis = Dispatcher;
+                if (handler.__handlerId) {
+                    for (var element in sThis.delegatesRegistry[eventTypeName]) {
+                        var currentElement = sThis.delegatesRegistry[eventTypeName][element];
+                        if (currentElement.__handlerId === handler.__handlerId) {
+                            sThis.delegatesRegistry[eventTypeName].splice(Number(element), 1);
+                            break;
+                        }
+                    }
+                }
+            };
             Dispatcher.dispatch = function (event) {
                 var sThis = Dispatcher;
                 var Errors = [];
@@ -84,14 +96,22 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
+    var Dispatcher = DDDTools.DomainEvents.Dispatcher;
     var BaseAggregateRoot = (function (_super) {
         __extends(BaseAggregateRoot, _super);
         function BaseAggregateRoot() {
             _super.apply(this, arguments);
         }
-        BaseAggregateRoot.prototype.raise = function (event) {
+        BaseAggregateRoot.prototype.raiseEvent = function (event) {
+            Dispatcher.dispatch(event);
         };
         ;
+        BaseAggregateRoot.prototype.registerEventHandler = function (eventTypeName, eventHandler) {
+            Dispatcher.registerHandler(eventTypeName, eventHandler);
+        };
+        BaseAggregateRoot.prototype.unregisterEventHandler = function (eventTypeName, eventHandler) {
+            Dispatcher.unregisterHandler(eventTypeName, eventHandler);
+        };
         return BaseAggregateRoot;
     }(DDDTools.BaseEntity));
     DDDTools.BaseAggregateRoot = BaseAggregateRoot;

@@ -14,7 +14,7 @@ namespace CdC.Model {
 
 		private codiceBaseOfferta: ValueObjects.CodiceBaseOfferta;
 		private dataPresuntaOrdine: Date;
-		private probabilitaRientroOrdine: number
+		private probabilitaRientroOrdine: number;
 		// private infoCommerciali: InfoCommerciali;
 		
 		constructor(

@@ -5,14 +5,14 @@ namespace DDDTools.DomainEvents {
 
     import SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
 
-    export interface IMessageHandler {
+    export interface IEventHandler {
         (domainEvent: IDomainEvent): void;
     }
 
     export class Dispatcher {
-        private static delegatesRegistry: { [eventTypeName: string]: IMessageHandler[] };
+        private static delegatesRegistry: { [eventTypeName: string]: IEventHandler[] };
 
-        public static registerHandler(eventTypeName: string, handler: IMessageHandler) {
+        public static registerHandler(eventTypeName: string, handler: IEventHandler) {
             var sThis = Dispatcher;
             if (!sThis.delegatesRegistry[eventTypeName]) {
                 sThis.delegatesRegistry[eventTypeName] = [];
@@ -21,6 +21,20 @@ namespace DDDTools.DomainEvents {
             if (!(<any>handler).__handlerId) {
                 (<any>handler).__handlerId = SimpleGuid.generate();
                 sThis.delegatesRegistry[eventTypeName].push(handler);                
+            }
+        }
+
+        public static unregisterHandler(eventTypeName: string, handler: IEventHandler) {
+            var sThis = Dispatcher;
+            // Act only id handler has been registered.
+            if ((<any>handler).__handlerId) {
+                for( var element in sThis.delegatesRegistry[eventTypeName] ){
+                    var currentElement = sThis.delegatesRegistry[eventTypeName][element];
+                    if ((<any>currentElement).__handlerId === (<any>handler).__handlerId){
+                        sThis.delegatesRegistry[eventTypeName].splice(Number(element),1);
+                        break;
+                    }
+                }
             }
         }
 

@@ -2,8 +2,9 @@
 
 namespace DDDTools {
 	export interface IAggregateRoot {
-        raise(event: IDomainEvent);
-        registerEvents();
-        unregisterEvents();
+        raiseEvent(event: IDomainEvent);
+        
+        registerEventHandlers();
+        unregisterEventHandlers();
 	}
 }
