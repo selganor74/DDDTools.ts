@@ -5,6 +5,99 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DDDTools;
 (function (DDDTools) {
+    var StatefulObject;
+    (function (StatefulObject) {
+        var SimpleGuid = (function () {
+            function SimpleGuid() {
+            }
+            SimpleGuid.isValid = function (guid) {
+                var guidRegexp = new RegExp("^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$");
+                return guidRegexp.test(guid);
+            };
+            SimpleGuid.s4 = function () {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };
+            SimpleGuid.generate = function () {
+                var newSimpleGuid = "{" + SimpleGuid.s4() + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" +
+                    SimpleGuid.s4() + "-" + SimpleGuid.s4() + SimpleGuid.s4() + SimpleGuid.s4() + "}";
+                if (SimpleGuid.isValid(newSimpleGuid)) {
+                    return newSimpleGuid;
+                }
+                throw new Error("Should Never Happen! The generated guid is not valid!");
+            };
+            return SimpleGuid;
+        }());
+        StatefulObject.SimpleGuid = SimpleGuid;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var DomainEvents;
+    (function (DomainEvents) {
+        var SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
+        var Dispatcher = (function () {
+            function Dispatcher() {
+            }
+            Dispatcher.registerHandler = function (eventTypeName, handler) {
+                var sThis = Dispatcher;
+                if (!sThis.delegatesRegistry[eventTypeName]) {
+                    sThis.delegatesRegistry[eventTypeName] = [];
+                }
+                if (!handler.__handlerId) {
+                    handler.__handlerId = SimpleGuid.generate();
+                    sThis.delegatesRegistry[eventTypeName].push(handler);
+                }
+            };
+            Dispatcher.dispatch = function (event) {
+                var sThis = Dispatcher;
+                var Errors = [];
+                for (var _i = 0, _a = sThis.delegatesRegistry[event.__typeName]; _i < _a.length; _i++) {
+                    var element = _a[_i];
+                    try {
+                        element(event);
+                    }
+                    catch (e) {
+                        Errors.push(e);
+                    }
+                }
+                if (Errors.length != 0) {
+                    var message = sThis.buildErrorMessage(Errors);
+                    var e = new Error(message);
+                    e.name = "Dispatcher Error";
+                    throw e;
+                }
+            };
+            Dispatcher.buildErrorMessage = function (Errors) {
+                var message = "";
+                for (var _i = 0, Errors_1 = Errors; _i < Errors_1.length; _i++) {
+                    var element = Errors_1[_i];
+                    message += element.name + ":" + element.message + "\n";
+                }
+                return message;
+            };
+            return Dispatcher;
+        }());
+        DomainEvents.Dispatcher = Dispatcher;
+    })(DomainEvents = DDDTools.DomainEvents || (DDDTools.DomainEvents = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var BaseAggregateRoot = (function (_super) {
+        __extends(BaseAggregateRoot, _super);
+        function BaseAggregateRoot() {
+            _super.apply(this, arguments);
+        }
+        BaseAggregateRoot.prototype.raise = function (event) {
+        };
+        ;
+        return BaseAggregateRoot;
+    }(DDDTools.BaseEntity));
+    DDDTools.BaseAggregateRoot = BaseAggregateRoot;
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
     var BaseErrors = (function () {
         function BaseErrors() {
         }
@@ -208,35 +301,6 @@ var DDDTools;
             return StatefulObjectFactory;
         }());
         StatefulObject.StatefulObjectFactory = StatefulObjectFactory;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var SimpleGuid = (function () {
-            function SimpleGuid() {
-            }
-            SimpleGuid.isValid = function (guid) {
-                var guidRegexp = new RegExp("^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$");
-                return guidRegexp.test(guid);
-            };
-            SimpleGuid.s4 = function () {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            };
-            SimpleGuid.generate = function () {
-                var newSimpleGuid = "{" + SimpleGuid.s4() + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" +
-                    SimpleGuid.s4() + "-" + SimpleGuid.s4() + SimpleGuid.s4() + SimpleGuid.s4() + "}";
-                if (SimpleGuid.isValid(newSimpleGuid)) {
-                    return newSimpleGuid;
-                }
-                throw new Error("Should Never Happen! The generated guid is not valid!");
-            };
-            return SimpleGuid;
-        }());
-        StatefulObject.SimpleGuid = SimpleGuid;
     })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
