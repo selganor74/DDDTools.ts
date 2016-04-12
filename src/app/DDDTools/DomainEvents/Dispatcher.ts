@@ -10,7 +10,7 @@ namespace DDDTools.DomainEvents {
     }
 
     export class Dispatcher {
-        private static delegatesRegistry: { [eventTypeName: string]: IEventHandler[] };
+        private static delegatesRegistry: { [eventTypeName: string]: IEventHandler[] } = {};
 
         public static registerHandler(eventTypeName: string, handler: IEventHandler) {
             var sThis = Dispatcher;

@@ -1,6 +1,6 @@
-/// <reference path="../../typings/main.d.ts"/>
-/// <reference path="../app/DDDTools/StatefulObject/StatefulObjectUpgrader.ts" />
-/// <reference path="../app/DDDTools/StatefulObject/StatefulObjectFactory.ts" />
+/// <reference path="../../../typings/main.d.ts"/>
+/// <reference path="../../app/DDDTools/StatefulObject/StatefulObjectUpgrader.ts" />
+/// <reference path="../../app/DDDTools/StatefulObject/StatefulObjectFactory.ts" />
 
 namespace CdC.Tests.BaseStatefulObject.v2 {
     import BaseEntity = DDDTools.BaseEntity;

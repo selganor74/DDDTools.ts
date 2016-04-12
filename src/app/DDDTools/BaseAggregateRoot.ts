@@ -1,6 +1,7 @@
 /// <reference path="IKeyValueObject.ts" />
 /// <reference path="IAggregateRoot.ts" />
 /// <reference path="DomainEvents/Dispatcher.ts" />
+/// <reference path="BaseEntity.ts" />
 
 namespace DDDTools {
 

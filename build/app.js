@@ -89,32 +89,11 @@ var DDDTools;
                 }
                 return message;
             };
+            Dispatcher.delegatesRegistry = {};
             return Dispatcher;
         }());
         DomainEvents.Dispatcher = Dispatcher;
     })(DomainEvents = DDDTools.DomainEvents || (DDDTools.DomainEvents = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var Dispatcher = DDDTools.DomainEvents.Dispatcher;
-    var BaseAggregateRoot = (function (_super) {
-        __extends(BaseAggregateRoot, _super);
-        function BaseAggregateRoot() {
-            _super.apply(this, arguments);
-        }
-        BaseAggregateRoot.prototype.raiseEvent = function (event) {
-            Dispatcher.dispatch(event);
-        };
-        ;
-        BaseAggregateRoot.prototype.registerEventHandler = function (eventTypeName, eventHandler) {
-            Dispatcher.registerHandler(eventTypeName, eventHandler);
-        };
-        BaseAggregateRoot.prototype.unregisterEventHandler = function (eventTypeName, eventHandler) {
-            Dispatcher.unregisterHandler(eventTypeName, eventHandler);
-        };
-        return BaseAggregateRoot;
-    }(DDDTools.BaseEntity));
-    DDDTools.BaseAggregateRoot = BaseAggregateRoot;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -579,6 +558,28 @@ var DDDTools;
         return BaseEntity;
     }(DDDTools.BaseStatefulObject));
     DDDTools.BaseEntity = BaseEntity;
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Dispatcher = DDDTools.DomainEvents.Dispatcher;
+    var BaseAggregateRoot = (function (_super) {
+        __extends(BaseAggregateRoot, _super);
+        function BaseAggregateRoot() {
+            _super.apply(this, arguments);
+        }
+        BaseAggregateRoot.prototype.raiseEvent = function (event) {
+            Dispatcher.dispatch(event);
+        };
+        ;
+        BaseAggregateRoot.prototype.registerEventHandler = function (eventTypeName, eventHandler) {
+            Dispatcher.registerHandler(eventTypeName, eventHandler);
+        };
+        BaseAggregateRoot.prototype.unregisterEventHandler = function (eventTypeName, eventHandler) {
+            Dispatcher.unregisterHandler(eventTypeName, eventHandler);
+        };
+        return BaseAggregateRoot;
+    }(DDDTools.BaseEntity));
+    DDDTools.BaseAggregateRoot = BaseAggregateRoot;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -1448,6 +1449,99 @@ var CdC;
                 });
             });
         })(BaseValueObject = Tests.BaseValueObject || (Tests.BaseValueObject = {}));
+    })(Tests = CdC.Tests || (CdC.Tests = {}));
+})(CdC || (CdC = {}));
+var CdC;
+(function (CdC) {
+    var Tests;
+    (function (Tests) {
+        var Dispatcher;
+        (function (Dispatcher_1) {
+            var Dispatcher = DDDTools.DomainEvents.Dispatcher;
+            var BaseValueObject = DDDTools.BaseValueObject;
+            var aDomainEvent = (function (_super) {
+                __extends(aDomainEvent, _super);
+                function aDomainEvent() {
+                    _super.apply(this, arguments);
+                    this.__typeName = "CdC.Tests.Dispatcher.aDomainEvent";
+                    this.__typeVersion = "v1";
+                }
+                return aDomainEvent;
+            }(BaseValueObject));
+            describe("Dispatcher", function () {
+                it("Multiple registration of the same eventhandler, must be treated as one.", function () {
+                    var eventHandler;
+                    var counter = 0;
+                    eventHandler = function (event) {
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    Dispatcher.dispatch(event);
+                    expect(counter).toEqual(1);
+                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                });
+                it("After deregistering an handler, dispatch must not call it anymore", function () {
+                    var eventHandler;
+                    var counter = 0;
+                    eventHandler = function (event) {
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    Dispatcher.dispatch(event);
+                    expect(counter).toEqual(1);
+                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    counter = 0;
+                    Dispatcher.dispatch(event);
+                    expect(counter).toEqual(0);
+                });
+                it("All handlers will be called by dispatch, even if handlers throw.", function () {
+                    var eventHandler;
+                    var aThrowingHandler;
+                    var counter = 0;
+                    aThrowingHandler = function (event) {
+                        throw new Error("Error thrown by the handler");
+                    };
+                    eventHandler = function (event) {
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    try {
+                        Dispatcher.dispatch(event);
+                    }
+                    catch (e) {
+                        expect(e.message).toEqual("Error:Error thrown by the handler\n");
+                    }
+                    expect(counter).toEqual(1);
+                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+                });
+                it("Handlers must be called in the same order they are registered.", function () {
+                    var eventHandler;
+                    var secondEventHandler;
+                    var counter = 0;
+                    eventHandler = function (event) {
+                        expect(counter).toEqual(0);
+                        counter++;
+                    };
+                    secondEventHandler = function (event) {
+                        expect(counter).toEqual(1);
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+                    Dispatcher.dispatch(event);
+                    expect(counter).toEqual(2);
+                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+                });
+            });
+        })(Dispatcher = Tests.Dispatcher || (Tests.Dispatcher = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
