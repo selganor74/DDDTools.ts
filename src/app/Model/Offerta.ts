@@ -3,13 +3,13 @@ namespace CdC.Model {
 	import DDD = DDDTools;
 	import VOs = CdC.Model.ValueObjects;
 
-	export class Offerta extends DDD.BaseEntity<Offerta, VOs.IdOfferta> {
+	export class Offerta extends DDD.BaseAggregateRoot<Offerta, VOs.IdOfferta> {
 
 		public __typeName =  "CdC.Model.Offerta";
 
 		private descrizioneOfferta: string;
 
-		private revisioniDiOfferta: Array<ValueObjects.IdRevisioneDiOfferta>;
+		private offertePerVarianti: Array<ValueObjects.IdRevisioneDiOfferta>;
 		private variantiDiOrdine: Array<ValueObjects.IdRevisioneDiOfferta>;
 
 		private codiceBaseOfferta: ValueObjects.CodiceBaseOfferta;
@@ -20,12 +20,16 @@ namespace CdC.Model {
 		constructor(
 			) {
 			super();
-			this.revisioniDiOfferta = [];
+			this.offertePerVarianti = [];
 			this.variantiDiOrdine = [];
 		}
         
         public getRevisioniDiOfferta() {
-            return this.revisioniDiOfferta;
+            return this.offertePerVarianti;
         }
+        
+        public registerEventHandlers() {}
+        
+        public unregisterEventHandlers() {}
 	}
 }

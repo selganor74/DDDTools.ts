@@ -1,9 +1,11 @@
+/// <reference path="../../DDDTools/BaseKeyValueObject.ts" />
+
 namespace CdC.Model.ValueObjects {
 	
 	import DDD = DDDTools;
 	import Guid = DDDTools.ValueObjects.Guid;
     
-	export class IdOfferta extends DDD.BaseValueObject<IdOfferta> {
+	export class IdOfferta extends DDD.BaseKeyValueObject<IdOfferta> {
 
         public __typeName =  "CdC.Model.ValueObjects.IdOfferta";
 

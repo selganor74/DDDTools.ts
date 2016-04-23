@@ -1,4 +1,4 @@
-namespace DDDTools.StatefulObject {
+namespace DDDTools.Utils {
 
     export class SimpleIdentityMap {
 

@@ -5,8 +5,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
+    var Utils;
+    (function (Utils) {
         var SimpleGuid = (function () {
             function SimpleGuid() {
             }
@@ -29,17 +29,21 @@ var DDDTools;
             };
             return SimpleGuid;
         }());
-        StatefulObject.SimpleGuid = SimpleGuid;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        Utils.SimpleGuid = SimpleGuid;
+    })(Utils = DDDTools.Utils || (DDDTools.Utils = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
     var DomainEvents;
     (function (DomainEvents) {
-        var SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
+        var SimpleGuid = DDDTools.Utils.SimpleGuid;
         var Dispatcher = (function () {
             function Dispatcher() {
             }
+            Dispatcher.clear = function () {
+                var sThis = Dispatcher;
+                sThis.delegatesRegistry = {};
+            };
             Dispatcher.registerHandler = function (eventTypeName, handler) {
                 var sThis = Dispatcher;
                 if (!sThis.delegatesRegistry[eventTypeName]) {
@@ -304,8 +308,8 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
+    var Utils;
+    (function (Utils) {
         var SimpleIdentityMap = (function () {
             function SimpleIdentityMap() {
                 this.idToObjectMap = {};
@@ -337,97 +341,58 @@ var DDDTools;
             };
             return SimpleIdentityMap;
         }());
-        StatefulObject.SimpleIdentityMap = SimpleIdentityMap;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        Utils.SimpleIdentityMap = SimpleIdentityMap;
+    })(Utils = DDDTools.Utils || (DDDTools.Utils = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var FakeDate = (function () {
-            function FakeDate(date) {
-                this.__typeName = "Date";
-                this.__typeVersion = "v1";
-                this.__dateAsString = date.toISOString();
+    var Serialization;
+    (function (Serialization) {
+        var SimpleGuid = DDDTools.Utils.SimpleGuid;
+        var Touch = (function () {
+            function Touch() {
             }
-            FakeDate.prototype.getDate = function () {
-                return new Date(this.__dateAsString);
-            };
-            return FakeDate;
-        }());
-        var FakeRegExp = (function () {
-            function FakeRegExp(regExp) {
-                this.__typeName = "RegExp";
-                this.__typeVersion = "v1";
-                this.__regularExpression = regExp.toString();
-            }
-            FakeRegExp.prototype.getRegExp = function () {
-                return new RegExp(this.__regularExpression);
-            };
-            return FakeRegExp;
-        }());
-        var StatefulSerializerDeserializer = (function () {
-            function StatefulSerializerDeserializer() {
-            }
-            StatefulSerializerDeserializer.serialize = function (toSerialize) {
-                var toReturn;
-                toSerialize = StatefulSerializerDeserializer.preprocessForFakeSubstitution(toSerialize);
-                try {
-                    toReturn = JSON.stringify(toSerialize, StatefulSerializerDeserializer.customSerializer);
+            Touch.touch = function (object) {
+                if (typeof object === "object") {
+                    var newId = SimpleGuid.generate();
+                    object.__objectInstanceId = newId;
                 }
-                finally {
-                    StatefulSerializerDeserializer.postprocessForFakeSubstitution(toSerialize);
+            };
+            Touch.untouch = function (object) {
+                if (object.__objectInstanceId) {
+                    delete object.__objectInstanceId;
                 }
+            };
+            Touch.hasBeenTouched = function (object) {
+                var casted = object;
+                if (casted.__objectInstanceId) {
+                    return true;
+                }
+                return false;
+            };
+            return Touch;
+        }());
+        Serialization.Touch = Touch;
+    })(Serialization = DDDTools.Serialization || (DDDTools.Serialization = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Serialization;
+    (function (Serialization) {
+        var SimpleIdentityMap = DDDTools.Utils.SimpleIdentityMap;
+        var Deserializer = (function () {
+            function Deserializer() {
+            }
+            Deserializer.deserialize = function (toDeserialize) {
+                Deserializer.identityMap = new SimpleIdentityMap();
+                var toReturn = JSON.parse(toDeserialize, Deserializer.customReviver);
+                Deserializer.cleanup();
                 return toReturn;
             };
-            StatefulSerializerDeserializer.deserialize = function (toDeserialize) {
-                StatefulSerializerDeserializer.identityMap = new StatefulObject.SimpleIdentityMap();
-                var toReturn = JSON.parse(toDeserialize, StatefulSerializerDeserializer.customReviver);
-                StatefulSerializerDeserializer.cleanup();
-                return toReturn;
-            };
-            StatefulSerializerDeserializer.preprocessForFakeSubstitution = function (sourceObject) {
-                for (var idx in sourceObject) {
-                    var current = sourceObject[idx];
-                    if (current instanceof Date) {
-                        var newFakeDate = new FakeDate(current);
-                        sourceObject[idx] = newFakeDate;
-                        continue;
-                    }
-                    if (current instanceof RegExp) {
-                        var newFakeRegExp = new FakeRegExp(current);
-                        sourceObject[idx] = newFakeRegExp;
-                        continue;
-                    }
-                    if (typeof current === 'object' || Array.isArray(current)) {
-                        sourceObject[idx] = StatefulSerializerDeserializer.preprocessForFakeSubstitution(current);
-                        continue;
-                    }
-                }
-                return sourceObject;
-            };
-            StatefulSerializerDeserializer.postprocessForFakeSubstitution = function (sourceObject) {
-                for (var idx in sourceObject) {
-                    var current = sourceObject[idx];
-                    if (current instanceof FakeDate) {
-                        sourceObject[idx] = current.getDate();
-                        continue;
-                    }
-                    if (current instanceof FakeRegExp) {
-                        sourceObject[idx] = current.getRegExp();
-                        continue;
-                    }
-                    if (typeof current === 'object' || Array.isArray(current)) {
-                        sourceObject[idx] = StatefulSerializerDeserializer.postprocessForFakeSubstitution(current);
-                        continue;
-                    }
-                }
-                return sourceObject;
-            };
-            StatefulSerializerDeserializer.cleanup = function () {
-                var sThis = StatefulSerializerDeserializer;
+            Deserializer.cleanup = function () {
+                var sThis = Deserializer;
                 var idMap = sThis.identityMap;
-                var untouch = sThis.untouch;
+                var untouch = Serialization.Touch.untouch;
                 for (var _i = 0, _a = idMap.getIds(); _i < _a.length; _i++) {
                     var item = _a[_i];
                     var currentItem = idMap.getById(item);
@@ -435,17 +400,8 @@ var DDDTools;
                     idMap.deleteById(item);
                 }
             };
-            StatefulSerializerDeserializer.customSerializer = function (key, value) {
-                var sThis = StatefulSerializerDeserializer;
-                if (typeof value === "object") {
-                    if (!sThis.hasBeenTouched(value)) {
-                        sThis.touch(value);
-                    }
-                }
-                return value;
-            };
-            StatefulSerializerDeserializer.customReviver = function (key, value) {
-                var sThis = StatefulSerializerDeserializer;
+            Deserializer.customReviver = function (key, value) {
+                var sThis = Deserializer;
                 var idMap = sThis.identityMap;
                 if (typeof value === "object") {
                     if (sThis.hasBeenTouched(value)) {
@@ -461,25 +417,14 @@ var DDDTools;
                 }
                 return value;
             };
-            StatefulSerializerDeserializer.hasBeenTouched = function (object) {
+            Deserializer.hasBeenTouched = function (object) {
                 var casted = object;
                 if (casted.__objectInstanceId) {
                     return true;
                 }
                 return false;
             };
-            StatefulSerializerDeserializer.touch = function (object) {
-                if (typeof object === "object") {
-                    var newId = StatefulObject.SimpleGuid.generate();
-                    object.__objectInstanceId = newId;
-                }
-            };
-            StatefulSerializerDeserializer.untouch = function (object) {
-                if (object.__objectInstanceId) {
-                    delete object.__objectInstanceId;
-                }
-            };
-            StatefulSerializerDeserializer.FakeRegExpDeserializer = function (value) {
+            Deserializer.FakeRegExpDeserializer = function (value) {
                 if (value.__typeName) {
                     if (value.__typeName === "RegExp") {
                         value = new RegExp(value.__regularExpression || "");
@@ -487,7 +432,7 @@ var DDDTools;
                 }
                 return value;
             };
-            StatefulSerializerDeserializer.FakeDateDeserializer = function (value) {
+            Deserializer.FakeDateDeserializer = function (value) {
                 if (value.__typeName) {
                     if (value.__typeName === "Date") {
                         value = new Date(value.__dateAsString);
@@ -495,16 +440,87 @@ var DDDTools;
                 }
                 return value;
             };
-            return StatefulSerializerDeserializer;
+            return Deserializer;
         }());
-        StatefulObject.StatefulSerializerDeserializer = StatefulSerializerDeserializer;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        Serialization.Deserializer = Deserializer;
+    })(Serialization = DDDTools.Serialization || (DDDTools.Serialization = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Serialization;
+    (function (Serialization) {
+        var Serializer = (function () {
+            function Serializer() {
+            }
+            Serializer.serialize = function (toSerialize) {
+                var toReturn;
+                toSerialize = Serializer.preprocessForFakeSubstitution(toSerialize);
+                try {
+                    toReturn = JSON.stringify(toSerialize, Serializer.customSerializer);
+                }
+                finally {
+                    Serializer.postprocessForFakeSubstitution(toSerialize);
+                }
+                return toReturn;
+            };
+            Serializer.preprocessForFakeSubstitution = function (sourceObject) {
+                for (var idx in sourceObject) {
+                    var current = sourceObject[idx];
+                    if (current instanceof Date) {
+                        var newFakeDate = new Serialization.FakeDate(current);
+                        sourceObject[idx] = newFakeDate;
+                        continue;
+                    }
+                    if (current instanceof RegExp) {
+                        var newFakeRegExp = new Serialization.FakeRegExp(current);
+                        sourceObject[idx] = newFakeRegExp;
+                        continue;
+                    }
+                    if (typeof current === 'object' || Array.isArray(current)) {
+                        sourceObject[idx] = Serializer.preprocessForFakeSubstitution(current);
+                        continue;
+                    }
+                }
+                return sourceObject;
+            };
+            Serializer.postprocessForFakeSubstitution = function (sourceObject) {
+                for (var idx in sourceObject) {
+                    var current = sourceObject[idx];
+                    if (current instanceof Serialization.FakeDate) {
+                        sourceObject[idx] = current.getDate();
+                        continue;
+                    }
+                    if (current instanceof Serialization.FakeRegExp) {
+                        sourceObject[idx] = current.getRegExp();
+                        continue;
+                    }
+                    if (typeof current === 'object' || Array.isArray(current)) {
+                        sourceObject[idx] = Serializer.postprocessForFakeSubstitution(current);
+                        continue;
+                    }
+                }
+                return sourceObject;
+            };
+            Serializer.customSerializer = function (key, value) {
+                var sThis = Serializer;
+                if (typeof value === "object") {
+                    if (!Serialization.Touch.hasBeenTouched(value)) {
+                        Serialization.Touch.touch(value);
+                    }
+                }
+                return value;
+            };
+            return Serializer;
+        }());
+        Serialization.Serializer = Serializer;
+    })(Serialization = DDDTools.Serialization || (DDDTools.Serialization = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
     var Errors = DDDTools.StatefulObject.StatefulObjectErrors;
     var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
-    var StatefulIdentityMap = DDDTools.StatefulObject.StatefulSerializerDeserializer;
+    var Serializer = DDDTools.Serialization.Serializer;
+    var Deserializer = DDDTools.Serialization.Deserializer;
     var BaseStatefulObject = (function () {
         function BaseStatefulObject() {
             this.__typeName = "";
@@ -517,8 +533,8 @@ var DDDTools;
             if (this.__typeVersion === "") {
                 Errors.Throw(Errors.TypeVersionNotSet);
             }
-            var toReconstitute = StatefulIdentityMap.serialize(this);
-            var reconstituted = StatefulIdentityMap.deserialize(toReconstitute);
+            var toReconstitute = Serializer.serialize(this);
+            var reconstituted = Deserializer.deserialize(toReconstitute);
             return reconstituted;
         };
         BaseStatefulObject.prototype.setState = function (state) {
@@ -667,7 +683,7 @@ var DDDTools;
 (function (DDDTools) {
     var ValueObjects;
     (function (ValueObjects) {
-        var SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
+        var SimpleGuid = DDDTools.Utils.SimpleGuid;
         var Guid = (function (_super) {
             __extends(Guid, _super);
             function Guid(guid) {
@@ -788,6 +804,42 @@ var DDDTools;
         Locking.LockingErrors = LockingErrors;
     })(Locking = DDDTools.Locking || (DDDTools.Locking = {}));
 })(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Serialization;
+    (function (Serialization) {
+        var FakeDate = (function () {
+            function FakeDate(date) {
+                this.__typeName = "Date";
+                this.__typeVersion = "v1";
+                this.__dateAsString = date.toISOString();
+            }
+            FakeDate.prototype.getDate = function () {
+                return new Date(this.__dateAsString);
+            };
+            return FakeDate;
+        }());
+        Serialization.FakeDate = FakeDate;
+    })(Serialization = DDDTools.Serialization || (DDDTools.Serialization = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Serialization;
+    (function (Serialization) {
+        var FakeRegExp = (function () {
+            function FakeRegExp(regExp) {
+                this.__typeName = "RegExp";
+                this.__typeVersion = "v1";
+                this.__regularExpression = regExp.toString();
+            }
+            FakeRegExp.prototype.getRegExp = function () {
+                return new RegExp(this.__regularExpression);
+            };
+            return FakeRegExp;
+        }());
+        Serialization.FakeRegExp = FakeRegExp;
+    })(Serialization = DDDTools.Serialization || (DDDTools.Serialization = {}));
+})(DDDTools || (DDDTools = {}));
 var CdC;
 (function (CdC) {
     var Model;
@@ -798,14 +850,16 @@ var CdC;
             function Offerta() {
                 _super.call(this);
                 this.__typeName = "CdC.Model.Offerta";
-                this.revisioniDiOfferta = [];
+                this.offertePerVarianti = [];
                 this.variantiDiOrdine = [];
             }
             Offerta.prototype.getRevisioniDiOfferta = function () {
-                return this.revisioniDiOfferta;
+                return this.offertePerVarianti;
             };
+            Offerta.prototype.registerEventHandlers = function () { };
+            Offerta.prototype.unregisterEventHandlers = function () { };
             return Offerta;
-        }(DDD.BaseEntity));
+        }(DDD.BaseAggregateRoot));
         Model.Offerta = Offerta;
     })(Model = CdC.Model || (CdC.Model = {}));
 })(CdC || (CdC = {}));
@@ -882,7 +936,7 @@ var CdC;
                         this.idOfferta = Guid.generate();
                 }
                 return IdOfferta;
-            }(DDD.BaseValueObject));
+            }(DDD.BaseKeyValueObject));
             ValueObjects.IdOfferta = IdOfferta;
         })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
     })(Model = CdC.Model || (CdC.Model = {}));

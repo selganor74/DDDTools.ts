@@ -1,9 +1,9 @@
 /// <reference path="../IDomainEvent.ts" />
-/// <reference path="../StatefulObject/SimpleGuid.ts" />
+/// <reference path="../Utils/SimpleGuid.ts" />
 
 namespace DDDTools.DomainEvents {
 
-    import SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
+    import SimpleGuid = DDDTools.Utils.SimpleGuid;
 
     export interface IEventHandler {
         (domainEvent: IDomainEvent): void;
@@ -12,6 +12,11 @@ namespace DDDTools.DomainEvents {
     export class Dispatcher {
         private static delegatesRegistry: { [eventTypeName: string]: IEventHandler[] } = {};
 
+        public static clear() {
+            var sThis = Dispatcher;
+            sThis.delegatesRegistry = {};
+        }
+        
         public static registerHandler(eventTypeName: string, handler: IEventHandler) {
             var sThis = Dispatcher;
             if (!sThis.delegatesRegistry[eventTypeName]) {

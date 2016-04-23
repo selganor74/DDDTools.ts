@@ -1,14 +1,16 @@
 /// <reference path="StatefulObject/IStateful.ts" />
 /// <reference path="StatefulObject/StatefulObjectErrors.ts" />
 /// <reference path="StatefulObject/StatefulObjectFactory.ts" />
-/// <reference path="StatefulObject/StatefulSerializerDeserializer.ts" />
+/// <reference path="Serialization/Deserializer.ts" />
+/// <reference path="Serialization/Serializer.ts" />
 
 namespace DDDTools {
 
     import IStateful = StatefulObject.IStateful;
     import Errors = StatefulObject.StatefulObjectErrors;
     import StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
-    import StatefulIdentityMap = StatefulObject.StatefulSerializerDeserializer;
+    import Serializer = Serialization.Serializer;
+    import Deserializer = Serialization.Deserializer;
     
     export abstract class BaseStatefulObject implements IStateful {
 
@@ -24,8 +26,8 @@ namespace DDDTools {
                 Errors.Throw(Errors.TypeVersionNotSet);
             }
 
-            var toReconstitute = StatefulIdentityMap.serialize(this);
-            var reconstituted = StatefulIdentityMap.deserialize(toReconstitute);
+            var toReconstitute = Serializer.serialize(this);
+            var reconstituted = Deserializer.deserialize(toReconstitute);
 
             return reconstituted;
         }

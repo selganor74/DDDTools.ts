@@ -1,9 +1,10 @@
 /// <reference path="../BaseValueObject.ts" />
 /// <reference path="../IKeyValueObject.ts" />
+/// <reference path="../Utils/SimpleGuid.ts" />
 
 namespace DDDTools.ValueObjects {
 
-    import SimpleGuid = DDDTools.StatefulObject.SimpleGuid;
+    import SimpleGuid = DDDTools.Utils.SimpleGuid;
 
     export class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
 
