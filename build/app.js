@@ -892,6 +892,154 @@ var DDDTools;
         Serialization.FakeRegExp = FakeRegExp;
     })(Serialization = DDDTools.Serialization || (DDDTools.Serialization = {}));
 })(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
+    (function (UnitOfWork_1) {
+        var Serializer = DDDTools.Serialization.Serializer;
+        var UnitOfWork = (function () {
+            function UnitOfWork(repository) {
+                this.repository = repository;
+                this.idMap = new UnitOfWork_1.IdentityMap();
+            }
+            UnitOfWork.prototype.saveAll = function () {
+                var keys = this.idMap.getIds();
+                for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                    var key = keys_1[_i];
+                    var status = this.idMap.getItemStatus(key);
+                    if (status === UnitOfWork_1.ItemStatus.Saved) {
+                        if (this.itemHasChanged(key)) {
+                            this.idMap.markAsModifiedById(key);
+                        }
+                    }
+                    switch (status) {
+                        case UnitOfWork_1.ItemStatus.Deleted:
+                            this.repository.delete(key);
+                            this.removeById(key);
+                            break;
+                        case UnitOfWork_1.ItemStatus.Modified, UnitOfWork_1.ItemStatus.New:
+                            var item = this.idMap.getById(key);
+                            this.repository.save(item);
+                            this.idMap.markAsSavedById(key);
+                            break;
+                        case UnitOfWork_1.ItemStatus.Saved:
+                            break;
+                    }
+                }
+            };
+            UnitOfWork.prototype.removeById = function (key) {
+                if (this.idMap.isTracked(key)) {
+                    this.idMap.remove(key);
+                    delete this.asLoaded[key.toString()];
+                }
+            };
+            UnitOfWork.prototype.getById = function (key) {
+                if (this.idMap.isTracked(key)) {
+                    return this.idMap.getById(key);
+                }
+                var toReturn = this.repository.getById(key);
+                this.idMap.add(key, toReturn);
+                this.asLoaded[key.toString()] = Serializer.serialize(toReturn);
+                return toReturn;
+            };
+            UnitOfWork.prototype.deleteById = function (key) {
+                this.idMap.markAsDeletedById(key);
+            };
+            UnitOfWork.prototype.itemHasChanged = function (key) {
+                var howItWas = this.asLoaded[key.toString()];
+                var howItIs = Serializer.serialize(this.getById(key));
+                return howItIs === howItWas;
+            };
+            return UnitOfWork;
+        }());
+        UnitOfWork_1.UnitOfWork = UnitOfWork;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
+    (function (UnitOfWork) {
+        (function (ItemStatus) {
+            ItemStatus[ItemStatus["New"] = 0] = "New";
+            ItemStatus[ItemStatus["Modified"] = 1] = "Modified";
+            ItemStatus[ItemStatus["Saved"] = 2] = "Saved";
+            ItemStatus[ItemStatus["Deleted"] = 3] = "Deleted";
+        })(UnitOfWork.ItemStatus || (UnitOfWork.ItemStatus = {}));
+        var ItemStatus = UnitOfWork.ItemStatus;
+        var TrackedItem = (function () {
+            function TrackedItem(status, item, key) {
+                this.status = status;
+                this.item = item;
+                this.key = key;
+            }
+            TrackedItem.prototype.setStatus = function (status) {
+                this.status = status;
+            };
+            return TrackedItem;
+        }());
+        var IdentityMap = (function () {
+            function IdentityMap() {
+                this.idToObjectMap = {};
+            }
+            IdentityMap.prototype.isTracked = function (key) {
+                var idAsString = key.toString();
+                if (this.idToObjectMap[idAsString]) {
+                    return true;
+                }
+                return false;
+            };
+            IdentityMap.prototype.getById = function (key) {
+                var idAsString = key.toString();
+                if (this.isTracked(key)) {
+                    return this.idToObjectMap[idAsString].item;
+                }
+                return null;
+            };
+            IdentityMap.prototype.add = function (key, item) {
+                var idAsString = key.toString();
+                var newItem = new TrackedItem(ItemStatus.New, item, key);
+                this.idToObjectMap[idAsString] = newItem;
+            };
+            IdentityMap.prototype.remove = function (key) {
+                if (this.isTracked(key)) {
+                    delete this.idToObjectMap[key.toString()];
+                }
+            };
+            IdentityMap.prototype.getIds = function () {
+                var toReturn = [];
+                for (var element in this.idToObjectMap) {
+                    toReturn.push(this.idToObjectMap[element].key);
+                }
+                return toReturn;
+            };
+            IdentityMap.prototype.markAsDeletedById = function (key) {
+                this.setItemStatus(key, ItemStatus.Deleted);
+            };
+            IdentityMap.prototype.markAsSavedById = function (key) {
+                this.setItemStatus(key, ItemStatus.Saved);
+            };
+            IdentityMap.prototype.markAsModifiedById = function (key) {
+                this.setItemStatus(key, ItemStatus.Modified);
+            };
+            IdentityMap.prototype.getItemStatus = function (key) {
+                if (this.isTracked(key)) {
+                    var trackedItem = this.getTrackedItem(key);
+                    return trackedItem.status;
+                }
+                return null;
+            };
+            IdentityMap.prototype.getTrackedItem = function (key) {
+                return this.idToObjectMap[key.toString()];
+            };
+            IdentityMap.prototype.setItemStatus = function (key, status) {
+                var trackedItem = this.getTrackedItem(key);
+                trackedItem.setStatus(status);
+            };
+            return IdentityMap;
+        }());
+        UnitOfWork.IdentityMap = IdentityMap;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
 var CdC;
 (function (CdC) {
     var Tests;
