@@ -402,8 +402,6 @@ declare namespace CdC.Tests.BaseStatefulObject {
 }
 declare namespace CdC.Tests.BaseValueObject {
 }
-declare namespace CdC.Tests.Dispatcher {
-}
 declare namespace CdC.Tests.InMemoryItemLocker {
     import DDD = DDDTools;
     import BaseValueObject = DDD.ValueObject.BaseValueObject;
@@ -413,4 +411,6 @@ declare namespace CdC.Tests.InMemoryItemLocker {
         __typeVersion: string;
         constructor();
     }
+}
+declare namespace CdC.Tests.Dispatcher {
 }

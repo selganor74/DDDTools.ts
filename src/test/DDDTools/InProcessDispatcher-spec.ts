@@ -8,13 +8,14 @@ namespace CdC.Tests.Dispatcher {
     import IEventHandler = DDDTools.DomainEvents.IEventHandler;
     import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
 
     class aDomainEvent extends BaseValueObject<aDomainEvent> implements IDomainEvent {
         __typeName = "CdC.Tests.Dispatcher.aDomainEvent";
         __typeVersion = "v1";
     }
 
-    describe("Dispatcher", () => {
+    describe("InProcessDispatcher", () => {
 
         it("Multiple registration of the same eventhandler, must be treated as one.", () => {
             var eventHandler: IEventHandler;
@@ -26,6 +27,8 @@ namespace CdC.Tests.Dispatcher {
 
             var event = new aDomainEvent;
 
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+            
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 
@@ -46,6 +49,8 @@ namespace CdC.Tests.Dispatcher {
             };
 
             var event = new aDomainEvent;
+
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
 
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 
@@ -75,6 +80,8 @@ namespace CdC.Tests.Dispatcher {
             };
 
             var event = new aDomainEvent;
+
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
 
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
@@ -110,6 +117,8 @@ namespace CdC.Tests.Dispatcher {
 
             var event = new aDomainEvent;
 
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
 
@@ -119,8 +128,6 @@ namespace CdC.Tests.Dispatcher {
 
             DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
             DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
-
         });
     });
-
 }

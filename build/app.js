@@ -1315,99 +1315,6 @@ var CdC;
 (function (CdC) {
     var Tests;
     (function (Tests) {
-        var Dispatcher;
-        (function (Dispatcher) {
-            var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
-            var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
-            var aDomainEvent = (function (_super) {
-                __extends(aDomainEvent, _super);
-                function aDomainEvent() {
-                    _super.apply(this, arguments);
-                    this.__typeName = "CdC.Tests.Dispatcher.aDomainEvent";
-                    this.__typeVersion = "v1";
-                }
-                return aDomainEvent;
-            }(BaseValueObject));
-            describe("Dispatcher", function () {
-                it("Multiple registration of the same eventhandler, must be treated as one.", function () {
-                    var eventHandler;
-                    var counter = 0;
-                    eventHandler = function (event) {
-                        counter++;
-                    };
-                    var event = new aDomainEvent;
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    DomainDispatcher.dispatch(event);
-                    expect(counter).toEqual(1);
-                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                });
-                it("After deregistering an handler, dispatch must not call it anymore", function () {
-                    var eventHandler;
-                    var counter = 0;
-                    eventHandler = function (event) {
-                        counter++;
-                    };
-                    var event = new aDomainEvent;
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    DomainDispatcher.dispatch(event);
-                    expect(counter).toEqual(1);
-                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    counter = 0;
-                    DomainDispatcher.dispatch(event);
-                    expect(counter).toEqual(0);
-                });
-                it("All handlers will be called by dispatch, even if handlers throw.", function () {
-                    var eventHandler;
-                    var aThrowingHandler;
-                    var counter = 0;
-                    aThrowingHandler = function (event) {
-                        throw new Error("Error thrown by the handler");
-                    };
-                    eventHandler = function (event) {
-                        counter++;
-                    };
-                    var event = new aDomainEvent;
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    try {
-                        DomainDispatcher.dispatch(event);
-                    }
-                    catch (e) {
-                        expect(e.message).toEqual("Error:Error thrown by the handler\n");
-                    }
-                    expect(counter).toEqual(1);
-                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
-                });
-                it("Handlers must be called in the same order they are registered.", function () {
-                    var eventHandler;
-                    var secondEventHandler;
-                    var counter = 0;
-                    eventHandler = function (event) {
-                        expect(counter).toEqual(0);
-                        counter++;
-                    };
-                    secondEventHandler = function (event) {
-                        expect(counter).toEqual(1);
-                        counter++;
-                    };
-                    var event = new aDomainEvent;
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
-                    DomainDispatcher.dispatch(event);
-                    expect(counter).toEqual(2);
-                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
-                });
-            });
-        })(Dispatcher = Tests.Dispatcher || (Tests.Dispatcher = {}));
-    })(Tests = CdC.Tests || (CdC.Tests = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Tests;
-    (function (Tests) {
         var InMemoryItemLocker;
         (function (InMemoryItemLocker) {
             var DDD = DDDTools;
@@ -1491,6 +1398,104 @@ var CdC;
                 });
             });
         })(InMemoryItemLocker = Tests.InMemoryItemLocker || (Tests.InMemoryItemLocker = {}));
+    })(Tests = CdC.Tests || (CdC.Tests = {}));
+})(CdC || (CdC = {}));
+var CdC;
+(function (CdC) {
+    var Tests;
+    (function (Tests) {
+        var Dispatcher;
+        (function (Dispatcher) {
+            var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
+            var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+            var InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
+            var aDomainEvent = (function (_super) {
+                __extends(aDomainEvent, _super);
+                function aDomainEvent() {
+                    _super.apply(this, arguments);
+                    this.__typeName = "CdC.Tests.Dispatcher.aDomainEvent";
+                    this.__typeVersion = "v1";
+                }
+                return aDomainEvent;
+            }(BaseValueObject));
+            describe("InProcessDispatcher", function () {
+                it("Multiple registration of the same eventhandler, must be treated as one.", function () {
+                    var eventHandler;
+                    var counter = 0;
+                    eventHandler = function (event) {
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.dispatch(event);
+                    expect(counter).toEqual(1);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                });
+                it("After deregistering an handler, dispatch must not call it anymore", function () {
+                    var eventHandler;
+                    var counter = 0;
+                    eventHandler = function (event) {
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.dispatch(event);
+                    expect(counter).toEqual(1);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    counter = 0;
+                    DomainDispatcher.dispatch(event);
+                    expect(counter).toEqual(0);
+                });
+                it("All handlers will be called by dispatch, even if handlers throw.", function () {
+                    var eventHandler;
+                    var aThrowingHandler;
+                    var counter = 0;
+                    aThrowingHandler = function (event) {
+                        throw new Error("Error thrown by the handler");
+                    };
+                    eventHandler = function (event) {
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    try {
+                        DomainDispatcher.dispatch(event);
+                    }
+                    catch (e) {
+                        expect(e.message).toEqual("Error:Error thrown by the handler\n");
+                    }
+                    expect(counter).toEqual(1);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+                });
+                it("Handlers must be called in the same order they are registered.", function () {
+                    var eventHandler;
+                    var secondEventHandler;
+                    var counter = 0;
+                    eventHandler = function (event) {
+                        expect(counter).toEqual(0);
+                        counter++;
+                    };
+                    secondEventHandler = function (event) {
+                        expect(counter).toEqual(1);
+                        counter++;
+                    };
+                    var event = new aDomainEvent;
+                    DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+                    DomainDispatcher.dispatch(event);
+                    expect(counter).toEqual(2);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+                });
+            });
+        })(Dispatcher = Tests.Dispatcher || (Tests.Dispatcher = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 //# sourceMappingURL=app.js.map
