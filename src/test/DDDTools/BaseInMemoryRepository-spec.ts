@@ -36,7 +36,7 @@ namespace CdC.Tests {
     export class TestEntity extends BaseAggregateRoot<TestEntity, Key> {
         public arrayOfEntities: ChildEntity[] = [];
         public anonymousObject: any = {};
-        // Le due property qui sotto vengono usate per testare che i riferimenti agli stessi oggetti vengano ricostituiti correttamente.
+        // Used to test objects references reconstitution.
         public anObjectReference: any = {};
         public anotherObjectReference: any = {};
 
@@ -60,12 +60,12 @@ namespace CdC.Tests {
 
     describe("BaseInMemoryRepository", () => {
 
-        it("Deve essere possibile istanziare il Repository", () => {
+        it("It must be possible to instantiate a Repository class", () => {
             var repo = new TestRepository();
             expect(repo instanceof TestRepository).toEqual(true);
         });
 
-        it("Se si salva una entity senza chiave impostata, il repository deve restituire un errore KeyNotSet", () => {
+        it("It must throw 'KeyNotSet' when saving an entity without key set", () => {
             var repo = new TestRepository();
 
             var item = new TestEntity();
@@ -77,7 +77,7 @@ namespace CdC.Tests {
             }
         });
 
-        it("Deve essere possibile salvare una entity con la chiave impostata", () => {
+        it("It must be possible to save an entity with the key set", () => {
             var repo = new TestRepository();
 
             var item = new TestEntity();
@@ -89,7 +89,7 @@ namespace CdC.Tests {
             }
         });
 
-        it("Se si richiede un item non presente nel repository, viene lanciato errore ItemNotFound", () => {
+        it("it should throw ItemNotFound if a key is not present in the repository", () => {
             var repo = new TestRepository();
 
             var item = new TestEntity();
@@ -104,7 +104,7 @@ namespace CdC.Tests {
 
         });
 
-        it("Gli array devono essere ricostituiti correttamente", () => {
+        it("It must correctly reconstitute an array", () => {
             var repo = new TestRepository();
             var numberOfElementsToAdd = 10;
 
@@ -126,19 +126,19 @@ namespace CdC.Tests {
                 var reloaded = repo.getById(key);
                 // console.log("Recuperato");
             } catch (e) {
-                expect(false).toBeTruthy("Eccezione nel salvataggio o nel recupero dell'item. " + e.message)
+                expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
             }
-            expect(reloaded instanceof TestEntity).toBeTruthy("L'oggetto ricostituito non è un'istanza dell'oggetto originale.");
-            expect(Array.isArray(reloaded.arrayOfEntities)).toBeTruthy("La property arrayOfEntities non è un Array");
-            expect(reloaded.arrayOfEntities.length).toEqual(numberOfElementsToAdd, "La property arrayOfEntities non contiene " + numberOfElementsToAdd + " elementi");
+            expect(reloaded instanceof TestEntity).toBeTruthy("Reconstituted object is not an instance of the original type.");
+            expect(Array.isArray(reloaded.arrayOfEntities)).toBeTruthy("Property arrayOfEntities is not an Array");
+            expect(reloaded.arrayOfEntities.length).toEqual(numberOfElementsToAdd, "Property arrayOfEntities does not contain " + numberOfElementsToAdd + " elements");
             for (var t = 0; t < numberOfElementsToAdd; t++) {
                 var ce = reloaded.arrayOfEntities[t];
-                expect(Array.isArray(ce.arrayOfKeys)).toBeTruthy("La property arrayOfKeys non è un Array");
-                expect(ce.arrayOfKeys.length).toEqual(numberOfElementsToAdd, "La property arrayOfKeys non contiene " + numberOfElementsToAdd + " elementi");
+                expect(Array.isArray(ce.arrayOfKeys)).toBeTruthy("Property arrayOfKeys is not an Array");
+                expect(ce.arrayOfKeys.length).toEqual(numberOfElementsToAdd, "Property arrayOfKeys does not contain " + numberOfElementsToAdd + " elements");
             }
         });
 
-        it("Gli oggetti anonimi devono essere ricostituiti correttamente.", () => {
+        it("It must correctly reconstitute 'anonymous' objects.", () => {
             var repo = new TestRepository();
             var numberOfElementsToAdd = 10;
             var item = new TestEntity();
@@ -153,14 +153,14 @@ namespace CdC.Tests {
                 repo.save(item);
                 var reloaded = repo.getById(key);
             } catch (e) {
-                expect(false).toBeTruthy("Eccezione nel salvataggio o nel recupero dell'item. " + e.message)
+                expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
             }
 
-            expect(reloaded.anonymousObject.anotherEntity instanceof TestEntity).toBeTruthy("L'oggetto ricostituito non è un'istanza dell'oggetto originale.");
-            expect(reloaded.anonymousObject.aNumberType).toEqual(42, "La property aNumberType non è stata ricostituita correttamente.");
+            expect(reloaded.anonymousObject.anotherEntity instanceof TestEntity).toBeTruthy("Reconstituted object is not an instance of the original type.");
+            expect(reloaded.anonymousObject.aNumberType).toEqual(42, "Property aNumberType was not correctly reconstituted.");
         });
 
-        it("Riferimenti alla stessa istanza devono essere ricostituiti correttamente", () => {
+        it("It must correctly reconstitute references to the same instance.", () => {
 
             // pending("Feature non ancora sviluppata");
 
@@ -186,7 +186,7 @@ namespace CdC.Tests {
                 repo.save(item);
                 var reloaded = repo.getById(key);
             } catch (e) {
-                expect(false).toBeTruthy("Eccezione nel salvataggio o nel recupero dell'item. " + e.message)
+                expect(false).toBeTruthy("Exception while saving or retrieving the item. " + e.message)
             }
 
             expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
