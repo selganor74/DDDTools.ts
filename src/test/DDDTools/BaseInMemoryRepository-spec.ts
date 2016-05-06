@@ -2,12 +2,14 @@
 
 namespace CdC.Tests {
 
-    import DDD = DDDTools;
     import Guid = DDDTools.ValueObjects.Guid;
-
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
     import RepoErrors = DDDTools.Repository.RepositoryErrors;
+    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
 
-    export class Key extends DDD.BaseValueObject<Key> {
+    export class Key extends BaseValueObject<Key> {
         private id: Guid;
         __typeName = "CdC.Tests.Key";
         __typeVersion = "v1";
@@ -21,7 +23,7 @@ namespace CdC.Tests {
         }
     }
 
-    export class ChildEntity extends DDD.BaseEntity<ChildEntity, Key> {
+    export class ChildEntity extends BaseEntity<ChildEntity, Key> {
         public arrayOfKeys: Key[] = [];
         __typeName = "CdC.Tests.ChildEntity";
         __typeVersion = "v1";
@@ -31,7 +33,7 @@ namespace CdC.Tests {
         }
     }
 
-    export class TestEntity extends DDD.BaseEntity<TestEntity, Key> {
+    export class TestEntity extends BaseAggregateRoot<TestEntity, Key> {
         public arrayOfEntities: ChildEntity[] = [];
         public anonymousObject: any = {};
         // Le due property qui sotto vengono usate per testare che i riferimenti agli stessi oggetti vengano ricostituiti correttamente.
@@ -47,7 +49,7 @@ namespace CdC.Tests {
 
     }
 
-    class TestRepository extends DDD.BaseInMemoryRepository<TestEntity, Key> {
+    class TestRepository extends BaseInMemoryRepository<TestEntity, Key> {
 
         private static managedTypeName = "CdC.Tests.TestEntity";
 

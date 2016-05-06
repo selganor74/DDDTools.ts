@@ -1,11 +1,15 @@
 /// <reference path="ILockManager.ts"/>
-/// <reference path="../BaseValueObject.ts"/>
+/// <reference path="../VAlueObject/BaseValueObject.ts"/>
 /// <reference path="../ValueObjects/Guid.ts"/>
+/// <reference path="../Entity/IKeyValueObject.ts"/>
 
 namespace DDDTools.Locking {
 
-    import Guid = DDDTools.ValueObjects.Guid;
-
+    import Guid = ValueObjects.Guid;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import BaseEntity = Entity.BaseEntity;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    
     // Simple locking class used by InMemoryLockManager
     export class SimpleLock extends BaseValueObject<SimpleLock> implements ILock<SimpleLockKey>{
         public __typeName: string = "DDDTools.Locking.SimpleLock";

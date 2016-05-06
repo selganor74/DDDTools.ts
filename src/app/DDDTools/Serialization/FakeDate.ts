@@ -1,6 +1,8 @@
-/// <reference path="../ITypeTracking.ts" />
+/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 
 namespace DDDTools.Serialization {
+    
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
 
     export class FakeDate implements ITypeTracking {
         __typeName: string = "Date";

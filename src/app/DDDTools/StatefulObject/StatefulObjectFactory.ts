@@ -112,7 +112,6 @@ namespace DDDTools.StatefulObject {
         /**
          * Returns the "Fully Qualified TypeName" of type "typeName" for the supplied "version".
          * FQTN is computed from typeName adding the version string in the right place.
-         * versione prima del nome della classe.
          * Example
          * typeName: Application.Model.Offerta
          * version: v2

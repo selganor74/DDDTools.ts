@@ -1,10 +1,10 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
-/// <reference path="../ITypeTracking.ts" />
+/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 
 namespace DDDTools.Serialization {
     
-    import SimpleGuid = DDDTools.Utils.SimpleGuid;
-    import ITypeTracking = DDDTools.ITypeTracking;
+    import SimpleGuid = Utils.SimpleGuid;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
     
     export class Touch {
         /**

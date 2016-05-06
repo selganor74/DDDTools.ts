@@ -1,9 +1,11 @@
 /// <reference path="../../../typings/main.d.ts"/>
 /// <reference path="../../app/DDDTools/StatefulObject/StatefulObjectUpgrader.ts" />
 /// <reference path="../../app/DDDTools/StatefulObject/StatefulObjectFactory.ts" />
+/// <reference path="../../app/DDDTools/Entity/BaseEntity.ts" />
 
 namespace CdC.Tests.BaseStatefulObject.v2 {
-    import BaseEntity = DDDTools.BaseEntity;
+    
+    import BaseEntity = DDDTools.Entity.BaseEntity;
     import Guid = DDDTools.ValueObjects.Guid;
 
     export class A3StepUpgradableItem extends BaseEntity<TestEntity, Guid> {
@@ -25,7 +27,7 @@ namespace CdC.Tests.BaseStatefulObject.v2 {
 
 namespace CdC.Tests.BaseStatefulObject.v1 {
 
-    import BaseEntity = DDDTools.BaseEntity;
+    import BaseEntity = DDDTools.Entity.BaseEntity;
     import Guid = DDDTools.ValueObjects.Guid;
 
     export class TestEntity extends BaseEntity<TestEntity, Guid> {
@@ -41,7 +43,7 @@ namespace CdC.Tests.BaseStatefulObject.v1 {
 
 namespace CdC.Tests.BaseStatefulObject {
 
-    import BaseEntity = DDDTools.BaseEntity;
+    import BaseEntity = DDDTools.Entity.BaseEntity;
     import Guid = DDDTools.ValueObjects.Guid;
     import StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
     import StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;

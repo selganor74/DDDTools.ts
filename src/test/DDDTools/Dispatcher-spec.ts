@@ -1,13 +1,13 @@
-/// <reference path="../../app/DDDTools/DomainEvents/Dispatcher.ts" />
-/// <reference path="../../app/DDDTools/IDomainEvent.ts" />
-/// <reference path="../../app/DDDTools/BaseValueObject.ts" />
+/// <reference path="../../app/DDDTools/DomainEvents/DomainDispatcher.ts" />
+/// <reference path="../../app/DDDTools/DomainEvents/IDomainEvent.ts" />
+/// <reference path="../../app/DDDTools/ValueObject/BaseValueObject.ts" />
 
 namespace CdC.Tests.Dispatcher {
 
-    import Dispatcher = DDDTools.DomainEvents.Dispatcher;
+    import DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
     import IEventHandler = DDDTools.DomainEvents.IEventHandler;
-    import IDomainEvent = DDDTools.IDomainEvent;
-    import BaseValueObject = DDDTools.BaseValueObject;
+    import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
 
     class aDomainEvent extends BaseValueObject<aDomainEvent> implements IDomainEvent {
         __typeName = "CdC.Tests.Dispatcher.aDomainEvent";
@@ -26,15 +26,15 @@ namespace CdC.Tests.Dispatcher {
 
             var event = new aDomainEvent;
 
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 
-            Dispatcher.dispatch(event);
+            DomainDispatcher.dispatch(event);
 
             // Handler has been registered twice, but dispatcher should call it once.
             expect(counter).toEqual(1);
 
-            Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
         });
 
         it("After deregistering an handler, dispatch must not call it anymore", () => {
@@ -47,17 +47,17 @@ namespace CdC.Tests.Dispatcher {
 
             var event = new aDomainEvent;
 
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 
-            Dispatcher.dispatch(event);
+            DomainDispatcher.dispatch(event);
 
             // Just to verify that Handler has been correctly registered.
             expect(counter).toEqual(1);
 
-            Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 
             counter = 0;
-            Dispatcher.dispatch(event);
+            DomainDispatcher.dispatch(event);
             expect(counter).toEqual(0);
         });
 
@@ -76,11 +76,11 @@ namespace CdC.Tests.Dispatcher {
 
             var event = new aDomainEvent;
 
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 
             try {
-                Dispatcher.dispatch(event);
+                DomainDispatcher.dispatch(event);
             } catch (e) {
                 expect(e.message).toEqual("Error:Error thrown by the handler\n");
             }
@@ -88,8 +88,8 @@ namespace CdC.Tests.Dispatcher {
             // Verifies that the non Throwing Handler has not been thrown.
             expect(counter).toEqual(1);
 
-            Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-            Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+            DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
 
         });
 
@@ -110,15 +110,15 @@ namespace CdC.Tests.Dispatcher {
 
             var event = new aDomainEvent;
 
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-            Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
 
-            Dispatcher.dispatch(event);
+            DomainDispatcher.dispatch(event);
 
             expect(counter).toEqual(2);
 
-            Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-            Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+            DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+            DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
 
         });
     });

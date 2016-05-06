@@ -1,6 +1,8 @@
-/// <reference path="../ITypeTracking.ts" />
+/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 
 namespace DDDTools.StatefulObject {
+	
+	import ITypeTracking = CommonInterfaces.ITypeTracking;
     
 	export interface IStateful extends ITypeTracking {
         getUpgradedInstance?(fromInstance: IStateful): IStateful;

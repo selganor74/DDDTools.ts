@@ -5,7 +5,7 @@ namespace CdC.Tests.BaseValueObject {
     import DDD = DDDTools;
     import Guid = DDDTools.ValueObjects.Guid;
 
-    class TestValueObject extends DDD.BaseValueObject<TestValueObject> {
+    class TestValueObject extends DDD.ValueObject.BaseValueObject<TestValueObject> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject";
         __typeVersion = "v1";
 
@@ -19,7 +19,7 @@ namespace CdC.Tests.BaseValueObject {
         }
     }
 
-    class TestValueObject_Array extends DDD.BaseValueObject<TestValueObject_Array> {
+    class TestValueObject_Array extends DDD.ValueObject.BaseValueObject<TestValueObject_Array> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject_Array";
         __typeVersion = "v1";
 
@@ -30,7 +30,7 @@ namespace CdC.Tests.BaseValueObject {
         }
     }
 
-    class TestValueObject_Object extends DDD.BaseValueObject<TestValueObject_Object> {
+    class TestValueObject_Object extends DDD.ValueObject.BaseValueObject<TestValueObject_Object> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject_Array";
         __typeVersion = "v1";
 

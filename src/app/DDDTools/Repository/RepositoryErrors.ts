@@ -1,10 +1,10 @@
-/// <reference path="../BaseErrors.ts"/>
+/// <reference path="../ErrorManagement/BaseErrors.ts"/>
 
 namespace DDDTools.Repository {
     
-    import DDD = DDDTools;
+    import BaseErrors = ErrorManagement.BaseErrors;
     
-    export class RepositoryErrors extends DDD.BaseErrors {
+    export class RepositoryErrors extends BaseErrors {
         public static KeyNotSet = "Key not set";
         public static ItemNotFound = "Item Not Found";
     }

@@ -6,8 +6,10 @@ namespace CdC.Tests.InMemoryItemLocker {
     import Locking = DDDTools.Locking;
     import Guid = DDDTools.ValueObjects.Guid;
     import LockingErrors = Locking.LockingErrors;
+    import BaseValueObject = DDD.ValueObject.BaseValueObject;
+    import BaseEntity = DDD.Entity.BaseEntity;
 
-    export class Key extends DDD.BaseValueObject<Key> {
+    export class Key extends BaseValueObject<Key> {
         private id: Guid;
 
         __typeName = "CdC.Tests.InMemoryItemLocker.Key";
@@ -19,7 +21,7 @@ namespace CdC.Tests.InMemoryItemLocker {
         }
     }
 
-    class LockKey extends DDD.BaseValueObject<LockKey> {
+    class LockKey extends BaseValueObject<LockKey> {
         private id: Guid;
 
         __typeName = "CdC.Tests.InMemoryItemLocker.LockKey";
@@ -31,7 +33,7 @@ namespace CdC.Tests.InMemoryItemLocker {
         }
     }
 
-    class Lock extends DDD.BaseValueObject<Lock> implements Locking.ILock<LockKey> {
+    class Lock extends BaseValueObject<Lock> implements Locking.ILock<LockKey> {
 
         __typeName = "CdC.Tests.InMemoryItemLocker.Lock";
         __typeVersion = "v1";
@@ -50,7 +52,7 @@ namespace CdC.Tests.InMemoryItemLocker {
 
     }
 
-    class TestEntity extends DDD.BaseEntity<TestEntity, Key> {
+    class TestEntity extends BaseEntity<TestEntity, Key> {
 
         __typeName = "CdC.Tests.InMemoryItemLocker.TestEntity";
         __typeVersion = "v1";

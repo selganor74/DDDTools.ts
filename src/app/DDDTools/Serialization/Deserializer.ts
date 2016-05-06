@@ -1,15 +1,15 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../Utils/SimpleIdentityMap.ts" />
-/// <reference path="../ITypeTracking.ts" />
+/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 /// <reference path="../StatefulObject/IStateful.ts" />
 /// <reference path="Touch.ts" />
 
 namespace DDDTools.Serialization {
 
-    import SimpleGuid = DDDTools.Utils.SimpleGuid;
-    import SimpleIdentityMap = DDDTools.Utils.SimpleIdentityMap;
-    import IStateful =  DDDTools.StatefulObject.IStateful;
-
+    import SimpleGuid = Utils.SimpleGuid;
+    import SimpleIdentityMap = Utils.SimpleIdentityMap;
+    import IStateful =  StatefulObject.IStateful;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
 
     export class Deserializer {
         /**
@@ -71,7 +71,7 @@ namespace DDDTools.Serialization {
          * checks for the presence of an __objectInstanceId property
          */
         private static hasBeenTouched(object: any): boolean {
-            var casted = <IStateful>object;
+            var casted = <ITypeTracking>object;
             if (casted.__objectInstanceId) {
                 return true;
             }

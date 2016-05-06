@@ -4,7 +4,10 @@
   "dependencies": {},
   "ambientDependencies": {
     "angular": "registry:dt/angular#1.5.0+20160320081937",
+    "electron": "registry:env/electron#0.37.6+20160416165306",
     "jasmine": "registry:dt/jasmine#2.2.0+20160317120654",
-    "jquery": "registry:dt/jquery#1.10.0+20160316155526"
+    "jquery": "registry:dt/jquery#1.10.0+20160316155526",
+    "nedb": "registry:dt/nedb#0.0.0+20160317120654",
+    "node": "registry:dt/node#4.0.0+20160423143914"
   }
 }

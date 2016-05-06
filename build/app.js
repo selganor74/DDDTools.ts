@@ -5,123 +5,30 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DDDTools;
 (function (DDDTools) {
-    var Utils;
-    (function (Utils) {
-        var SimpleGuid = (function () {
-            function SimpleGuid() {
+    var ErrorManagement;
+    (function (ErrorManagement) {
+        var BaseErrors = (function () {
+            function BaseErrors() {
             }
-            SimpleGuid.isValid = function (guid) {
-                var guidRegexp = new RegExp("^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$");
-                return guidRegexp.test(guid);
+            BaseErrors.Throw = function (name, message) {
+                var err = BaseErrors.getErrorInstance(name, message);
+                throw err;
             };
-            SimpleGuid.s4 = function () {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
+            BaseErrors.getErrorInstance = function (name, message) {
+                var err = new Error(message || name);
+                err.name = name;
+                return err;
             };
-            SimpleGuid.generate = function () {
-                var newSimpleGuid = "{" + SimpleGuid.s4() + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" +
-                    SimpleGuid.s4() + "-" + SimpleGuid.s4() + SimpleGuid.s4() + SimpleGuid.s4() + "}";
-                if (SimpleGuid.isValid(newSimpleGuid)) {
-                    return newSimpleGuid;
-                }
-                throw new Error("Should Never Happen! The generated guid is not valid!");
-            };
-            return SimpleGuid;
+            return BaseErrors;
         }());
-        Utils.SimpleGuid = SimpleGuid;
-    })(Utils = DDDTools.Utils || (DDDTools.Utils = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var DomainEvents;
-    (function (DomainEvents) {
-        var SimpleGuid = DDDTools.Utils.SimpleGuid;
-        var Dispatcher = (function () {
-            function Dispatcher() {
-            }
-            Dispatcher.clear = function () {
-                var sThis = Dispatcher;
-                sThis.delegatesRegistry = {};
-            };
-            Dispatcher.registerHandler = function (eventTypeName, handler) {
-                var sThis = Dispatcher;
-                if (!sThis.delegatesRegistry[eventTypeName]) {
-                    sThis.delegatesRegistry[eventTypeName] = [];
-                }
-                if (!handler.__handlerId) {
-                    handler.__handlerId = SimpleGuid.generate();
-                    sThis.delegatesRegistry[eventTypeName].push(handler);
-                }
-            };
-            Dispatcher.unregisterHandler = function (eventTypeName, handler) {
-                var sThis = Dispatcher;
-                if (handler.__handlerId) {
-                    for (var element in sThis.delegatesRegistry[eventTypeName]) {
-                        var currentElement = sThis.delegatesRegistry[eventTypeName][element];
-                        if (currentElement.__handlerId === handler.__handlerId) {
-                            sThis.delegatesRegistry[eventTypeName].splice(Number(element), 1);
-                            break;
-                        }
-                    }
-                }
-            };
-            Dispatcher.dispatch = function (event) {
-                var sThis = Dispatcher;
-                var Errors = [];
-                for (var _i = 0, _a = sThis.delegatesRegistry[event.__typeName]; _i < _a.length; _i++) {
-                    var element = _a[_i];
-                    try {
-                        element(event);
-                    }
-                    catch (e) {
-                        Errors.push(e);
-                    }
-                }
-                if (Errors.length != 0) {
-                    var message = sThis.buildErrorMessage(Errors);
-                    var e = new Error(message);
-                    e.name = "Dispatcher Error";
-                    throw e;
-                }
-            };
-            Dispatcher.buildErrorMessage = function (Errors) {
-                var message = "";
-                for (var _i = 0, Errors_1 = Errors; _i < Errors_1.length; _i++) {
-                    var element = Errors_1[_i];
-                    message += element.name + ":" + element.message + "\n";
-                }
-                return message;
-            };
-            Dispatcher.delegatesRegistry = {};
-            return Dispatcher;
-        }());
-        DomainEvents.Dispatcher = Dispatcher;
-    })(DomainEvents = DDDTools.DomainEvents || (DDDTools.DomainEvents = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var BaseErrors = (function () {
-        function BaseErrors() {
-        }
-        BaseErrors.Throw = function (name, message) {
-            var err = BaseErrors.getErrorInstance(name, message);
-            throw err;
-        };
-        BaseErrors.getErrorInstance = function (name, message) {
-            var err = new Error(message || name);
-            err.name = name;
-            return err;
-        };
-        return BaseErrors;
-    }());
-    DDDTools.BaseErrors = BaseErrors;
+        ErrorManagement.BaseErrors = BaseErrors;
+    })(ErrorManagement = DDDTools.ErrorManagement || (DDDTools.ErrorManagement = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
     var StatefulObject;
     (function (StatefulObject) {
-        var BaseErrors = DDDTools.BaseErrors;
+        var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
         var StatefulObjectErrors = (function (_super) {
             __extends(StatefulObjectErrors, _super);
             function StatefulObjectErrors() {
@@ -140,7 +47,7 @@ var DDDTools;
 (function (DDDTools) {
     var StatefulObject;
     (function (StatefulObject) {
-        var BaseErrors = DDDTools.BaseErrors;
+        var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
         var UpgraderErrors = (function (_super) {
             __extends(UpgraderErrors, _super);
             function UpgraderErrors() {
@@ -305,6 +212,35 @@ var DDDTools;
         }());
         StatefulObject.StatefulObjectFactory = StatefulObjectFactory;
     })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Utils;
+    (function (Utils) {
+        var SimpleGuid = (function () {
+            function SimpleGuid() {
+            }
+            SimpleGuid.isValid = function (guid) {
+                var guidRegexp = new RegExp("^[{(]?[0-9A-Fa-f]{8}[-]?([0-9A-Fa-f]{4}[-]?){3}[0-9A-Fa-f]{12}[)}]?$");
+                return guidRegexp.test(guid);
+            };
+            SimpleGuid.s4 = function () {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                    .toString(16)
+                    .substring(1);
+            };
+            SimpleGuid.generate = function () {
+                var newSimpleGuid = "{" + SimpleGuid.s4() + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" + SimpleGuid.s4() + "-" +
+                    SimpleGuid.s4() + "-" + SimpleGuid.s4() + SimpleGuid.s4() + SimpleGuid.s4() + "}";
+                if (SimpleGuid.isValid(newSimpleGuid)) {
+                    return newSimpleGuid;
+                }
+                throw new Error("Should Never Happen! The generated guid is not valid!");
+            };
+            return SimpleGuid;
+        }());
+        Utils.SimpleGuid = SimpleGuid;
+    })(Utils = DDDTools.Utils || (DDDTools.Utils = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -517,173 +453,233 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var Errors = DDDTools.StatefulObject.StatefulObjectErrors;
-    var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
-    var Serializer = DDDTools.Serialization.Serializer;
-    var Deserializer = DDDTools.Serialization.Deserializer;
-    var BaseStatefulObject = (function () {
-        function BaseStatefulObject() {
-            this.__typeName = "";
-            this.__typeVersion = "";
-        }
-        BaseStatefulObject.prototype.getState = function () {
-            if (this.__typeName === "") {
-                Errors.Throw(Errors.TypeNameNotSet);
+    var StatefulObject;
+    (function (StatefulObject) {
+        var Errors = StatefulObject.StatefulObjectErrors;
+        var StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
+        var Serializer = DDDTools.Serialization.Serializer;
+        var Deserializer = DDDTools.Serialization.Deserializer;
+        var BaseStatefulObject = (function () {
+            function BaseStatefulObject() {
+                this.__typeName = "";
+                this.__typeVersion = "";
             }
-            if (this.__typeVersion === "") {
-                Errors.Throw(Errors.TypeVersionNotSet);
-            }
-            var toReconstitute = Serializer.serialize(this);
-            var reconstituted = Deserializer.deserialize(toReconstitute);
-            return reconstituted;
-        };
-        BaseStatefulObject.prototype.setState = function (state) {
-            if (typeof state !== "object") {
-                Errors.Throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
-            }
-            for (var element in state) {
-                var currentStateElement = state[element];
-                this[element] = StatefulObjectFactory.createObjectsFromState(currentStateElement);
-            }
-        };
-        return BaseStatefulObject;
-    }());
-    DDDTools.BaseStatefulObject = BaseStatefulObject;
+            BaseStatefulObject.prototype.getState = function () {
+                if (this.__typeName === "") {
+                    Errors.Throw(Errors.TypeNameNotSet);
+                }
+                if (this.__typeVersion === "") {
+                    Errors.Throw(Errors.TypeVersionNotSet);
+                }
+                var toReconstitute = Serializer.serialize(this);
+                var reconstituted = Deserializer.deserialize(toReconstitute);
+                return reconstituted;
+            };
+            BaseStatefulObject.prototype.setState = function (state) {
+                if (typeof state !== "object") {
+                    Errors.Throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
+                }
+                for (var element in state) {
+                    var currentStateElement = state[element];
+                    this[element] = StatefulObjectFactory.createObjectsFromState(currentStateElement);
+                }
+            };
+            return BaseStatefulObject;
+        }());
+        StatefulObject.BaseStatefulObject = BaseStatefulObject;
+    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var BaseEntity = (function (_super) {
-        __extends(BaseEntity, _super);
-        function BaseEntity() {
-            _super.apply(this, arguments);
-        }
-        BaseEntity.prototype.getKey = function () {
-            return this.key;
-        };
-        ;
-        BaseEntity.prototype.setKey = function (key) {
-            this.key = key;
-        };
-        ;
-        BaseEntity.prototype.equals = function (item) {
-            if (!item) {
-                return false;
-            }
-            return item.getKey().equals(this.getKey());
-        };
-        return BaseEntity;
-    }(DDDTools.BaseStatefulObject));
-    DDDTools.BaseEntity = BaseEntity;
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var Dispatcher = DDDTools.DomainEvents.Dispatcher;
-    var BaseAggregateRoot = (function (_super) {
-        __extends(BaseAggregateRoot, _super);
-        function BaseAggregateRoot() {
-            _super.apply(this, arguments);
-        }
-        BaseAggregateRoot.prototype.raiseEvent = function (event) {
-            Dispatcher.dispatch(event);
-        };
-        ;
-        BaseAggregateRoot.prototype.registerEventHandler = function (eventTypeName, eventHandler) {
-            Dispatcher.registerHandler(eventTypeName, eventHandler);
-        };
-        BaseAggregateRoot.prototype.unregisterEventHandler = function (eventTypeName, eventHandler) {
-            Dispatcher.unregisterHandler(eventTypeName, eventHandler);
-        };
-        return BaseAggregateRoot;
-    }(DDDTools.BaseEntity));
-    DDDTools.BaseAggregateRoot = BaseAggregateRoot;
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var BaseValueObject = (function (_super) {
-        __extends(BaseValueObject, _super);
-        function BaseValueObject() {
-            _super.call(this);
-        }
-        BaseValueObject.prototype.equals = function (item) {
-            var foreign = JSON.stringify(item);
-            var local = JSON.stringify(this);
-            return foreign === local;
-        };
-        return BaseValueObject;
-    }(DDDTools.BaseStatefulObject));
-    DDDTools.BaseValueObject = BaseValueObject;
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var Repository;
-    (function (Repository) {
-        var DDD = DDDTools;
-        var RepositoryErrors = (function (_super) {
-            __extends(RepositoryErrors, _super);
-            function RepositoryErrors() {
+    var Entity;
+    (function (Entity) {
+        var BaseStatefulObject = DDDTools.StatefulObject.BaseStatefulObject;
+        var BaseEntity = (function (_super) {
+            __extends(BaseEntity, _super);
+            function BaseEntity() {
                 _super.apply(this, arguments);
             }
-            RepositoryErrors.KeyNotSet = "Key not set";
-            RepositoryErrors.ItemNotFound = "Item Not Found";
-            return RepositoryErrors;
-        }(DDD.BaseErrors));
-        Repository.RepositoryErrors = RepositoryErrors;
-    })(Repository = DDDTools.Repository || (DDDTools.Repository = {}));
+            BaseEntity.prototype.getKey = function () {
+                return this.key;
+            };
+            ;
+            BaseEntity.prototype.setKey = function (key) {
+                this.key = key;
+            };
+            ;
+            BaseEntity.prototype.equals = function (item) {
+                if (!item) {
+                    return false;
+                }
+                return item.getKey().equals(this.getKey());
+            };
+            return BaseEntity;
+        }(BaseStatefulObject));
+        Entity.BaseEntity = BaseEntity;
+    })(Entity = DDDTools.Entity || (DDDTools.Entity = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var Errors = DDDTools.Repository.RepositoryErrors;
-    var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
-    var BaseInMemoryRepository = (function () {
-        function BaseInMemoryRepository(_managedTypeName) {
-            this._managedTypeName = _managedTypeName;
-            this.storage = {};
-        }
-        BaseInMemoryRepository.prototype.getById = function (id) {
-            var key = id.toString();
-            if (this.storage[key]) {
-                var toReturn = StatefulObjectFactory.createObjectsFromState(this.storage[key]);
-                return toReturn;
+    var DomainEvents;
+    (function (DomainEvents) {
+        var DomainDispatcher = (function () {
+            function DomainDispatcher() {
             }
-            Errors.Throw(Errors.ItemNotFound);
-        };
-        BaseInMemoryRepository.prototype.save = function (item) {
-            try {
-                var key = item.getKey().toString();
-            }
-            catch (e) {
-                Errors.Throw(Errors.KeyNotSet);
-            }
-            this.storage[key] = item.getState();
-        };
-        BaseInMemoryRepository.prototype.delete = function (id) {
-            var key = id.toString();
-            this.storage[key] = undefined;
-        };
-        return BaseInMemoryRepository;
-    }());
-    DDDTools.BaseInMemoryRepository = BaseInMemoryRepository;
+            DomainDispatcher.setDispatcherImplementation = function (dispatcher) {
+                var sThis = DomainDispatcher;
+                sThis.dispatcherImplementation = dispatcher;
+            };
+            DomainDispatcher.registerHandler = function (eventTypeName, handler) {
+                var sThis = DomainDispatcher;
+                if (sThis.dispatcherImplementation) {
+                    sThis.dispatcherImplementation.registerHandler(eventTypeName, handler);
+                }
+            };
+            DomainDispatcher.unregisterHandler = function (eventTypeName, handler) {
+                var sThis = DomainDispatcher;
+                if (sThis.dispatcherImplementation) {
+                    sThis.dispatcherImplementation.unregisterHandler(eventTypeName, handler);
+                }
+            };
+            DomainDispatcher.dispatch = function (event) {
+                var sThis = DomainDispatcher;
+                if (sThis.dispatcherImplementation) {
+                    sThis.dispatcherImplementation.dispatch(event);
+                }
+            };
+            return DomainDispatcher;
+        }());
+        DomainEvents.DomainDispatcher = DomainDispatcher;
+    })(DomainEvents = DDDTools.DomainEvents || (DDDTools.DomainEvents = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var BaseKeyValueObject = (function (_super) {
-        __extends(BaseKeyValueObject, _super);
-        function BaseKeyValueObject() {
-            _super.call(this);
-        }
-        BaseKeyValueObject.prototype.toString = function () {
-            var state = this.getState();
-            return JSON.stringify(state);
-        };
-        return BaseKeyValueObject;
-    }(DDDTools.BaseValueObject));
-    DDDTools.BaseKeyValueObject = BaseKeyValueObject;
+    var Aggregate;
+    (function (Aggregate) {
+        var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
+        var BaseEntity = DDDTools.Entity.BaseEntity;
+        var BaseAggregateRoot = (function (_super) {
+            __extends(BaseAggregateRoot, _super);
+            function BaseAggregateRoot() {
+                _super.apply(this, arguments);
+            }
+            BaseAggregateRoot.prototype.raiseEvent = function (event) {
+                DomainDispatcher.dispatch(event);
+            };
+            ;
+            return BaseAggregateRoot;
+        }(BaseEntity));
+        Aggregate.BaseAggregateRoot = BaseAggregateRoot;
+    })(Aggregate = DDDTools.Aggregate || (DDDTools.Aggregate = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var DomainEvents;
+    (function (DomainEvents) {
+        var SimpleGuid = DDDTools.Utils.SimpleGuid;
+        var InProcessDispatcher = (function () {
+            function InProcessDispatcher() {
+                this.delegatesRegistry = {};
+            }
+            InProcessDispatcher.prototype.clear = function () {
+                this.delegatesRegistry = {};
+            };
+            InProcessDispatcher.prototype.registerHandler = function (eventTypeName, handler) {
+                if (!this.delegatesRegistry[eventTypeName]) {
+                    this.delegatesRegistry[eventTypeName] = [];
+                }
+                if (!handler.__handlerId) {
+                    handler.__handlerId = SimpleGuid.generate();
+                    this.delegatesRegistry[eventTypeName].push(handler);
+                }
+            };
+            InProcessDispatcher.prototype.unregisterHandler = function (eventTypeName, handler) {
+                if (handler.__handlerId) {
+                    for (var element in this.delegatesRegistry[eventTypeName]) {
+                        var currentElement = this.delegatesRegistry[eventTypeName][element];
+                        if (currentElement.__handlerId === handler.__handlerId) {
+                            this.delegatesRegistry[eventTypeName].splice(Number(element), 1);
+                            break;
+                        }
+                    }
+                }
+            };
+            InProcessDispatcher.prototype.dispatch = function (event) {
+                var Errors = [];
+                for (var _i = 0, _a = this.delegatesRegistry[event.__typeName]; _i < _a.length; _i++) {
+                    var element = _a[_i];
+                    try {
+                        element(event);
+                    }
+                    catch (e) {
+                        Errors.push(e);
+                    }
+                }
+                if (Errors.length != 0) {
+                    var message = this.buildErrorMessage(Errors);
+                    var e = new Error(message);
+                    e.name = "Dispatcher Error";
+                    throw e;
+                }
+            };
+            InProcessDispatcher.prototype.buildErrorMessage = function (Errors) {
+                var message = "";
+                for (var _i = 0, Errors_1 = Errors; _i < Errors_1.length; _i++) {
+                    var element = Errors_1[_i];
+                    message += element.name + ":" + element.message + "\n";
+                }
+                return message;
+            };
+            return InProcessDispatcher;
+        }());
+        DomainEvents.InProcessDispatcher = InProcessDispatcher;
+    })(DomainEvents = DDDTools.DomainEvents || (DDDTools.DomainEvents = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var ValueObject;
+    (function (ValueObject) {
+        var BaseStatefulObject = DDDTools.StatefulObject.BaseStatefulObject;
+        var BaseValueObject = (function (_super) {
+            __extends(BaseValueObject, _super);
+            function BaseValueObject() {
+                _super.call(this);
+            }
+            BaseValueObject.prototype.equals = function (item) {
+                var foreign = JSON.stringify(item);
+                var local = JSON.stringify(this);
+                return foreign === local;
+            };
+            return BaseValueObject;
+        }(BaseStatefulObject));
+        ValueObject.BaseValueObject = BaseValueObject;
+    })(ValueObject = DDDTools.ValueObject || (DDDTools.ValueObject = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Entity;
+    (function (Entity) {
+        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+        var BaseKeyValueObject = (function (_super) {
+            __extends(BaseKeyValueObject, _super);
+            function BaseKeyValueObject() {
+                _super.call(this);
+            }
+            BaseKeyValueObject.prototype.toString = function () {
+                var state = this.getState();
+                return JSON.stringify(state);
+            };
+            return BaseKeyValueObject;
+        }(BaseValueObject));
+        Entity.BaseKeyValueObject = BaseKeyValueObject;
+    })(Entity = DDDTools.Entity || (DDDTools.Entity = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
     var ValueObjects;
     (function (ValueObjects) {
         var SimpleGuid = DDDTools.Utils.SimpleGuid;
+        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
         var Guid = (function (_super) {
             __extends(Guid, _super);
             function Guid(guid) {
@@ -701,7 +697,7 @@ var DDDTools;
                 return this.guid;
             };
             return Guid;
-        }(DDDTools.BaseValueObject));
+        }(BaseValueObject));
         ValueObjects.Guid = Guid;
     })(ValueObjects = DDDTools.ValueObjects || (DDDTools.ValueObjects = {}));
 })(DDDTools || (DDDTools = {}));
@@ -710,6 +706,7 @@ var DDDTools;
     var Locking;
     (function (Locking) {
         var Guid = DDDTools.ValueObjects.Guid;
+        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
         var SimpleLock = (function (_super) {
             __extends(SimpleLock, _super);
             function SimpleLock(keyCreatedWith) {
@@ -724,7 +721,7 @@ var DDDTools;
                 return this.keyCreatedWith.equals(otherLock.keyCreatedWith);
             };
             return SimpleLock;
-        }(DDDTools.BaseValueObject));
+        }(BaseValueObject));
         Locking.SimpleLock = SimpleLock;
         var SimpleLockKey = (function (_super) {
             __extends(SimpleLockKey, _super);
@@ -737,7 +734,7 @@ var DDDTools;
                 return this.key.toString();
             };
             return SimpleLockKey;
-        }(DDDTools.BaseValueObject));
+        }(BaseValueObject));
         Locking.SimpleLockKey = SimpleLockKey;
         var InMemoryEntityLockManager = (function () {
             function InMemoryEntityLockManager(item, clientKey) {
@@ -793,6 +790,7 @@ var DDDTools;
 (function (DDDTools) {
     var Locking;
     (function (Locking) {
+        var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
         var LockingErrors = (function (_super) {
             __extends(LockingErrors, _super);
             function LockingErrors() {
@@ -800,9 +798,63 @@ var DDDTools;
             }
             LockingErrors.EntityLockedBySomeoneElse = "Entity is Locked by someone else";
             return LockingErrors;
-        }(DDDTools.BaseErrors));
+        }(BaseErrors));
         Locking.LockingErrors = LockingErrors;
     })(Locking = DDDTools.Locking || (DDDTools.Locking = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Repository;
+    (function (Repository) {
+        var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
+        var RepositoryErrors = (function (_super) {
+            __extends(RepositoryErrors, _super);
+            function RepositoryErrors() {
+                _super.apply(this, arguments);
+            }
+            RepositoryErrors.KeyNotSet = "Key not set";
+            RepositoryErrors.ItemNotFound = "Item Not Found";
+            return RepositoryErrors;
+        }(BaseErrors));
+        Repository.RepositoryErrors = RepositoryErrors;
+    })(Repository = DDDTools.Repository || (DDDTools.Repository = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Repository;
+    (function (Repository) {
+        var Errors = Repository.RepositoryErrors;
+        var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
+        var BaseInMemoryRepository = (function () {
+            function BaseInMemoryRepository(_managedTypeName) {
+                this._managedTypeName = _managedTypeName;
+                this.storage = {};
+            }
+            BaseInMemoryRepository.prototype.getById = function (id) {
+                var key = id.toString();
+                if (this.storage[key]) {
+                    var toReturn = StatefulObjectFactory.createObjectsFromState(this.storage[key]);
+                    return toReturn;
+                }
+                Errors.Throw(Errors.ItemNotFound);
+            };
+            BaseInMemoryRepository.prototype.save = function (item) {
+                try {
+                    var key = item.getKey().toString();
+                }
+                catch (e) {
+                    Errors.Throw(Errors.KeyNotSet);
+                }
+                this.storage[key] = item.getState();
+            };
+            BaseInMemoryRepository.prototype.delete = function (id) {
+                var key = id.toString();
+                this.storage[key] = undefined;
+            };
+            return BaseInMemoryRepository;
+        }());
+        Repository.BaseInMemoryRepository = BaseInMemoryRepository;
+    })(Repository = DDDTools.Repository || (DDDTools.Repository = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -842,260 +894,14 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var CdC;
 (function (CdC) {
-    var Model;
-    (function (Model) {
-        var DDD = DDDTools;
-        var Offerta = (function (_super) {
-            __extends(Offerta, _super);
-            function Offerta() {
-                _super.call(this);
-                this.__typeName = "CdC.Model.Offerta";
-                this.offertePerVarianti = [];
-                this.variantiDiOrdine = [];
-            }
-            Offerta.prototype.getRevisioniDiOfferta = function () {
-                return this.offertePerVarianti;
-            };
-            Offerta.prototype.registerEventHandlers = function () { };
-            Offerta.prototype.unregisterEventHandlers = function () { };
-            return Offerta;
-        }(DDD.BaseAggregateRoot));
-        Model.Offerta = Offerta;
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var RevisioneDiOfferta = (function () {
-            function RevisioneDiOfferta() {
-            }
-            return RevisioneDiOfferta;
-        }());
-        Model.RevisioneDiOfferta = RevisioneDiOfferta;
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var CodiceBaseOfferta = (function (_super) {
-                __extends(CodiceBaseOfferta, _super);
-                function CodiceBaseOfferta(codiceBaseOfferta) {
-                    _super.call(this);
-                    this.codiceBaseOfferta = codiceBaseOfferta;
-                    this.__typeName = "CdC.Model.ValueObjects.CodiceBaseOfferta";
-                }
-                CodiceBaseOfferta.prototype.isValid = function () {
-                    return true;
-                };
-                return CodiceBaseOfferta;
-            }(DDD.BaseValueObject));
-            ValueObjects.CodiceBaseOfferta = CodiceBaseOfferta;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var IdModulo = (function (_super) {
-                __extends(IdModulo, _super);
-                function IdModulo(idModulo) {
-                    _super.call(this);
-                    this.idModulo = idModulo;
-                    this.__typeName = "CdC.Model.ValueObjects.IdModulo";
-                }
-                return IdModulo;
-            }(DDD.BaseValueObject));
-            ValueObjects.IdModulo = IdModulo;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var Guid = DDDTools.ValueObjects.Guid;
-            var IdOfferta = (function (_super) {
-                __extends(IdOfferta, _super);
-                function IdOfferta(idOfferta) {
-                    _super.call(this);
-                    this.idOfferta = idOfferta;
-                    this.__typeName = "CdC.Model.ValueObjects.IdOfferta";
-                    if (!idOfferta)
-                        this.idOfferta = Guid.generate();
-                }
-                return IdOfferta;
-            }(DDD.BaseKeyValueObject));
-            ValueObjects.IdOfferta = IdOfferta;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var IdRevisione = (function (_super) {
-                __extends(IdRevisione, _super);
-                function IdRevisione(idRevisione) {
-                    _super.call(this);
-                    this.idRevisione = idRevisione;
-                    this.__typeName = "CdC.Model.ValueObjects.IdRevisione";
-                }
-                IdRevisione.prototype.toString = function () {
-                    return 'R' + this.idRevisione;
-                };
-                return IdRevisione;
-            }(DDD.BaseValueObject));
-            ValueObjects.IdRevisione = IdRevisione;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var IdRevisioneDiOfferta = (function (_super) {
-                __extends(IdRevisioneDiOfferta, _super);
-                function IdRevisioneDiOfferta(idRevisioneDiOfferta) {
-                    _super.call(this);
-                    this.idRevisioneDiOfferta = idRevisioneDiOfferta;
-                    this.__typeName = "CdC.Model.ValueObjects.IdRevisioneDiOfferta";
-                }
-                return IdRevisioneDiOfferta;
-            }(DDD.BaseValueObject));
-            ValueObjects.IdRevisioneDiOfferta = IdRevisioneDiOfferta;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var IdVariante = (function (_super) {
-                __extends(IdVariante, _super);
-                function IdVariante(idVariante) {
-                    _super.call(this);
-                    this.__typeName = "CdC.Model.ValueObjects.IdVariante";
-                    if (idVariante != null && idVariante != undefined) {
-                        this.idVariante = idVariante;
-                    }
-                }
-                IdVariante.prototype.toString = function () {
-                    return 'V' + this.idVariante;
-                };
-                return IdVariante;
-            }(DDD.BaseValueObject));
-            ValueObjects.IdVariante = IdVariante;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var InfoCommerciali = (function (_super) {
-                __extends(InfoCommerciali, _super);
-                function InfoCommerciali(idPrmLinea, idPrmSottolinea, idPrmTipoBanco, idPrmComponente, descrizioneLinea, descrizioneSottolinea, descrizioneComponente, descrizioneTipoBanco) {
-                    _super.call(this);
-                    this.idPrmLinea = idPrmLinea;
-                    this.idPrmSottolinea = idPrmSottolinea;
-                    this.idPrmTipoBanco = idPrmTipoBanco;
-                    this.idPrmComponente = idPrmComponente;
-                    this.descrizioneLinea = descrizioneLinea;
-                    this.descrizioneSottolinea = descrizioneSottolinea;
-                    this.descrizioneComponente = descrizioneComponente;
-                    this.descrizioneTipoBanco = descrizioneTipoBanco;
-                    this.__typeName = "CdC.Model.ValueObjects.InfoCommerciali";
-                }
-                return InfoCommerciali;
-            }(DDD.BaseValueObject));
-            ValueObjects.InfoCommerciali = InfoCommerciali;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Model;
-    (function (Model) {
-        var ValueObjects;
-        (function (ValueObjects) {
-            var DDD = DDDTools;
-            var ReferenteInterno = (function (_super) {
-                __extends(ReferenteInterno, _super);
-                function ReferenteInterno(idReferentePrm, nome, cognome, email) {
-                    _super.call(this);
-                    this.idReferentePrm = idReferentePrm;
-                    this.nome = nome;
-                    this.cognome = cognome;
-                    this.email = email;
-                    this.__typeName = "CdC.Model.ValueObjects.ReferenteInterno";
-                }
-                return ReferenteInterno;
-            }(DDD.BaseValueObject));
-            ValueObjects.ReferenteInterno = ReferenteInterno;
-        })(ValueObjects = Model.ValueObjects || (Model.ValueObjects = {}));
-    })(Model = CdC.Model || (CdC.Model = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Repositories;
-    (function (Repositories) {
-        var DDD = DDDTools;
-        var OfferteErrors = (function (_super) {
-            __extends(OfferteErrors, _super);
-            function OfferteErrors() {
-                _super.apply(this, arguments);
-            }
-            return OfferteErrors;
-        }(DDD.BaseErrors));
-        Repositories.OfferteErrors = OfferteErrors;
-    })(Repositories = CdC.Repositories || (CdC.Repositories = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Repositories;
-    (function (Repositories) {
-        var DDD = DDDTools;
-        var Offerte = (function (_super) {
-            __extends(Offerte, _super);
-            function Offerte() {
-                _super.apply(this, arguments);
-            }
-            return Offerte;
-        }(DDD.BaseInMemoryRepository));
-        Repositories.Offerte = Offerte;
-    })(Repositories = CdC.Repositories || (CdC.Repositories = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
     var Tests;
     (function (Tests) {
-        var DDD = DDDTools;
         var Guid = DDDTools.ValueObjects.Guid;
+        var BaseEntity = DDDTools.Entity.BaseEntity;
+        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+        var BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
         var RepoErrors = DDDTools.Repository.RepositoryErrors;
+        var BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
         var Key = (function (_super) {
             __extends(Key, _super);
             function Key() {
@@ -1108,7 +914,7 @@ var CdC;
                 return this.id.toString();
             };
             return Key;
-        }(DDD.BaseValueObject));
+        }(BaseValueObject));
         Tests.Key = Key;
         var ChildEntity = (function (_super) {
             __extends(ChildEntity, _super);
@@ -1119,7 +925,7 @@ var CdC;
                 this.__typeVersion = "v1";
             }
             return ChildEntity;
-        }(DDD.BaseEntity));
+        }(BaseEntity));
         Tests.ChildEntity = ChildEntity;
         var TestEntity = (function (_super) {
             __extends(TestEntity, _super);
@@ -1133,7 +939,7 @@ var CdC;
                 this.__typeVersion = "v1";
             }
             return TestEntity;
-        }(DDD.BaseEntity));
+        }(BaseAggregateRoot));
         Tests.TestEntity = TestEntity;
         var TestRepository = (function (_super) {
             __extends(TestRepository, _super);
@@ -1142,7 +948,7 @@ var CdC;
             }
             TestRepository.managedTypeName = "CdC.Tests.TestEntity";
             return TestRepository;
-        }(DDD.BaseInMemoryRepository));
+        }(BaseInMemoryRepository));
         describe("BaseInMemoryRepository", function () {
             it("Deve essere possibile istanziare il Repository", function () {
                 var repo = new TestRepository();
@@ -1264,7 +1070,7 @@ var CdC;
         (function (BaseStatefulObject) {
             var v2;
             (function (v2) {
-                var BaseEntity = DDDTools.BaseEntity;
+                var BaseEntity = DDDTools.Entity.BaseEntity;
                 var A3StepUpgradableItem = (function (_super) {
                     __extends(A3StepUpgradableItem, _super);
                     function A3StepUpgradableItem() {
@@ -1294,7 +1100,7 @@ var CdC;
         (function (BaseStatefulObject) {
             var v1;
             (function (v1) {
-                var BaseEntity = DDDTools.BaseEntity;
+                var BaseEntity = DDDTools.Entity.BaseEntity;
                 var TestEntity = (function (_super) {
                     __extends(TestEntity, _super);
                     function TestEntity() {
@@ -1325,7 +1131,7 @@ var CdC;
     (function (Tests) {
         var BaseStatefulObject;
         (function (BaseStatefulObject) {
-            var BaseEntity = DDDTools.BaseEntity;
+            var BaseEntity = DDDTools.Entity.BaseEntity;
             var StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
             var Errors = DDDTools.StatefulObject.UpgraderErrors;
             var A3StepUpgradableItem = (function (_super) {
@@ -1458,7 +1264,7 @@ var CdC;
                     this.__typeVersion = "v1";
                 }
                 return TestValueObject;
-            }(DDD.BaseValueObject));
+            }(DDD.ValueObject.BaseValueObject));
             var TestValueObject_Array = (function (_super) {
                 __extends(TestValueObject_Array, _super);
                 function TestValueObject_Array(arrayOfSomething) {
@@ -1468,7 +1274,7 @@ var CdC;
                     this.__typeVersion = "v1";
                 }
                 return TestValueObject_Array;
-            }(DDD.BaseValueObject));
+            }(DDD.ValueObject.BaseValueObject));
             var TestValueObject_Object = (function (_super) {
                 __extends(TestValueObject_Object, _super);
                 function TestValueObject_Object(someObject) {
@@ -1478,7 +1284,7 @@ var CdC;
                     this.__typeVersion = "v1";
                 }
                 return TestValueObject_Object;
-            }(DDD.BaseValueObject));
+            }(DDD.ValueObject.BaseValueObject));
             describe("BaseValueObject", function () {
                 it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Tipi base", function () {
                     var vo1 = new TestValueObject("via F.Mestica", 3, "Apiro", "62021");
@@ -1510,9 +1316,9 @@ var CdC;
     var Tests;
     (function (Tests) {
         var Dispatcher;
-        (function (Dispatcher_1) {
-            var Dispatcher = DDDTools.DomainEvents.Dispatcher;
-            var BaseValueObject = DDDTools.BaseValueObject;
+        (function (Dispatcher) {
+            var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
+            var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
             var aDomainEvent = (function (_super) {
                 __extends(aDomainEvent, _super);
                 function aDomainEvent() {
@@ -1530,11 +1336,11 @@ var CdC;
                         counter++;
                     };
                     var event = new aDomainEvent;
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    Dispatcher.dispatch(event);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.dispatch(event);
                     expect(counter).toEqual(1);
-                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
                 });
                 it("After deregistering an handler, dispatch must not call it anymore", function () {
                     var eventHandler;
@@ -1543,12 +1349,12 @@ var CdC;
                         counter++;
                     };
                     var event = new aDomainEvent;
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    Dispatcher.dispatch(event);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.dispatch(event);
                     expect(counter).toEqual(1);
-                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
                     counter = 0;
-                    Dispatcher.dispatch(event);
+                    DomainDispatcher.dispatch(event);
                     expect(counter).toEqual(0);
                 });
                 it("All handlers will be called by dispatch, even if handlers throw.", function () {
@@ -1562,17 +1368,17 @@ var CdC;
                         counter++;
                     };
                     var event = new aDomainEvent;
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
                     try {
-                        Dispatcher.dispatch(event);
+                        DomainDispatcher.dispatch(event);
                     }
                     catch (e) {
                         expect(e.message).toEqual("Error:Error thrown by the handler\n");
                     }
                     expect(counter).toEqual(1);
-                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", aThrowingHandler);
                 });
                 it("Handlers must be called in the same order they are registered.", function () {
                     var eventHandler;
@@ -1587,12 +1393,12 @@ var CdC;
                         counter++;
                     };
                     var event = new aDomainEvent;
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    Dispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
-                    Dispatcher.dispatch(event);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+                    DomainDispatcher.dispatch(event);
                     expect(counter).toEqual(2);
-                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
-                    Dispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
+                    DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
                 });
             });
         })(Dispatcher = Tests.Dispatcher || (Tests.Dispatcher = {}));
@@ -1608,6 +1414,8 @@ var CdC;
             var Locking = DDDTools.Locking;
             var Guid = DDDTools.ValueObjects.Guid;
             var LockingErrors = Locking.LockingErrors;
+            var BaseValueObject = DDD.ValueObject.BaseValueObject;
+            var BaseEntity = DDD.Entity.BaseEntity;
             var Key = (function (_super) {
                 __extends(Key, _super);
                 function Key() {
@@ -1617,7 +1425,7 @@ var CdC;
                     this.id = Guid.generate();
                 }
                 return Key;
-            }(DDD.BaseValueObject));
+            }(BaseValueObject));
             InMemoryItemLocker.Key = Key;
             var LockKey = (function (_super) {
                 __extends(LockKey, _super);
@@ -1628,7 +1436,7 @@ var CdC;
                     this.id = Guid.generate();
                 }
                 return LockKey;
-            }(DDD.BaseValueObject));
+            }(BaseValueObject));
             var Lock = (function (_super) {
                 __extends(Lock, _super);
                 function Lock(key) {
@@ -1644,7 +1452,7 @@ var CdC;
                     return this.key.equals(otherLock.key);
                 };
                 return Lock;
-            }(DDD.BaseValueObject));
+            }(BaseValueObject));
             var TestEntity = (function (_super) {
                 __extends(TestEntity, _super);
                 function TestEntity() {
@@ -1657,7 +1465,7 @@ var CdC;
                     this.anotherObjectReference = {};
                 }
                 return TestEntity;
-            }(DDD.BaseEntity));
+            }(BaseEntity));
             var TestLockManager = (function (_super) {
                 __extends(TestLockManager, _super);
                 function TestLockManager() {

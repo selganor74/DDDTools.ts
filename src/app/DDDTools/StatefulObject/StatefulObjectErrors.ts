@@ -1,8 +1,8 @@
-/// <reference path="../BaseErrors.ts"/>
+/// <reference path="../ErrorManagement/BaseErrors.ts"/>
 
 namespace DDDTools.StatefulObject {
     
-    import BaseErrors = DDDTools.BaseErrors;
+    import BaseErrors = ErrorManagement.BaseErrors;
     
     export class StatefulObjectErrors extends BaseErrors {
         static StateIsNotAnObject = "State is not an Object";

@@ -1,10 +1,12 @@
-/// <reference path="../BaseValueObject.ts" />
-/// <reference path="../IKeyValueObject.ts" />
+/// <reference path="../ValueObject/BaseValueObject.ts" />
+/// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../Utils/SimpleGuid.ts" />
 
 namespace DDDTools.ValueObjects {
 
-    import SimpleGuid = DDDTools.Utils.SimpleGuid;
+    import SimpleGuid = Utils.SimpleGuid;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import BaseValueObject = ValueObject.BaseValueObject;
 
     export class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
 
