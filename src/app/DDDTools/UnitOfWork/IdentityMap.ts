@@ -15,13 +15,25 @@ namespace DDDTools.UnitOfWork {
 
     class TrackedItem<T, TKey> {
         constructor(
-            public status: ItemStatus,
-            public item: T,
-            public key: TKey
+            private status: ItemStatus,
+            private item: T,
+            private key: TKey
         ) {}
         
         public setStatus( status: ItemStatus) {
             this.status = status;
+        }
+        
+        public getStatus(): ItemStatus {
+            return this.status;
+        }
+
+        public getItem(): T {
+            return this.item;
+        }
+        
+        public getKey(): TKey {
+            return this.key;
         }
     }
 
@@ -50,7 +62,7 @@ namespace DDDTools.UnitOfWork {
         public getById(key: TKey): T {
             var idAsString = key.toString();
             if (this.isTracked(key)) {
-                return this.idToObjectMap[idAsString].item;
+                return this.idToObjectMap[idAsString].getItem();
             }
             return null;
         }
@@ -79,7 +91,7 @@ namespace DDDTools.UnitOfWork {
         public getIds(): TKey[] {
             var toReturn: TKey[] = [];
             for (var element in this.idToObjectMap) {
-                toReturn.push(this.idToObjectMap[element].key);
+                toReturn.push(this.idToObjectMap[element].getKey());
             }
             return toReturn;
         }
@@ -111,7 +123,7 @@ namespace DDDTools.UnitOfWork {
         public getItemStatus(key: TKey): ItemStatus {
             if (this.isTracked(key)) {
                 var trackedItem = this.getTrackedItem(key);
-                return trackedItem.status; 
+                return trackedItem.getStatus(); 
             }
             return null;
         }
