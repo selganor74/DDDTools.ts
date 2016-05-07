@@ -5,6 +5,8 @@ namespace DDDTools.UnitOfWork {
 
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
+    import IStateful = StatefulObject.IStateful;
 
     export enum ItemStatus {
         New,
@@ -16,15 +18,38 @@ namespace DDDTools.UnitOfWork {
     /**
      * Internal class to store item status info
      */
-    class TrackedItem<T, TKey> {
+    class TrackedItem<
+        T extends BaseAggregateRoot<T, TKey>,
+        TKey extends IKeyValueObject<TKey>
+        > {
+        // Will contain a serialized version of the object as it was when it was loaded from the repository.
+
+        private asLoaded: IStateful // Will contain the state of the object when first added or updated
+
         constructor(
             private status: ItemStatus,
             private item: T,
             private key: TKey
-        ) { }
+        ) {
+            this.asLoaded = item.getState();
+        }
 
-        public setStatus(status: ItemStatus) {
-            this.status = status;
+        public markAsNew() {
+            this.status = ItemStatus.New;
+            this.asLoaded = this.item.getState();
+        }
+
+        public markAsSaved() {
+            this.status = ItemStatus.Saved;
+            this.asLoaded = this.item.getState();
+        }
+
+        public markAsModified() {
+            this.status = ItemStatus.Modified;
+        }
+
+        public markAsDeleted() {
+            this.status = ItemStatus.Deleted;
         }
 
         public getStatus(): ItemStatus {
@@ -38,11 +63,31 @@ namespace DDDTools.UnitOfWork {
         public getKey(): TKey {
             return this.key;
         }
+
+        public hasChanged(): boolean {
+            var currentState = this.item.getState();
+            var currentStateAsString = JSON.stringify(currentState);
+            var asLoadedAsString = JSON.stringify(this.asLoaded);
+
+            return currentStateAsString !== asLoadedAsString;
+        }
+
+        /**
+         * Checks if an item in "Saved" status has been modified, and changes the status accordingly.
+         */
+        public updateSavedItemStatus() {
+            if (this.status === ItemStatus.Saved) {
+                if(this.hasChanged()) {
+                    this.markAsModified();
+                }
+            }
+        }
+        
     }
 
     export class IdentityMap
         <
-        T extends IAggregateRoot<T, TKey>,
+        T extends BaseAggregateRoot<T, TKey>,
         TKey extends IKeyValueObject<TKey>
         >
     {
@@ -102,15 +147,18 @@ namespace DDDTools.UnitOfWork {
         }
 
         public markAsDeletedById(key: TKey) {
-            this.setItemStatus(key, ItemStatus.Deleted);
+            var trackedItem = this.getTrackedItem(key);
+            trackedItem.markAsDeleted();
         }
 
         public markAsSavedById(key: TKey) {
-            this.setItemStatus(key, ItemStatus.Saved);
+            var trackedItem = this.getTrackedItem(key);
+            trackedItem.markAsSaved();
         }
 
         public markAsModifiedById(key: TKey) {
-            this.setItemStatus(key, ItemStatus.Modified);
+            var trackedItem = this.getTrackedItem(key);
+            trackedItem.markAsModified();
         }
 
         public getItemStatus(key: TKey): ItemStatus {
@@ -121,13 +169,20 @@ namespace DDDTools.UnitOfWork {
             return null;
         }
 
-        private getTrackedItem(key: TKey): TrackedItem<T, TKey> {
-            return this.idToObjectMap[key.toString()];
+        /**
+         * Computes the correct status for an item in "Saved" status, as it may have been modified since now (here we don't have property tracking).
+         */
+        public updateSavedItemStatus(key: TKey) {
+            var item = this.getTrackedItem(key);
+            item.updateSavedItemStatus();
         }
 
-        private setItemStatus(key: TKey, status: ItemStatus): void {
-            var trackedItem = this.getTrackedItem(key);
-            trackedItem.setStatus(status);
+        private getTrackedItem(key: TKey): TrackedItem<T, TKey> {
+            var toReturn = this.idToObjectMap[key.toString()];
+            if (!toReturn) {
+                return null;
+            }
+            return toReturn;
         }
     }
 }

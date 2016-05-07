@@ -902,6 +902,22 @@ var DDDTools;
 (function (DDDTools) {
     var UnitOfWork;
     (function (UnitOfWork) {
+        var Events = (function () {
+            function Events() {
+            }
+            Events.__nameSpace = "DDDTools.UnitOfWork";
+            Events.ObjectSavedEvent = Events.__nameSpace + ".ObjectSavedEvent";
+            Events.ObjectDeletedEvent = Events.__nameSpace + ".ObjectDeletedEvent";
+            Events.ObjectRetrievedEvent = Events.__nameSpace + ".ObjectRetrievedEvent";
+            return Events;
+        }());
+        UnitOfWork.Events = Events;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
+    (function (UnitOfWork) {
         (function (ItemStatus) {
             ItemStatus[ItemStatus["New"] = 0] = "New";
             ItemStatus[ItemStatus["Modified"] = 1] = "Modified";
@@ -914,9 +930,21 @@ var DDDTools;
                 this.status = status;
                 this.item = item;
                 this.key = key;
+                this.asLoaded = item.getState();
             }
-            TrackedItem.prototype.setStatus = function (status) {
-                this.status = status;
+            TrackedItem.prototype.markAsNew = function () {
+                this.status = ItemStatus.New;
+                this.asLoaded = this.item.getState();
+            };
+            TrackedItem.prototype.markAsSaved = function () {
+                this.status = ItemStatus.Saved;
+                this.asLoaded = this.item.getState();
+            };
+            TrackedItem.prototype.markAsModified = function () {
+                this.status = ItemStatus.Modified;
+            };
+            TrackedItem.prototype.markAsDeleted = function () {
+                this.status = ItemStatus.Deleted;
             };
             TrackedItem.prototype.getStatus = function () {
                 return this.status;
@@ -926,6 +954,19 @@ var DDDTools;
             };
             TrackedItem.prototype.getKey = function () {
                 return this.key;
+            };
+            TrackedItem.prototype.hasChanged = function () {
+                var currentState = this.item.getState();
+                var currentStateAsString = JSON.stringify(currentState);
+                var asLoadedAsString = JSON.stringify(this.asLoaded);
+                return currentStateAsString !== asLoadedAsString;
+            };
+            TrackedItem.prototype.updateSavedItemStatus = function () {
+                if (this.status === ItemStatus.Saved) {
+                    if (this.hasChanged()) {
+                        this.markAsModified();
+                    }
+                }
             };
             return TrackedItem;
         }());
@@ -965,13 +1006,16 @@ var DDDTools;
                 return toReturn;
             };
             IdentityMap.prototype.markAsDeletedById = function (key) {
-                this.setItemStatus(key, ItemStatus.Deleted);
+                var trackedItem = this.getTrackedItem(key);
+                trackedItem.markAsDeleted();
             };
             IdentityMap.prototype.markAsSavedById = function (key) {
-                this.setItemStatus(key, ItemStatus.Saved);
+                var trackedItem = this.getTrackedItem(key);
+                trackedItem.markAsSaved();
             };
             IdentityMap.prototype.markAsModifiedById = function (key) {
-                this.setItemStatus(key, ItemStatus.Modified);
+                var trackedItem = this.getTrackedItem(key);
+                trackedItem.markAsModified();
             };
             IdentityMap.prototype.getItemStatus = function (key) {
                 if (this.isTracked(key)) {
@@ -980,16 +1024,54 @@ var DDDTools;
                 }
                 return null;
             };
-            IdentityMap.prototype.getTrackedItem = function (key) {
-                return this.idToObjectMap[key.toString()];
+            IdentityMap.prototype.updateSavedItemStatus = function (key) {
+                var item = this.getTrackedItem(key);
+                item.updateSavedItemStatus();
             };
-            IdentityMap.prototype.setItemStatus = function (key, status) {
-                var trackedItem = this.getTrackedItem(key);
-                trackedItem.setStatus(status);
+            IdentityMap.prototype.getTrackedItem = function (key) {
+                var toReturn = this.idToObjectMap[key.toString()];
+                if (!toReturn) {
+                    return null;
+                }
+                return toReturn;
             };
             return IdentityMap;
         }());
         UnitOfWork.IdentityMap = IdentityMap;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
+    (function (UnitOfWork) {
+        var ObjectDeletedEvent = (function () {
+            function ObjectDeletedEvent(typeName, typeVersion, id) {
+                this.typeName = typeName;
+                this.typeVersion = typeVersion;
+                this.id = id;
+                this.__typeName = UnitOfWork.Events.ObjectDeletedEvent;
+                this.__typeVersion = "v1";
+            }
+            return ObjectDeletedEvent;
+        }());
+        UnitOfWork.ObjectDeletedEvent = ObjectDeletedEvent;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
+    (function (UnitOfWork) {
+        var ObjectRetrievedEvent = (function () {
+            function ObjectRetrievedEvent(typeName, typeVersion, id) {
+                this.typeName = typeName;
+                this.typeVersion = typeVersion;
+                this.id = id;
+                this.__typeName = UnitOfWork.Events.ObjectRetrievedEvent;
+                this.__typeVersion = "v1";
+            }
+            return ObjectRetrievedEvent;
+        }());
+        UnitOfWork.ObjectRetrievedEvent = ObjectRetrievedEvent;
     })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
@@ -1001,7 +1083,7 @@ var DDDTools;
                 this.typeName = typeName;
                 this.typeVersion = typeVersion;
                 this.id = id;
-                this.__typeName = "DDDTools.UnitOfWork.ObjectSavedEvent";
+                this.__typeName = UnitOfWork.Events.ObjectSavedEvent;
                 this.__typeVersion = "v1";
             }
             return ObjectSavedEvent;
@@ -1013,11 +1095,9 @@ var DDDTools;
 (function (DDDTools) {
     var UnitOfWork;
     (function (UnitOfWork_1) {
-        var Serializer = DDDTools.Serialization.Serializer;
         var InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
         var UnitOfWork = (function () {
             function UnitOfWork(repository) {
-                this.asLoaded = {};
                 this.repository = repository;
                 this.idMap = new UnitOfWork_1.IdentityMap();
                 this.dispatcher = new InProcessDispatcher();
@@ -1026,17 +1106,15 @@ var DDDTools;
                 var keys = this.idMap.getIds();
                 for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
                     var key = keys_1[_i];
+                    this.idMap.updateSavedItemStatus(key);
                     var status = this.idMap.getItemStatus(key);
-                    if (status === UnitOfWork_1.ItemStatus.Saved) {
-                        if (this.itemHasChanged(key)) {
-                            this.idMap.markAsModifiedById(key);
-                            status = this.idMap.getItemStatus(key);
-                        }
-                    }
                     switch (status) {
                         case UnitOfWork_1.ItemStatus.Deleted:
+                            var item = this.idMap.getById(key);
+                            var deletedEvent = new UnitOfWork_1.ObjectDeletedEvent(item.__typeName, item.__typeVersion, key.toString());
                             this.repository.delete(key);
                             this.removeById(key);
+                            this.raiseEvent(deletedEvent);
                             break;
                         case UnitOfWork_1.ItemStatus.Modified:
                         case UnitOfWork_1.ItemStatus.New:
@@ -1063,7 +1141,6 @@ var DDDTools;
             UnitOfWork.prototype.removeById = function (key) {
                 if (this.idMap.isTracked(key)) {
                     this.idMap.remove(key);
-                    delete this.asLoaded[key.toString()];
                 }
             };
             UnitOfWork.prototype.getById = function (key) {
@@ -1073,16 +1150,17 @@ var DDDTools;
                 var toReturn = this.repository.getById(key);
                 this.idMap.add(key, toReturn);
                 this.idMap.markAsSavedById(key);
-                this.asLoaded[key.toString()] = toReturn.getState();
+                var retrievedEvent = new UnitOfWork_1.ObjectRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString());
+                this.raiseEvent(retrievedEvent);
                 return toReturn;
             };
             UnitOfWork.prototype.deleteById = function (key) {
                 this.idMap.markAsDeletedById(key);
             };
             UnitOfWork.prototype.itemHasChanged = function (key) {
-                var howItWas = this.asLoaded[key.toString()];
-                var howItIs = Serializer.serialize(this.getById(key));
-                return howItIs !== howItWas;
+                this.idMap.updateSavedItemStatus(key);
+                var status = this.idMap.getItemStatus(key);
+                return status === UnitOfWork_1.ItemStatus.Modified;
             };
             return UnitOfWork;
         }());
@@ -1705,6 +1783,7 @@ var CdC;
             var BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
             var Guid = DDDTools.ValueObjects.Guid;
             var UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
+            var Events = DDDTools.UnitOfWork.Events;
             var TestKey = (function (_super) {
                 __extends(TestKey, _super);
                 function TestKey() {
@@ -1790,18 +1869,71 @@ var CdC;
                     var repoAsString = JSON.stringify(fromRepo);
                     expect(uowAsString).toEqual(uowAsString);
                 });
-                it("UnitOfWork must save only effectively changed objects.", function () {
-                    pending("UoW still saves everything... but this will change !");
-                    var fromUoW1 = uow.getById(keys[0]);
-                    var fromUoW2 = uow.getById(keys[1]);
+                it("When retrieving objects, events of type ObjectRetrieveEvent must be raised.", function () {
                     var counter = 0;
-                    fromUoW2.setATestProperty("BBello");
-                    uow.registerHandler("DDDTools.UnitOfWork.ObjectSavedEvent", function (event) {
+                    uow.registerHandler(Events.ObjectRetrievedEvent, function () {
+                        counter++;
+                    });
+                    var fromUoW0 = uow.getById(keys[0]);
+                    var fromUoW1 = uow.getById(keys[1]);
+                    expect(counter).toEqual(2);
+                });
+                it("After calling saveAll all Modified objects must be saved into the repository", function () {
+                    var fromUoW0 = uow.getById(keys[0]);
+                    var fromUoW1 = uow.getById(keys[1]);
+                    var counter = 0;
+                    fromUoW0.setATestProperty("Brutto!");
+                    fromUoW1.setATestProperty("BBello");
+                    uow.registerHandler(Events.ObjectSavedEvent, function (event) {
+                        counter++;
+                    });
+                    uow.saveAll();
+                    expect(counter).toEqual(2, "The UoW has not saved exactly 2 object.");
+                    var fromRepo0 = repo.getById(keys[0]);
+                    var fromRepo1 = repo.getById(keys[1]);
+                    expect(fromRepo0.getATestProperty()).toEqual("Brutto!");
+                    expect(fromRepo1.getATestProperty()).toEqual("BBello");
+                });
+                it("UnitOfWork must save only effectively changed objects.", function () {
+                    var fromUoW0 = uow.getById(keys[0]);
+                    var fromUoW1 = uow.getById(keys[1]);
+                    var counter = 0;
+                    fromUoW1.setATestProperty("BBello");
+                    uow.registerHandler(Events.ObjectSavedEvent, function (event) {
                         counter++;
                         expect(event.id).toEqual(keys[1].toString());
                     });
                     uow.saveAll();
                     expect(counter).toEqual(1, "The UoW has not saved exactly 1 object.");
+                });
+                it("UnitOfWork must delete completely an object only after calling saveAll.", function () {
+                    var fromUoW0 = uow.getById(keys[0]);
+                    var fromUoW1 = uow.getById(keys[1]);
+                    var counter = 0;
+                    uow.registerHandler(Events.ObjectDeletedEvent, function (event) {
+                        counter++;
+                    });
+                    uow.deleteById(keys[0]);
+                    uow.deleteById(keys[1]);
+                    expect(counter).toEqual(0, "Handler triggered before saveAll was called!");
+                    var fromRepo0 = repo.getById(keys[0]);
+                    var fromRepo1 = repo.getById(keys[1]);
+                    expect(fromRepo0).not.toBeNull("Element 0 deleted before saveAll");
+                    expect(fromRepo1).not.toBeNull("Element 1 deleted before saveAll");
+                    uow.saveAll();
+                    expect(counter).toEqual(2, "The UoW has not deleted exactly 2 object.");
+                    try {
+                        var fromRepo0 = repo.getById(keys[0]);
+                        expect(false).toBeTruthy("Item 0 should be no more in the repository");
+                    }
+                    catch (e) {
+                    }
+                    try {
+                        var fromRepo1 = repo.getById(keys[1]);
+                        expect(false).toBeTruthy("Item 1 should be no more in the repository");
+                    }
+                    catch (e) {
+                    }
                 });
             });
         })(UnitOfWork = Tests.UnitOfWork || (Tests.UnitOfWork = {}));

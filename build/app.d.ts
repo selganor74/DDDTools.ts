@@ -318,15 +318,23 @@ declare namespace DDDTools.Serialization {
     }
 }
 declare namespace DDDTools.UnitOfWork {
-    import IAggregateRoot = Aggregate.IAggregateRoot;
+    class Events {
+        private static __nameSpace;
+        static ObjectSavedEvent: string;
+        static ObjectDeletedEvent: string;
+        static ObjectRetrievedEvent: string;
+    }
+}
+declare namespace DDDTools.UnitOfWork {
     import IKeyValueObject = Entity.IKeyValueObject;
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     enum ItemStatus {
         New = 0,
         Modified = 1,
         Saved = 2,
         Deleted = 3,
     }
-    class IdentityMap<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+    class IdentityMap<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
         private idToObjectMap;
         constructor();
         isTracked(key: TKey): boolean;
@@ -338,8 +346,30 @@ declare namespace DDDTools.UnitOfWork {
         markAsSavedById(key: TKey): void;
         markAsModifiedById(key: TKey): void;
         getItemStatus(key: TKey): ItemStatus;
+        updateSavedItemStatus(key: TKey): void;
         private getTrackedItem(key);
-        private setItemStatus(key, status);
+    }
+}
+declare namespace DDDTools.UnitOfWork {
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    class ObjectDeletedEvent implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string);
+    }
+}
+declare namespace DDDTools.UnitOfWork {
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    class ObjectRetrievedEvent implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string);
     }
 }
 declare namespace DDDTools.UnitOfWork {
@@ -362,7 +392,6 @@ declare namespace DDDTools.UnitOfWork {
         private idMap;
         private repository;
         private dispatcher;
-        private asLoaded;
         constructor(repository: IRepository<T, TKey>);
         saveAll(): void;
         registerHandler(eventTypeName: string, eventHandler: IEventHandler): void;

@@ -4,6 +4,9 @@
 /// <reference path="../Serialization/Serializer.ts" />
 /// <reference path="../DomainEvents/IDomainEvent.ts" />
 /// <reference path="../DomainEvents/IEventHandler.ts" />
+/// <reference path="ObjectDeletedEvent.ts" />
+/// <reference path="ObjectSavedEvent.ts" />
+/// <reference path="ObjectRetrievedEvent.ts" />
 
 namespace DDDTools.UnitOfWork {
     
@@ -23,8 +26,6 @@ namespace DDDTools.UnitOfWork {
         private idMap : IdentityMap<T, TKey>;
         private repository: IRepository<T, TKey>;
         private dispatcher: InProcessDispatcher;
-        // Will contain a serialized version of the object as it was when it was loaded from the repository.
-        private asLoaded: {[id: string]: string } = {};
         
         constructor(repository: IRepository<T, TKey>) {
             this.repository = repository;
@@ -38,17 +39,17 @@ namespace DDDTools.UnitOfWork {
         public saveAll() {
             var keys = this.idMap.getIds();
             for(var key of keys) {
+
+                this.idMap.updateSavedItemStatus(key);
                 var status = this.idMap.getItemStatus(key);
-                if (status === ItemStatus.Saved) {
-                    if (this.itemHasChanged(key)) {
-                        this.idMap.markAsModifiedById(key);
-                        status = this.idMap.getItemStatus(key);
-                    }
-                }
+
                 switch(status) {
                     case ItemStatus.Deleted:
+                        var item = this.idMap.getById(key);
+                        var deletedEvent = new ObjectDeletedEvent(item.__typeName, item.__typeVersion, key.toString());
                         this.repository.delete(key);
                         this.removeById(key);
+                        this.raiseEvent(deletedEvent);
                         break;
                     case ItemStatus.Modified:
                     case ItemStatus.New:
@@ -83,7 +84,6 @@ namespace DDDTools.UnitOfWork {
         private removeById(key: TKey) {
             if (this.idMap.isTracked(key)) {
                 this.idMap.remove(key);
-                delete this.asLoaded[key.toString()];
             }
         }
         
@@ -99,7 +99,10 @@ namespace DDDTools.UnitOfWork {
             var toReturn = this.repository.getById(key);
             this.idMap.add(key, toReturn);
             this.idMap.markAsSavedById(key);
-            this.asLoaded[key.toString()] = toReturn.getState();
+            
+            var retrievedEvent = new ObjectRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString());
+            this.raiseEvent(retrievedEvent);
+            
             return toReturn;
         }
         
@@ -114,9 +117,9 @@ namespace DDDTools.UnitOfWork {
          * Determines if an item has changed since it was loaded
          */
         private itemHasChanged(key: TKey) {
-            var howItWas: string = this.asLoaded[key.toString()];
-            var howItIs: string = Serializer.serialize( this.getById(key) );
-            return howItIs !== howItWas;
+            this.idMap.updateSavedItemStatus(key);
+            var status = this.idMap.getItemStatus(key);
+            return status === ItemStatus.Modified;
         }
     }    
 }

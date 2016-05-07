@@ -5,8 +5,8 @@ namespace DDDTools.UnitOfWork {
 
     import IDomainEvent = DomainEvents.IDomainEvent;
 
-    export class ObjectSavedEvent implements IDomainEvent {
-        __typeName = Events.ObjectSavedEvent;
+    export class ObjectRetrievedEvent implements IDomainEvent {
+        __typeName = Events.ObjectRetrievedEvent;
         __typeVersion = "v1";
         
         constructor(
