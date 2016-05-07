@@ -27,6 +27,12 @@ module.exports = function(grunt) {
                             'assets/**/*', 'Scripts/**/*', 'images/**/*'
                         ],
                         dest: 'build/'
+                    },
+                    { // pulls in nedb
+                        expand: true,
+                        cwd: 'node_modules/nedb/browser-version/out',
+                        src: ['nedb.js'],
+                        dest: 'build/lib'
                     }
                 ]
             }
