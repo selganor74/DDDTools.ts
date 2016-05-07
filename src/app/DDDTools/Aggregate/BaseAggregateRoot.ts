@@ -20,7 +20,7 @@ namespace DDDTools.Aggregate {
         extends BaseEntity<T, TKey>
         implements IAggregateRoot<T, TKey>
     {   
-        public raiseEvent(event: IDomainEvent) {
+        private raiseEvent(event: IDomainEvent) {
             DomainDispatcher.dispatch(event);
         };
     }

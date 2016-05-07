@@ -1,29 +1,35 @@
-/// <reference path="../Aggregate/IAggregateRoot.ts" />
+/// <reference path="../Aggregate/BaseAggregateRoot.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../Repository/IRepository.ts" />
 /// <reference path="../Serialization/Serializer.ts" />
+/// <reference path="../DomainEvents/IDomainEvent.ts" />
+/// <reference path="../DomainEvents/IEventHandler.ts" />
 
 namespace DDDTools.UnitOfWork {
     
-    import IAggregateRoot = Aggregate.IAggregateRoot;
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import IRepository = Repository.IRepository;
     import Serializer = Serialization.Serializer;
-    
+    import InProcessDispatcher = DomainEvents.InProcessDispatcher;
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    import IEventHandler = DomainEvents.IEventHandler;
+       
     /**
      * Simple UnitOfWork for a single Repository.
      */
-    export class UnitOfWork<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+    export class UnitOfWork<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
         
         private idMap : IdentityMap<T, TKey>;
         private repository: IRepository<T, TKey>;
-        
+        private dispatcher: InProcessDispatcher;
         // Will contain a serialized version of the object as it was when it was loaded from the repository.
-        private asLoaded: {[id: string]: string };
+        private asLoaded: {[id: string]: string } = {};
         
         constructor(repository: IRepository<T, TKey>) {
             this.repository = repository;
             this.idMap = new IdentityMap<T, TKey>();
+            this.dispatcher = new InProcessDispatcher();
         }
         
         /**
@@ -36,6 +42,7 @@ namespace DDDTools.UnitOfWork {
                 if (status === ItemStatus.Saved) {
                     if (this.itemHasChanged(key)) {
                         this.idMap.markAsModifiedById(key);
+                        status = this.idMap.getItemStatus(key);
                     }
                 }
                 switch(status) {
@@ -43,10 +50,14 @@ namespace DDDTools.UnitOfWork {
                         this.repository.delete(key);
                         this.removeById(key);
                         break;
-                    case ItemStatus.Modified, ItemStatus.New:
+                    case ItemStatus.Modified:
+                    case ItemStatus.New:
                         var item = this.idMap.getById(key);
                         this.repository.save(item);
                         this.idMap.markAsSavedById(key);
+                        // raises an event for whomever is interested
+                        var savedEvent = new ObjectSavedEvent(item.__typeName, item.__typeVersion, key.toString());
+                        this.raiseEvent(savedEvent);
                         break;
                     case ItemStatus.Saved:
                         break;
@@ -54,6 +65,18 @@ namespace DDDTools.UnitOfWork {
             }
         }
         
+        public registerHandler(eventTypeName: string, eventHandler: IEventHandler) {
+            this.dispatcher.registerHandler(eventTypeName, eventHandler);
+        }
+        
+        public unregisterHandler(eventTypeName: string, eventHandler: IEventHandler) {
+            this.dispatcher.unregisterHandler(eventTypeName, eventHandler);
+        }
+
+        private raiseEvent(event: IDomainEvent) {
+            this.dispatcher.dispatch(event);    
+        }
+
         /**
          * Completely removes an object from the IdentityMap
          */
@@ -75,7 +98,8 @@ namespace DDDTools.UnitOfWork {
             
             var toReturn = this.repository.getById(key);
             this.idMap.add(key, toReturn);
-            this.asLoaded[key.toString()] = Serializer.serialize(toReturn);
+            this.idMap.markAsSavedById(key);
+            this.asLoaded[key.toString()] = toReturn.getState();
             return toReturn;
         }
         
@@ -92,7 +116,7 @@ namespace DDDTools.UnitOfWork {
         private itemHasChanged(key: TKey) {
             var howItWas: string = this.asLoaded[key.toString()];
             var howItIs: string = Serializer.serialize( this.getById(key) );
-            return howItIs === howItWas;
+            return howItIs !== howItWas;
         }
     }    
 }

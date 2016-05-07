@@ -605,6 +605,9 @@ var DDDTools;
                 }
             };
             InProcessDispatcher.prototype.dispatch = function (event) {
+                if (!this.delegatesRegistry[event.__typeName]) {
+                    return;
+                }
                 var Errors = [];
                 for (var _i = 0, _a = this.delegatesRegistry[event.__typeName]; _i < _a.length; _i++) {
                     var element = _a[_i];
@@ -619,7 +622,7 @@ var DDDTools;
                     var message = this.buildErrorMessage(Errors);
                     var e = new Error(message);
                     e.name = "Dispatcher Error";
-                    throw e;
+                    console.log(e);
                 }
             };
             InProcessDispatcher.prototype.buildErrorMessage = function (Errors) {
@@ -688,6 +691,9 @@ var DDDTools;
                 this.__typeVersion = "v1";
                 if (guid) {
                     this.guid = guid;
+                }
+                else {
+                    this.guid = SimpleGuid.generate();
                 }
             }
             Guid.generate = function () {
@@ -989,12 +995,32 @@ var DDDTools;
 var DDDTools;
 (function (DDDTools) {
     var UnitOfWork;
+    (function (UnitOfWork) {
+        var ObjectSavedEvent = (function () {
+            function ObjectSavedEvent(typeName, typeVersion, id) {
+                this.typeName = typeName;
+                this.typeVersion = typeVersion;
+                this.id = id;
+                this.__typeName = "DDDTools.UnitOfWork.ObjectSavedEvent";
+                this.__typeVersion = "v1";
+            }
+            return ObjectSavedEvent;
+        }());
+        UnitOfWork.ObjectSavedEvent = ObjectSavedEvent;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
     (function (UnitOfWork_1) {
         var Serializer = DDDTools.Serialization.Serializer;
+        var InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
         var UnitOfWork = (function () {
             function UnitOfWork(repository) {
+                this.asLoaded = {};
                 this.repository = repository;
                 this.idMap = new UnitOfWork_1.IdentityMap();
+                this.dispatcher = new InProcessDispatcher();
             }
             UnitOfWork.prototype.saveAll = function () {
                 var keys = this.idMap.getIds();
@@ -1004,6 +1030,7 @@ var DDDTools;
                     if (status === UnitOfWork_1.ItemStatus.Saved) {
                         if (this.itemHasChanged(key)) {
                             this.idMap.markAsModifiedById(key);
+                            status = this.idMap.getItemStatus(key);
                         }
                     }
                     switch (status) {
@@ -1011,15 +1038,27 @@ var DDDTools;
                             this.repository.delete(key);
                             this.removeById(key);
                             break;
-                        case UnitOfWork_1.ItemStatus.Modified, UnitOfWork_1.ItemStatus.New:
+                        case UnitOfWork_1.ItemStatus.Modified:
+                        case UnitOfWork_1.ItemStatus.New:
                             var item = this.idMap.getById(key);
                             this.repository.save(item);
                             this.idMap.markAsSavedById(key);
+                            var savedEvent = new UnitOfWork_1.ObjectSavedEvent(item.__typeName, item.__typeVersion, key.toString());
+                            this.raiseEvent(savedEvent);
                             break;
                         case UnitOfWork_1.ItemStatus.Saved:
                             break;
                     }
                 }
+            };
+            UnitOfWork.prototype.registerHandler = function (eventTypeName, eventHandler) {
+                this.dispatcher.registerHandler(eventTypeName, eventHandler);
+            };
+            UnitOfWork.prototype.unregisterHandler = function (eventTypeName, eventHandler) {
+                this.dispatcher.unregisterHandler(eventTypeName, eventHandler);
+            };
+            UnitOfWork.prototype.raiseEvent = function (event) {
+                this.dispatcher.dispatch(event);
             };
             UnitOfWork.prototype.removeById = function (key) {
                 if (this.idMap.isTracked(key)) {
@@ -1033,7 +1072,8 @@ var DDDTools;
                 }
                 var toReturn = this.repository.getById(key);
                 this.idMap.add(key, toReturn);
-                this.asLoaded[key.toString()] = Serializer.serialize(toReturn);
+                this.idMap.markAsSavedById(key);
+                this.asLoaded[key.toString()] = toReturn.getState();
                 return toReturn;
             };
             UnitOfWork.prototype.deleteById = function (key) {
@@ -1042,7 +1082,7 @@ var DDDTools;
             UnitOfWork.prototype.itemHasChanged = function (key) {
                 var howItWas = this.asLoaded[key.toString()];
                 var howItIs = Serializer.serialize(this.getById(key));
-                return howItIs === howItWas;
+                return howItIs !== howItWas;
             };
             return UnitOfWork;
         }());
@@ -1653,6 +1693,118 @@ var CdC;
                 });
             });
         })(Dispatcher = Tests.Dispatcher || (Tests.Dispatcher = {}));
+    })(Tests = CdC.Tests || (CdC.Tests = {}));
+})(CdC || (CdC = {}));
+var CdC;
+(function (CdC) {
+    var Tests;
+    (function (Tests) {
+        var UnitOfWork;
+        (function (UnitOfWork_2) {
+            var BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
+            var BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+            var Guid = DDDTools.ValueObjects.Guid;
+            var UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
+            var TestKey = (function (_super) {
+                __extends(TestKey, _super);
+                function TestKey() {
+                    _super.call(this);
+                    this.__typeName = "CdC.Tests.UnitOfWork.TestKey";
+                    this.__typeVersion = "v1";
+                }
+                return TestKey;
+            }(Guid));
+            UnitOfWork_2.TestKey = TestKey;
+            var TestAggregate = (function (_super) {
+                __extends(TestAggregate, _super);
+                function TestAggregate() {
+                    _super.call(this);
+                    this.aTestProperty = "Ciao";
+                    this.__typeName = "CdC.Tests.UnitOfWork.TestAggregate";
+                    this.__typeVersion = "v1";
+                }
+                TestAggregate.prototype.setATestProperty = function (value) {
+                    this.aTestProperty = value;
+                };
+                TestAggregate.prototype.getATestProperty = function () {
+                    return this.aTestProperty;
+                };
+                return TestAggregate;
+            }(BaseAggregateRoot));
+            UnitOfWork_2.TestAggregate = TestAggregate;
+            var TestRepository = (function (_super) {
+                __extends(TestRepository, _super);
+                function TestRepository() {
+                    _super.apply(this, arguments);
+                }
+                return TestRepository;
+            }(BaseInMemoryRepository));
+            UnitOfWork_2.TestRepository = TestRepository;
+            var TestUoW = (function (_super) {
+                __extends(TestUoW, _super);
+                function TestUoW(repo) {
+                    _super.call(this, repo);
+                }
+                return TestUoW;
+            }(UnitOfWork));
+            UnitOfWork_2.TestUoW = TestUoW;
+            describe("UnitOfWork", function () {
+                var repo;
+                var keys;
+                var aggregates;
+                var numberOfAggregates = 10;
+                var uow;
+                var initKeys = function () {
+                    keys = [];
+                    for (var i = 0; i < numberOfAggregates; i++) {
+                        keys.push(Guid.generate());
+                    }
+                };
+                var initAggregates = function (keys) {
+                    aggregates = [];
+                    for (var i = 0; i < numberOfAggregates; i++) {
+                        var aggr = new TestAggregate();
+                        aggr.setKey(keys[i]);
+                        aggregates.push(aggr);
+                    }
+                };
+                var fillRepo = function (repo) {
+                    for (var i = 0; i < numberOfAggregates; i++) {
+                        repo.save(aggregates[i]);
+                    }
+                };
+                beforeEach(function () {
+                    repo = new TestRepository("CdC.Tests.UnitOfWork.TestAggregate");
+                    initKeys();
+                    initAggregates(keys);
+                    fillRepo(repo);
+                    uow = new TestUoW(repo);
+                });
+                it("It must be possible to instantiate a UnitOfWork for a Repository.", function () {
+                    expect(uow instanceof TestUoW).toBeTruthy();
+                });
+                it("It must be possible to get an item as if it came directly from the repo.", function () {
+                    var fromUoW = uow.getById(keys[0]);
+                    var fromRepo = repo.getById(keys[0]);
+                    var uowAsString = JSON.stringify(fromUoW);
+                    var repoAsString = JSON.stringify(fromRepo);
+                    expect(uowAsString).toEqual(uowAsString);
+                });
+                it("UnitOfWork must save only effectively changed objects.", function () {
+                    pending("UoW still saves everything... but this will change !");
+                    var fromUoW1 = uow.getById(keys[0]);
+                    var fromUoW2 = uow.getById(keys[1]);
+                    var counter = 0;
+                    fromUoW2.setATestProperty("BBello");
+                    uow.registerHandler("DDDTools.UnitOfWork.ObjectSavedEvent", function (event) {
+                        counter++;
+                        expect(event.id).toEqual(keys[1].toString());
+                    });
+                    uow.saveAll();
+                    expect(counter).toEqual(1, "The UoW has not saved exactly 1 object.");
+                });
+            });
+        })(UnitOfWork = Tests.UnitOfWork || (Tests.UnitOfWork = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 //# sourceMappingURL=app.js.map

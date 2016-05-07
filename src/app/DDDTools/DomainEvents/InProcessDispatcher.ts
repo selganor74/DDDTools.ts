@@ -37,6 +37,9 @@ namespace DDDTools.DomainEvents {
         }
 
         public  dispatch(event: IDomainEvent) {
+            if (! this.delegatesRegistry[event.__typeName]) {
+                return;
+            }
             var Errors: Error[] = [];
             for (var element of this.delegatesRegistry[event.__typeName]) {
                 try {
@@ -49,7 +52,7 @@ namespace DDDTools.DomainEvents {
                 var message = this.buildErrorMessage(Errors);
                 var e = new Error(message);
                 e.name = "Dispatcher Error";
-                throw e;
+                console.log(e);
             }
         }
 

@@ -20,6 +20,8 @@ namespace DDDTools.ValueObjects {
 
             if (guid) {
                 this.guid = guid
+            } else {
+                this.guid = SimpleGuid.generate();
             }
         }
 
