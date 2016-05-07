@@ -5,7 +5,7 @@ namespace DDDTools.UnitOfWork {
 
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject
-    
+
     export enum ItemStatus {
         New,
         Modified,
@@ -18,12 +18,12 @@ namespace DDDTools.UnitOfWork {
             private status: ItemStatus,
             private item: T,
             private key: TKey
-        ) {}
-        
-        public setStatus( status: ItemStatus) {
+        ) { }
+
+        public setStatus(status: ItemStatus) {
             this.status = status;
         }
-        
+
         public getStatus(): ItemStatus {
             return this.status;
         }
@@ -31,13 +31,18 @@ namespace DDDTools.UnitOfWork {
         public getItem(): T {
             return this.item;
         }
-        
+
         public getKey(): TKey {
             return this.key;
         }
     }
 
-    export class IdentityMap<T extends IAggregateRoot<T,TKey>, TKey extends IKeyValueObject<TKey>> {
+    export class IdentityMap
+        <
+        T extends IAggregateRoot<T, TKey>,
+        TKey extends IKeyValueObject<TKey>
+        >
+    {
 
         private idToObjectMap: { [id: string]: TrackedItem<T, TKey> }
 
@@ -55,7 +60,7 @@ namespace DDDTools.UnitOfWork {
             }
             return false;
         }
-        
+
         /**
          * Retrieves an item from the IdentityMap.
          */
@@ -72,10 +77,10 @@ namespace DDDTools.UnitOfWork {
          */
         public add(key: TKey, item: T): void {
             var idAsString = key.toString();
-            var newItem = new TrackedItem( ItemStatus.New, item, key );
+            var newItem = new TrackedItem(ItemStatus.New, item, key);
             this.idToObjectMap[idAsString] = newItem;
         }
-        
+
         /**
          * Completely removes an item from the IdentityMap
          */
@@ -102,7 +107,7 @@ namespace DDDTools.UnitOfWork {
         public markAsDeletedById(key: TKey) {
             this.setItemStatus(key, ItemStatus.Deleted);
         }
-        
+
         /**
          * Marks a tracked item as Deleted.
          */
@@ -123,7 +128,7 @@ namespace DDDTools.UnitOfWork {
         public getItemStatus(key: TKey): ItemStatus {
             if (this.isTracked(key)) {
                 var trackedItem = this.getTrackedItem(key);
-                return trackedItem.getStatus(); 
+                return trackedItem.getStatus();
             }
             return null;
         }
@@ -134,13 +139,13 @@ namespace DDDTools.UnitOfWork {
         private getTrackedItem(key: TKey): TrackedItem<T, TKey> {
             return this.idToObjectMap[key.toString()];
         }
-        
+
         /**
          * Sets an Item's state
          */
         private setItemStatus(key: TKey, status: ItemStatus): void {
             var trackedItem = this.getTrackedItem(key);
-            trackedItem.setStatus(status);    
+            trackedItem.setStatus(status);
         }
     }
 }
