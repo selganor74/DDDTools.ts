@@ -34,6 +34,32 @@ namespace DDDTools.UnitOfWork {
         }
         
         /**
+         * Retrieves an item from the Repository or from the UnitOfWork, given its Id.
+         */
+        public getById(key: TKey) : T {
+                        
+            if (this.idMap.isTracked(key)){
+                return this.idMap.getById(key);
+            }
+            
+            var toReturn = this.repository.getById(key);
+            this.idMap.add(key, toReturn);
+            this.idMap.markAsSavedById(key);
+            
+            var retrievedEvent = new ObjectRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString());
+            this.raiseEvent(retrievedEvent);
+            
+            return toReturn;
+        }
+        
+        /**
+         * Deletes an item from the UnitOfWork (and from the Repository when the UoW will be saved)
+         */
+        public deleteById(key: TKey) {
+            this.idMap.markAsDeletedById(key);
+        }
+        
+        /**
          * Saves all the modified items in the UnitOfWork.
          */
         public saveAll() {
@@ -85,32 +111,6 @@ namespace DDDTools.UnitOfWork {
             if (this.idMap.isTracked(key)) {
                 this.idMap.remove(key);
             }
-        }
-        
-        /**
-         * Retrieves an item from the Repository or from the UnitOfWork, given its Id.
-         */
-        public getById(key: TKey) : T {
-                        
-            if (this.idMap.isTracked(key)){
-                return this.idMap.getById(key);
-            }
-            
-            var toReturn = this.repository.getById(key);
-            this.idMap.add(key, toReturn);
-            this.idMap.markAsSavedById(key);
-            
-            var retrievedEvent = new ObjectRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString());
-            this.raiseEvent(retrievedEvent);
-            
-            return toReturn;
-        }
-        
-        /**
-         * Deletes an item from the UnitOfWork (and from the Repository when the UoW will be saved)
-         */
-        public deleteById(key: TKey) {
-            this.idMap.markAsDeletedById(key);
         }
         
         /**
