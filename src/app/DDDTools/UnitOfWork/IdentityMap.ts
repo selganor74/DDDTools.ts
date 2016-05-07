@@ -13,6 +13,9 @@ namespace DDDTools.UnitOfWork {
         Deleted
     }
 
+    /**
+     * Internal class to store item status info
+     */
     class TrackedItem<T, TKey> {
         constructor(
             private status: ItemStatus,
@@ -90,9 +93,6 @@ namespace DDDTools.UnitOfWork {
             }
         }
 
-        /**
-         * Returns all the ids in the map
-         */
         public getIds(): TKey[] {
             var toReturn: TKey[] = [];
             for (var element in this.idToObjectMap) {
@@ -101,30 +101,18 @@ namespace DDDTools.UnitOfWork {
             return toReturn;
         }
 
-        /**
-         * Marks a tracked item as Deleted.
-         */
         public markAsDeletedById(key: TKey) {
             this.setItemStatus(key, ItemStatus.Deleted);
         }
 
-        /**
-         * Marks a tracked item as Deleted.
-         */
         public markAsSavedById(key: TKey) {
             this.setItemStatus(key, ItemStatus.Saved);
         }
 
-        /**
-         * Marks a tracked item as Deleted.
-         */
         public markAsModifiedById(key: TKey) {
             this.setItemStatus(key, ItemStatus.Modified);
         }
 
-        /**
-         * Returns the ItemStatus of the tracked item
-         */
         public getItemStatus(key: TKey): ItemStatus {
             if (this.isTracked(key)) {
                 var trackedItem = this.getTrackedItem(key);
@@ -133,16 +121,10 @@ namespace DDDTools.UnitOfWork {
             return null;
         }
 
-        /**
-         * Returns a TrackedItem object from the IdentityMap
-         */
         private getTrackedItem(key: TKey): TrackedItem<T, TKey> {
             return this.idToObjectMap[key.toString()];
         }
 
-        /**
-         * Sets an Item's state
-         */
         private setItemStatus(key: TKey, status: ItemStatus): void {
             var trackedItem = this.getTrackedItem(key);
             trackedItem.setStatus(status);
