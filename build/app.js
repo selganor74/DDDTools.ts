@@ -1577,26 +1577,26 @@ var CdC;
                 return TestValueObject_Object;
             }(DDD.ValueObject.BaseValueObject));
             describe("BaseValueObject", function () {
-                it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Tipi base", function () {
+                it("ValueObjects must be compared against their content. - Base types", function () {
                     var vo1 = new TestValueObject("via F.Mestica", 3, "Apiro", "62021");
                     var vo2 = new TestValueObject("via F.Mestica", 3, "Apiro", "62021");
                     var vo3 = new TestValueObject("via del campo", 69, "Genova", "xxxxx");
-                    expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-                    expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+                    expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
+                    expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
                 });
-                it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Array", function () {
+                it("ValueObjects must be compared against their content. - Array", function () {
                     var vo1 = new TestValueObject_Array([{ p1: 3, p2: 42 }, { p1: 6, p3: 96 }]);
                     var vo2 = new TestValueObject_Array([{ p1: 3, p2: 42 }, { p1: 6, p3: 96 }]);
                     var vo3 = new TestValueObject_Array([{ p1: 6, p3: 96 }, { p1: 3, p2: 42 }]);
-                    expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-                    expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+                    expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
+                    expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
                 });
-                it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Object", function () {
+                it("ValueObjects must be compared against their content. - Object", function () {
                     var vo1 = new TestValueObject_Object({ p1: 3, p2: 42 });
                     var vo2 = new TestValueObject_Object({ p1: 3, p2: 42 });
                     var vo3 = new TestValueObject_Object({ p1: 6, p3: 96 });
-                    expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-                    expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+                    expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
+                    expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
                 });
             });
         })(BaseValueObject = Tests.BaseValueObject || (Tests.BaseValueObject = {}));
@@ -1967,7 +1967,7 @@ var CdC;
                     uow.saveAll();
                     try {
                         fromUoW = uow.getById(keys[0]);
-                        expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
+                        expect(false).toBeTruthy("The element has been marked as deleted and deleted, but it is still returned by the UoW.");
                     }
                     catch (e) {
                         expect(e instanceof Error).toBeTruthy();

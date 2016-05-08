@@ -43,7 +43,7 @@ namespace CdC.Tests.BaseValueObject {
 
     describe("BaseValueObject", () => {
 
-        it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Tipi base", () => {
+        it("ValueObjects must be compared against their content. - Base types", () => {
             var vo1 = new TestValueObject(
                 "via F.Mestica",
                 3,
@@ -63,11 +63,11 @@ namespace CdC.Tests.BaseValueObject {
                 "xxxxx"
             )
 
-            expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-            expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+            expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
+            expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
         });
 
-        it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Array", () => {
+        it("ValueObjects must be compared against their content. - Array", () => {
             var vo1 = new TestValueObject_Array(
                 [{ p1: 3, p2: 42 }, { p1: 6, p3: 96 }]
             );
@@ -78,11 +78,11 @@ namespace CdC.Tests.BaseValueObject {
                 [{ p1: 6, p3: 96 }, { p1: 3, p2: 42 }]
             )
 
-            expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-            expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+            expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
+            expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
         });
 
-        it("Il criterio di uguaglianza tra ValueObjects e sul 'contenuto' dell'oggetto. - Object", () => {
+        it("ValueObjects must be compared against their content. - Object", () => {
             var vo1 = new TestValueObject_Object(
                 { p1: 3, p2: 42 }
             );
@@ -93,8 +93,8 @@ namespace CdC.Tests.BaseValueObject {
                 { p1: 6, p3: 96 }
             )
 
-            expect(vo1.equals(vo2)).toBeTruthy("vo1 non risulta uguale a vo2, quando lo è");
-            expect(vo1.equals(vo3)).toBeFalsy("vo1 risulta essere uguale a vo3, quando non lo è");
+            expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
+            expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
         });
     });
 }

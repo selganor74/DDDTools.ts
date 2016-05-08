@@ -227,13 +227,11 @@ namespace CdC.Tests.UnitOfWork {
             // ... while after the saveAll we expect to get an Exception from the underlying Repository ...
             try {
                 fromUoW = uow.getById(keys[0]);
-                expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
+                expect(false).toBeTruthy("The element has been marked as deleted and deleted, but it is still returned by the UoW.");
             } catch (e) {
                 expect(e instanceof Error).toBeTruthy();
                 expect(e.name).toEqual(RepositoryErrors.ItemNotFound);            
-            }
-                         
-        })
+            }                         
+        });
     });
-
 }
