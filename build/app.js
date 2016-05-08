@@ -668,10 +668,6 @@ var DDDTools;
             function BaseKeyValueObject() {
                 _super.call(this);
             }
-            BaseKeyValueObject.prototype.toString = function () {
-                var state = this.getState();
-                return JSON.stringify(state);
-            };
             return BaseKeyValueObject;
         }(BaseValueObject));
         Entity.BaseKeyValueObject = BaseKeyValueObject;
@@ -1094,6 +1090,22 @@ var DDDTools;
 var DDDTools;
 (function (DDDTools) {
     var UnitOfWork;
+    (function (UnitOfWork) {
+        var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
+        var UnitOfWorkErrors = (function (_super) {
+            __extends(UnitOfWorkErrors, _super);
+            function UnitOfWorkErrors() {
+                _super.apply(this, arguments);
+            }
+            UnitOfWorkErrors.ItemMarkedAsDeleted = "This item was marked as deleted in this UnitOfWork, and cannot be retrieved.";
+            return UnitOfWorkErrors;
+        }(BaseErrors));
+        UnitOfWork.UnitOfWorkErrors = UnitOfWorkErrors;
+    })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var UnitOfWork;
     (function (UnitOfWork_1) {
         var InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
         var UnitOfWork = (function () {
@@ -1102,49 +1114,11 @@ var DDDTools;
                 this.idMap = new UnitOfWork_1.IdentityMap();
                 this.dispatcher = new InProcessDispatcher();
             }
-            UnitOfWork.prototype.saveAll = function () {
-                var keys = this.idMap.getIds();
-                for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
-                    var key = keys_1[_i];
-                    this.idMap.updateSavedItemStatus(key);
-                    var status = this.idMap.getItemStatus(key);
-                    switch (status) {
-                        case UnitOfWork_1.ItemStatus.Deleted:
-                            var item = this.idMap.getById(key);
-                            var deletedEvent = new UnitOfWork_1.ObjectDeletedEvent(item.__typeName, item.__typeVersion, key.toString());
-                            this.repository.delete(key);
-                            this.removeById(key);
-                            this.raiseEvent(deletedEvent);
-                            break;
-                        case UnitOfWork_1.ItemStatus.Modified:
-                        case UnitOfWork_1.ItemStatus.New:
-                            var item = this.idMap.getById(key);
-                            this.repository.save(item);
-                            this.idMap.markAsSavedById(key);
-                            var savedEvent = new UnitOfWork_1.ObjectSavedEvent(item.__typeName, item.__typeVersion, key.toString());
-                            this.raiseEvent(savedEvent);
-                            break;
-                        case UnitOfWork_1.ItemStatus.Saved:
-                            break;
-                    }
-                }
-            };
-            UnitOfWork.prototype.registerHandler = function (eventTypeName, eventHandler) {
-                this.dispatcher.registerHandler(eventTypeName, eventHandler);
-            };
-            UnitOfWork.prototype.unregisterHandler = function (eventTypeName, eventHandler) {
-                this.dispatcher.unregisterHandler(eventTypeName, eventHandler);
-            };
-            UnitOfWork.prototype.raiseEvent = function (event) {
-                this.dispatcher.dispatch(event);
-            };
-            UnitOfWork.prototype.removeById = function (key) {
-                if (this.idMap.isTracked(key)) {
-                    this.idMap.remove(key);
-                }
-            };
             UnitOfWork.prototype.getById = function (key) {
                 if (this.idMap.isTracked(key)) {
+                    if (this.idMap.getItemStatus(key) === UnitOfWork_1.ItemStatus.Deleted) {
+                        UnitOfWork_1.UnitOfWorkErrors.Throw(UnitOfWork_1.UnitOfWorkErrors.ItemMarkedAsDeleted);
+                    }
                     return this.idMap.getById(key);
                 }
                 var toReturn = this.repository.getById(key);
@@ -1157,10 +1131,52 @@ var DDDTools;
             UnitOfWork.prototype.deleteById = function (key) {
                 this.idMap.markAsDeletedById(key);
             };
-            UnitOfWork.prototype.itemHasChanged = function (key) {
-                this.idMap.updateSavedItemStatus(key);
-                var status = this.idMap.getItemStatus(key);
-                return status === UnitOfWork_1.ItemStatus.Modified;
+            UnitOfWork.prototype.saveAll = function () {
+                var keys = this.idMap.getIds();
+                for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                    var key = keys_1[_i];
+                    this.idMap.updateSavedItemStatus(key);
+                    var status = this.idMap.getItemStatus(key);
+                    switch (status) {
+                        case UnitOfWork_1.ItemStatus.Deleted:
+                            this.processDeletedItem(key);
+                            break;
+                        case UnitOfWork_1.ItemStatus.Modified:
+                        case UnitOfWork_1.ItemStatus.New:
+                            this.processNewOrModifiedItem(key);
+                            break;
+                        case UnitOfWork_1.ItemStatus.Saved:
+                            break;
+                    }
+                }
+            };
+            UnitOfWork.prototype.registerHandler = function (eventTypeName, eventHandler) {
+                this.dispatcher.registerHandler(eventTypeName, eventHandler);
+            };
+            UnitOfWork.prototype.unregisterHandler = function (eventTypeName, eventHandler) {
+                this.dispatcher.unregisterHandler(eventTypeName, eventHandler);
+            };
+            UnitOfWork.prototype.processDeletedItem = function (key) {
+                var item = this.idMap.getById(key);
+                var deletedEvent = new UnitOfWork_1.ObjectDeletedEvent(item.__typeName, item.__typeVersion, key.toString());
+                this.repository.delete(key);
+                this.removeById(key);
+                this.raiseEvent(deletedEvent);
+            };
+            UnitOfWork.prototype.processNewOrModifiedItem = function (key) {
+                var item = this.idMap.getById(key);
+                this.repository.save(item);
+                this.idMap.markAsSavedById(key);
+                var savedEvent = new UnitOfWork_1.ObjectSavedEvent(item.__typeName, item.__typeVersion, key.toString());
+                this.raiseEvent(savedEvent);
+            };
+            UnitOfWork.prototype.raiseEvent = function (event) {
+                this.dispatcher.dispatch(event);
+            };
+            UnitOfWork.prototype.removeById = function (key) {
+                if (this.idMap.isTracked(key)) {
+                    this.idMap.remove(key);
+                }
             };
             return UnitOfWork;
         }());
@@ -1784,6 +1800,8 @@ var CdC;
             var Guid = DDDTools.ValueObjects.Guid;
             var UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
             var Events = DDDTools.UnitOfWork.Events;
+            var UnitOfWorkErrors = DDDTools.UnitOfWork.UnitOfWorkErrors;
+            var RepositoryErrors = DDDTools.Repository.RepositoryErrors;
             var TestKey = (function (_super) {
                 __extends(TestKey, _super);
                 function TestKey() {
@@ -1933,6 +1951,27 @@ var CdC;
                         expect(false).toBeTruthy("Item 1 should be no more in the repository");
                     }
                     catch (e) {
+                    }
+                });
+                it("A deleted item must not be 'retrievable' from the UnitOfWork, even if saveAll was not called", function () {
+                    var fromUoW = uow.getById(keys[0]);
+                    uow.deleteById(keys[0]);
+                    try {
+                        fromUoW = uow.getById(keys[0]);
+                        expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
+                    }
+                    catch (e) {
+                        expect(e instanceof Error).toBeTruthy();
+                        expect(e.name).toEqual(UnitOfWorkErrors.ItemMarkedAsDeleted);
+                    }
+                    uow.saveAll();
+                    try {
+                        fromUoW = uow.getById(keys[0]);
+                        expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
+                    }
+                    catch (e) {
+                        expect(e instanceof Error).toBeTruthy();
+                        expect(e.name).toEqual(RepositoryErrors.ItemNotFound);
                     }
                 });
             });

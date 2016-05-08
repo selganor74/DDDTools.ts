@@ -202,7 +202,7 @@ declare namespace DDDTools.Entity {
     import BaseValueObject = ValueObject.BaseValueObject;
     abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T> {
         constructor();
-        toString(): string;
+        abstract toString(): string;
     }
 }
 declare namespace DDDTools.Locking {
@@ -384,6 +384,12 @@ declare namespace DDDTools.UnitOfWork {
     }
 }
 declare namespace DDDTools.UnitOfWork {
+    import BaseErrors = ErrorManagement.BaseErrors;
+    class UnitOfWorkErrors extends BaseErrors {
+        static ItemMarkedAsDeleted: string;
+    }
+}
+declare namespace DDDTools.UnitOfWork {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import IRepository = Repository.IRepository;
@@ -393,14 +399,15 @@ declare namespace DDDTools.UnitOfWork {
         private repository;
         private dispatcher;
         constructor(repository: IRepository<T, TKey>);
+        getById(key: TKey): T;
+        deleteById(key: TKey): void;
         saveAll(): void;
         registerHandler(eventTypeName: string, eventHandler: IEventHandler): void;
         unregisterHandler(eventTypeName: string, eventHandler: IEventHandler): void;
+        private processDeletedItem(key);
+        private processNewOrModifiedItem(key);
         private raiseEvent(event);
         private removeById(key);
-        getById(key: TKey): T;
-        deleteById(key: TKey): void;
-        private itemHasChanged(key);
     }
 }
 declare module "app/NeDBRepository/BaseNeDBRepository" {

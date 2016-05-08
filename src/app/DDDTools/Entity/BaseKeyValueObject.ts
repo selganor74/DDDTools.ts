@@ -14,11 +14,8 @@ namespace DDDTools.Entity {
         }
         
         /**
-         * This is a base implementation of "toString". 
+         * Derived classes must reimplement this method. 
          */		
-        public toString() {
-            var state = this.getState();
-            return JSON.stringify(state);
-        }
+        public abstract toString(): string; 
 	}
 }

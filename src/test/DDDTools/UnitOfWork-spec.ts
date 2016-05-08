@@ -14,7 +14,9 @@ namespace CdC.Tests.UnitOfWork {
     import ObjectDeletedEvent = DDDTools.UnitOfWork.ObjectDeletedEvent;
     import ObjectRetrievedEvent = DDDTools.UnitOfWork.ObjectRetrievedEvent;
     import Events = DDDTools.UnitOfWork.Events;
-
+    import UnitOfWorkErrors = DDDTools.UnitOfWork.UnitOfWorkErrors;
+    import RepositoryErrors = DDDTools.Repository.RepositoryErrors;
+    
     export class TestKey extends Guid {
         constructor() {
             super();
@@ -107,11 +109,11 @@ namespace CdC.Tests.UnitOfWork {
 
         it("When retrieving objects, events of type ObjectRetrieveEvent must be raised.", () => {
             var counter = 0;
-            
+
             uow.registerHandler(Events.ObjectRetrievedEvent, () => {
-                counter++;    
+                counter++;
             });
- 
+
             var fromUoW0 = uow.getById(keys[0]);
 
             var fromUoW1 = uow.getById(keys[1]);
@@ -204,9 +206,34 @@ namespace CdC.Tests.UnitOfWork {
             } catch (e) {
                 // Expected as the item should not be nomore in the repository.
             }
-
-
         });
+
+        it("A deleted item must not be 'retrievable' from the UnitOfWork, even if saveAll was not called", () => {
+            var fromUoW = uow.getById(keys[0]);
+
+            uow.deleteById(keys[0]);
+
+            // Before the saveAll we expect to get an Exception from the UnitOfWork ...
+            try {
+                fromUoW = uow.getById(keys[0]);
+                expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
+            } catch (e) {
+                expect(e instanceof Error).toBeTruthy();
+                expect(e.name).toEqual(UnitOfWorkErrors.ItemMarkedAsDeleted);            
+            }
+            
+            uow.saveAll();
+
+            // ... while after the saveAll we expect to get an Exception from the underlying Repository ...
+            try {
+                fromUoW = uow.getById(keys[0]);
+                expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
+            } catch (e) {
+                expect(e instanceof Error).toBeTruthy();
+                expect(e.name).toEqual(RepositoryErrors.ItemNotFound);            
+            }
+                         
+        })
     });
 
 }
