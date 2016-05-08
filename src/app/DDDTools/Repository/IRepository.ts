@@ -1,7 +1,9 @@
 /// <reference path="../Aggregate/IAggregateRoot.ts"/>
 /// <reference path="../Entity/IKeyValueObject.ts"/>
 
-
+/**
+ * Interfaces and classes to implement a Repository to persist Aggregates. Contains a reference in memory repository.
+ */
 namespace DDDTools.Repository {
     
     import IAggregateRoot = Aggregate.IAggregateRoot;

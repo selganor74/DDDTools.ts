@@ -4,6 +4,9 @@
 /// <reference path="../StatefulObject/IStateful.ts" />
 /// <reference path="Touch.ts" />
 
+/**
+ * Implements JSON string serialization. It extends the functionalities of JSON.stringify to allow serialization and deserialization of date and regular expression objects, and object reference.
+ */
 namespace DDDTools.Serialization {
 
     import SimpleGuid = Utils.SimpleGuid;

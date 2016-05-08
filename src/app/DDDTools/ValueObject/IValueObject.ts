@@ -1,5 +1,8 @@
 /// <reference path="../CommonInterfaces/IEquatable.ts"/>
 
+/**
+ * Implementation of the ValueObject pattern.
+ */
 namespace DDDTools.ValueObject {
 	
 	import IEquatable = CommonInterfaces.IEquatable;

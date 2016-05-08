@@ -2,6 +2,9 @@
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../Utils/SimpleGuid.ts" />
 
+/**
+ * Collection of general and commonly used ValueObjects. 
+ */
 namespace DDDTools.ValueObjects {
 
     import SimpleGuid = Utils.SimpleGuid;

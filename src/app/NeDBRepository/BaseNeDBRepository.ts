@@ -5,6 +5,9 @@
 import * as Nedb from "nedb";
 //declare type Nedb : Datastore;
 
+/**
+ * Repository implementation for the NeDB database.
+ */
 namespace Repository.NeDBImplementation {
 
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;

@@ -133,24 +133,9 @@ declare namespace DDDTools.StatefulObject {
         setState(state: any): void;
     }
 }
-declare namespace DDDTools.Entity {
-    import BaseStatefulObject = StatefulObject.BaseStatefulObject;
-    abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseStatefulObject {
-        private key;
-        getKey(): TKey;
-        setKey(key: TKey): void;
-        equals(item: T): boolean;
-    }
-}
 declare namespace DDDTools.DomainEvents {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     interface IDomainEvent extends ITypeTracking {
-    }
-}
-declare namespace DDDTools.Aggregate {
-    import IKeyValueObject = Entity.IKeyValueObject;
-    import IEntity = Entity.IEntity;
-    interface IAggregateRoot<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends IEntity<T, TKey> {
     }
 }
 declare namespace DDDTools.DomainEvents {
@@ -174,11 +159,26 @@ declare namespace DDDTools.DomainEvents {
         static dispatch(event: IDomainEvent): void;
     }
 }
+declare namespace DDDTools.Entity {
+    import BaseStatefulObject = StatefulObject.BaseStatefulObject;
+    abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseStatefulObject {
+        private key;
+        private raiseEvent(event);
+        getKey(): TKey;
+        setKey(key: TKey): void;
+        equals(item: T): boolean;
+    }
+}
+declare namespace DDDTools.Aggregate {
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import IEntity = Entity.IEntity;
+    interface IAggregateRoot<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends IEntity<T, TKey> {
+    }
+}
 declare namespace DDDTools.Aggregate {
     import IKeyValueObject = Entity.IKeyValueObject;
     import BaseEntity = Entity.BaseEntity;
     abstract class BaseAggregateRoot<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseEntity<T, TKey> implements IAggregateRoot<T, TKey> {
-        private raiseEvent(event);
     }
 }
 declare namespace DDDTools.DomainEvents {
@@ -285,6 +285,18 @@ declare namespace DDDTools.UnitOfWork {
         getItemStatus(key: TKey): ItemStatus;
         updateSavedItemStatus(key: TKey): void;
         private getTrackedItem(key);
+    }
+}
+declare namespace DDDTools.UnitOfWork {
+    import IAggregateRoot = Aggregate.IAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import IEventHandler = DomainEvents.IEventHandler;
+    interface IUnitOfWork<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+        getById(key: TKey): T;
+        deleteById(key: TKey): void;
+        saveAll(): void;
+        registerHandler(eventTypeName: string, eventHandler: IEventHandler): void;
+        unregisterHandler(eventTypeName: string, eventHandler: IEventHandler): void;
     }
 }
 declare namespace DDDTools.UnitOfWork {

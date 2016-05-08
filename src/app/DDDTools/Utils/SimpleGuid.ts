@@ -1,3 +1,6 @@
+/**
+ * Some simple classes used in different modules.
+ */
 namespace DDDTools.Utils {
 
     export class SimpleGuid {

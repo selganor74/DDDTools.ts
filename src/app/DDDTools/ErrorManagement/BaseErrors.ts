@@ -1,3 +1,6 @@
+/**
+ * Minimal Error handling base behaviors for the domain model.
+ */
 namespace DDDTools.ErrorManagement {
     export abstract class BaseErrors {
         

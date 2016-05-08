@@ -491,35 +491,6 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var Entity;
-    (function (Entity) {
-        var BaseStatefulObject = DDDTools.StatefulObject.BaseStatefulObject;
-        var BaseEntity = (function (_super) {
-            __extends(BaseEntity, _super);
-            function BaseEntity() {
-                _super.apply(this, arguments);
-            }
-            BaseEntity.prototype.getKey = function () {
-                return this.key;
-            };
-            ;
-            BaseEntity.prototype.setKey = function (key) {
-                this.key = key;
-            };
-            ;
-            BaseEntity.prototype.equals = function (item) {
-                if (!item) {
-                    return false;
-                }
-                return item.getKey().equals(this.getKey());
-            };
-            return BaseEntity;
-        }(BaseStatefulObject));
-        Entity.BaseEntity = BaseEntity;
-    })(Entity = DDDTools.Entity || (DDDTools.Entity = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
     var DomainEvents;
     (function (DomainEvents) {
         var DomainDispatcher = (function () {
@@ -554,19 +525,48 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
+    var Entity;
+    (function (Entity) {
+        var BaseStatefulObject = DDDTools.StatefulObject.BaseStatefulObject;
+        var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
+        var BaseEntity = (function (_super) {
+            __extends(BaseEntity, _super);
+            function BaseEntity() {
+                _super.apply(this, arguments);
+            }
+            BaseEntity.prototype.raiseEvent = function (event) {
+                DomainDispatcher.dispatch(event);
+            };
+            ;
+            BaseEntity.prototype.getKey = function () {
+                return this.key;
+            };
+            ;
+            BaseEntity.prototype.setKey = function (key) {
+                this.key = key;
+            };
+            ;
+            BaseEntity.prototype.equals = function (item) {
+                if (!item) {
+                    return false;
+                }
+                return item.getKey().equals(this.getKey());
+            };
+            return BaseEntity;
+        }(BaseStatefulObject));
+        Entity.BaseEntity = BaseEntity;
+    })(Entity = DDDTools.Entity || (DDDTools.Entity = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
     var Aggregate;
     (function (Aggregate) {
-        var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
         var BaseEntity = DDDTools.Entity.BaseEntity;
         var BaseAggregateRoot = (function (_super) {
             __extends(BaseAggregateRoot, _super);
             function BaseAggregateRoot() {
                 _super.apply(this, arguments);
             }
-            BaseAggregateRoot.prototype.raiseEvent = function (event) {
-                DomainDispatcher.dispatch(event);
-            };
-            ;
             return BaseAggregateRoot;
         }(BaseEntity));
         Aggregate.BaseAggregateRoot = BaseAggregateRoot;
