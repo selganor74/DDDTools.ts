@@ -14,19 +14,19 @@ namespace DDDTools.StatefulObject {
          * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
          * Latest available version is the one whose FQTN matches the one specified by typeName.
          */
-        public static createTypeInstance(typeName: string, typeVersion?: string): IStateful {
+        public static createTypeInstance<T extends IStateful>(typeName: string, typeVersion?: string): T {
 
-            var toReturn: IStateful;
+            var toReturn: T;
 
             if (typeVersion) {
                 var typeToInstatiate = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
                 try {
-                    toReturn = <IStateful>eval("new " + typeToInstatiate + "()");
+                    toReturn = <T>eval("new " + typeToInstatiate + "()");
                     return toReturn;
                 } catch (e) {
                     // This failure is expected if we are asking for the latest version available
                 }
-                toReturn = StatefulObjectFactory.createTypeInstance(typeName);
+                toReturn = StatefulObjectFactory.createTypeInstance<T>(typeName);
                 if (toReturn.__typeVersion != typeVersion) {
                     Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);    
                 }                   
@@ -34,7 +34,7 @@ namespace DDDTools.StatefulObject {
             }
 
             try {
-                toReturn = <IStateful>eval("new " + typeName + "()");
+                toReturn = <T>eval("new " + typeName + "()");
             } catch (e) {
                 Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
             }

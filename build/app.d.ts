@@ -73,7 +73,7 @@ declare namespace DDDTools.StatefulObject {
 }
 declare namespace DDDTools.StatefulObject {
     class StatefulObjectFactory {
-        static createTypeInstance(typeName: string, typeVersion?: string): IStateful;
+        static createTypeInstance<T extends IStateful>(typeName: string, typeVersion?: string): T;
         static createObjectsFromState(state: any): any;
         private static isStatefulObject(objectToTest);
         private static isTypeInstantiable(fullyQualifiedTypeName);
@@ -203,69 +203,6 @@ declare namespace DDDTools.Entity {
     abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T> {
         constructor();
         abstract toString(): string;
-    }
-}
-declare namespace DDDTools.Locking {
-    import BaseValueObject = ValueObject.BaseValueObject;
-    interface ILock<TLockKey extends BaseValueObject<TLockKey>> {
-        canBeUnlockedByKey(key: TLockKey): boolean;
-        isLockedByTheSameKey(otherLock: ILock<TLockKey>): boolean;
-    }
-}
-declare namespace DDDTools.Locking {
-    import BaseValueObject = ValueObject.BaseValueObject;
-    interface ILockManager<TLockKey extends BaseValueObject<TLockKey>, TLock extends ILock<TLockKey>> {
-        lock(locker: TLock): any;
-        releaseLock(): any;
-        getLock(): TLock;
-    }
-}
-declare namespace DDDTools.ValueObjects {
-    import IKeyValueObject = Entity.IKeyValueObject;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
-        __typeName: string;
-        __typeVersion: string;
-        private guid;
-        constructor(guid?: string);
-        static generate(): Guid;
-        toString(): string;
-    }
-}
-declare namespace DDDTools.Locking {
-    import Guid = ValueObjects.Guid;
-    import IKeyValueObject = Entity.IKeyValueObject;
-    import BaseEntity = Entity.BaseEntity;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    class SimpleLock extends BaseValueObject<SimpleLock> implements ILock<SimpleLockKey> {
-        private keyCreatedWith;
-        __typeName: string;
-        constructor(keyCreatedWith: SimpleLockKey);
-        canBeUnlockedByKey(key: SimpleLockKey): boolean;
-        isLockedByTheSameKey(otherLock: SimpleLock): boolean;
-    }
-    class SimpleLockKey extends BaseValueObject<SimpleLockKey> implements IKeyValueObject<SimpleLockKey> {
-        __typeName: string;
-        private key;
-        constructor(key?: Guid);
-        toString(): string;
-    }
-    class InMemoryEntityLockManager<TLockableEntity extends BaseEntity<TLockableEntity, TUniqueId>, TUniqueId extends BaseValueObject<TUniqueId>, TLockKey extends BaseValueObject<TLockKey>, TLock extends ILock<TLockKey>> implements ILockManager<TLockKey, TLock> {
-        private item;
-        private clientKey;
-        private static keyring;
-        constructor(item: TLockableEntity, clientKey: TLockKey);
-        private getKeyAsString();
-        getLock(): TLock;
-        hasLock(): boolean;
-        lock(locker: TLock): void;
-        releaseLock(): void;
-    }
-}
-declare namespace DDDTools.Locking {
-    import BaseErrors = ErrorManagement.BaseErrors;
-    class LockingErrors extends BaseErrors {
-        static EntityLockedBySomeoneElse: string;
     }
 }
 declare namespace DDDTools.Repository {
@@ -410,6 +347,18 @@ declare namespace DDDTools.UnitOfWork {
         private removeById(key);
     }
 }
+declare namespace DDDTools.ValueObjects {
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
+        __typeName: string;
+        __typeVersion: string;
+        private guid;
+        constructor(guid?: string);
+        static generate(): Guid;
+        toString(): string;
+    }
+}
 declare module "app/NeDBRepository/BaseNeDBRepository" {
 }
 declare namespace CdC.Tests {
@@ -493,16 +442,6 @@ declare namespace CdC.Tests.BaseStatefulObject {
     }
 }
 declare namespace CdC.Tests.BaseValueObject {
-}
-declare namespace CdC.Tests.InMemoryItemLocker {
-    import DDD = DDDTools;
-    import BaseValueObject = DDD.ValueObject.BaseValueObject;
-    class Key extends BaseValueObject<Key> {
-        private id;
-        __typeName: string;
-        __typeVersion: string;
-        constructor();
-    }
 }
 declare namespace CdC.Tests.Dispatcher {
 }

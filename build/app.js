@@ -675,137 +675,6 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var ValueObjects;
-    (function (ValueObjects) {
-        var SimpleGuid = DDDTools.Utils.SimpleGuid;
-        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
-        var Guid = (function (_super) {
-            __extends(Guid, _super);
-            function Guid(guid) {
-                _super.call(this);
-                this.__typeName = "DDDTools.ValueObjects.Guid";
-                this.__typeVersion = "v1";
-                if (guid) {
-                    this.guid = guid;
-                }
-                else {
-                    this.guid = SimpleGuid.generate();
-                }
-            }
-            Guid.generate = function () {
-                return new Guid(SimpleGuid.generate());
-            };
-            Guid.prototype.toString = function () {
-                return this.guid;
-            };
-            return Guid;
-        }(BaseValueObject));
-        ValueObjects.Guid = Guid;
-    })(ValueObjects = DDDTools.ValueObjects || (DDDTools.ValueObjects = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var Locking;
-    (function (Locking) {
-        var Guid = DDDTools.ValueObjects.Guid;
-        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
-        var SimpleLock = (function (_super) {
-            __extends(SimpleLock, _super);
-            function SimpleLock(keyCreatedWith) {
-                _super.call(this);
-                this.keyCreatedWith = keyCreatedWith;
-                this.__typeName = "DDDTools.Locking.SimpleLock";
-            }
-            SimpleLock.prototype.canBeUnlockedByKey = function (key) {
-                return this.keyCreatedWith.equals(key);
-            };
-            SimpleLock.prototype.isLockedByTheSameKey = function (otherLock) {
-                return this.keyCreatedWith.equals(otherLock.keyCreatedWith);
-            };
-            return SimpleLock;
-        }(BaseValueObject));
-        Locking.SimpleLock = SimpleLock;
-        var SimpleLockKey = (function (_super) {
-            __extends(SimpleLockKey, _super);
-            function SimpleLockKey(key) {
-                _super.call(this);
-                this.__typeName = "DDDTools.Locking.SimpleLockKey";
-                this.key = key || Guid.generate();
-            }
-            SimpleLockKey.prototype.toString = function () {
-                return this.key.toString();
-            };
-            return SimpleLockKey;
-        }(BaseValueObject));
-        Locking.SimpleLockKey = SimpleLockKey;
-        var InMemoryEntityLockManager = (function () {
-            function InMemoryEntityLockManager(item, clientKey) {
-                this.item = item;
-                this.clientKey = clientKey;
-            }
-            InMemoryEntityLockManager.prototype.getKeyAsString = function () {
-                var key = this.item.getKey();
-                var keyAsString = JSON.stringify(key);
-                return keyAsString;
-            };
-            InMemoryEntityLockManager.prototype.getLock = function () {
-                var keyAsString = this.getKeyAsString();
-                return InMemoryEntityLockManager.keyring[keyAsString] || null;
-            };
-            InMemoryEntityLockManager.prototype.hasLock = function () {
-                var keyAsString = this.getKeyAsString();
-                if (InMemoryEntityLockManager.keyring[keyAsString]) {
-                    return true;
-                }
-                return false;
-            };
-            ;
-            InMemoryEntityLockManager.prototype.lock = function (locker) {
-                var currentLock = this.getLock();
-                if (currentLock != null) {
-                    if (currentLock.isLockedByTheSameKey(locker)) {
-                        return;
-                    }
-                    else {
-                        Locking.LockingErrors.Throw(Locking.LockingErrors.EntityLockedBySomeoneElse);
-                    }
-                }
-                var keyAsString = this.getKeyAsString();
-                InMemoryEntityLockManager.keyring[keyAsString] = locker;
-            };
-            ;
-            InMemoryEntityLockManager.prototype.releaseLock = function () {
-                if (!this.hasLock()) {
-                    return;
-                }
-                var keyAsString = this.getKeyAsString();
-                InMemoryEntityLockManager.keyring[keyAsString] = undefined;
-            };
-            ;
-            InMemoryEntityLockManager.keyring = {};
-            return InMemoryEntityLockManager;
-        }());
-        Locking.InMemoryEntityLockManager = InMemoryEntityLockManager;
-    })(Locking = DDDTools.Locking || (DDDTools.Locking = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
-    var Locking;
-    (function (Locking) {
-        var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
-        var LockingErrors = (function (_super) {
-            __extends(LockingErrors, _super);
-            function LockingErrors() {
-                _super.apply(this, arguments);
-            }
-            LockingErrors.EntityLockedBySomeoneElse = "Entity is Locked by someone else";
-            return LockingErrors;
-        }(BaseErrors));
-        Locking.LockingErrors = LockingErrors;
-    })(Locking = DDDTools.Locking || (DDDTools.Locking = {}));
-})(DDDTools || (DDDTools = {}));
-var DDDTools;
-(function (DDDTools) {
     var Repository;
     (function (Repository) {
         var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
@@ -1182,6 +1051,36 @@ var DDDTools;
         }());
         UnitOfWork_1.UnitOfWork = UnitOfWork;
     })(UnitOfWork = DDDTools.UnitOfWork || (DDDTools.UnitOfWork = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var ValueObjects;
+    (function (ValueObjects) {
+        var SimpleGuid = DDDTools.Utils.SimpleGuid;
+        var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+        var Guid = (function (_super) {
+            __extends(Guid, _super);
+            function Guid(guid) {
+                _super.call(this);
+                this.__typeName = "DDDTools.ValueObjects.Guid";
+                this.__typeVersion = "v1";
+                if (guid) {
+                    this.guid = guid;
+                }
+                else {
+                    this.guid = SimpleGuid.generate();
+                }
+            }
+            Guid.generate = function () {
+                return new Guid(SimpleGuid.generate());
+            };
+            Guid.prototype.toString = function () {
+                return this.guid;
+            };
+            return Guid;
+        }(BaseValueObject));
+        ValueObjects.Guid = Guid;
+    })(ValueObjects = DDDTools.ValueObjects || (DDDTools.ValueObjects = {}));
 })(DDDTools || (DDDTools = {}));
 var CdC;
 (function (CdC) {
@@ -1600,95 +1499,6 @@ var CdC;
                 });
             });
         })(BaseValueObject = Tests.BaseValueObject || (Tests.BaseValueObject = {}));
-    })(Tests = CdC.Tests || (CdC.Tests = {}));
-})(CdC || (CdC = {}));
-var CdC;
-(function (CdC) {
-    var Tests;
-    (function (Tests) {
-        var InMemoryItemLocker;
-        (function (InMemoryItemLocker) {
-            var DDD = DDDTools;
-            var Locking = DDDTools.Locking;
-            var Guid = DDDTools.ValueObjects.Guid;
-            var LockingErrors = Locking.LockingErrors;
-            var BaseValueObject = DDD.ValueObject.BaseValueObject;
-            var BaseEntity = DDD.Entity.BaseEntity;
-            var Key = (function (_super) {
-                __extends(Key, _super);
-                function Key() {
-                    _super.call(this);
-                    this.__typeName = "CdC.Tests.InMemoryItemLocker.Key";
-                    this.__typeVersion = "v1";
-                    this.id = Guid.generate();
-                }
-                return Key;
-            }(BaseValueObject));
-            InMemoryItemLocker.Key = Key;
-            var LockKey = (function (_super) {
-                __extends(LockKey, _super);
-                function LockKey() {
-                    _super.call(this);
-                    this.__typeName = "CdC.Tests.InMemoryItemLocker.LockKey";
-                    this.__typeVersion = "v1";
-                    this.id = Guid.generate();
-                }
-                return LockKey;
-            }(BaseValueObject));
-            var Lock = (function (_super) {
-                __extends(Lock, _super);
-                function Lock(key) {
-                    _super.call(this);
-                    this.key = key;
-                    this.__typeName = "CdC.Tests.InMemoryItemLocker.Lock";
-                    this.__typeVersion = "v1";
-                }
-                Lock.prototype.canBeUnlockedByKey = function (key) {
-                    return this.key.equals(key);
-                };
-                Lock.prototype.isLockedByTheSameKey = function (otherLock) {
-                    return this.key.equals(otherLock.key);
-                };
-                return Lock;
-            }(BaseValueObject));
-            var TestEntity = (function (_super) {
-                __extends(TestEntity, _super);
-                function TestEntity() {
-                    _super.call(this);
-                    this.__typeName = "CdC.Tests.InMemoryItemLocker.TestEntity";
-                    this.__typeVersion = "v1";
-                    this.arrayOfEntities = [];
-                    this.anonymousObject = {};
-                    this.anObjectReference = {};
-                    this.anotherObjectReference = {};
-                }
-                return TestEntity;
-            }(BaseEntity));
-            var TestLockManager = (function (_super) {
-                __extends(TestLockManager, _super);
-                function TestLockManager() {
-                    _super.apply(this, arguments);
-                }
-                return TestLockManager;
-            }(Locking.InMemoryEntityLockManager));
-            describe("InMemoryItemLocker", function () {
-                it("Deve essere possibile gestire una Entity nel suo lock manager.", function () {
-                    var item = new TestEntity();
-                    var lockKey = new LockKey();
-                    var lockManager = new TestLockManager(item, lockKey);
-                    var lock = lockManager.getLock();
-                    expect(lock).toBeNull("Il getLock deve restituire null se un lock non è stato ancora assegnato.");
-                    lock = new Lock(lockKey);
-                    lockManager.lock(new Lock(lockKey));
-                    var newLock = lockManager.getLock();
-                    expect(lock.equals(newLock)).toBeTruthy("Il lock restituito non è quello impostato.");
-                    var anotherLockKey = new LockKey();
-                    var anotherLockManager = new TestLockManager(item, anotherLockKey);
-                    var anotherLock = new Lock(anotherLockKey);
-                    expect(function () { anotherLockManager.lock(anotherLock); }).toThrow(new Error(LockingErrors.EntityLockedBySomeoneElse));
-                });
-            });
-        })(InMemoryItemLocker = Tests.InMemoryItemLocker || (Tests.InMemoryItemLocker = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
