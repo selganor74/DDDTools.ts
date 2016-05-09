@@ -31,7 +31,7 @@ namespace DDDTools.StatefulObject {
                 StatefulObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
                 // console.log("Latest possible version for " + typeName + " is " + tmpInstance.__typeVersion);
             } catch (e) {
-                Errors.Throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
+                Errors.throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
             }
             StatefulObjectUpgrader.isVersionMapBuilt[typeName] = true;
         }
@@ -58,7 +58,7 @@ namespace DDDTools.StatefulObject {
             var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
             // Verifies that version is effectively upgraded
             if(upgraded.__typeVersion != nextVersion){
-                Errors.Throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion );
+                Errors.throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion );
             }
             return StatefulObjectUpgrader.upgrade(upgraded);
         }
@@ -67,7 +67,7 @@ namespace DDDTools.StatefulObject {
             // Version must be in the form vN where v is a constant and N is an integer.
             var versionRe = new RegExp("^v[0-9]+");
             if (!versionRe.test(typeVersion)) {
-                Errors.Throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
+                Errors.throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
             }
             var version = Number(typeVersion.substr(1));
             version = version + 1;

@@ -30,14 +30,14 @@ namespace DDDTools.Repository {
                 return <T>toReturn;
             }
             
-            Errors.Throw(Errors.ItemNotFound);
+            Errors.throw(Errors.ItemNotFound);
         }
         
         save(item: T): void {
             try {
                 var key = item.getKey().toString();
             } catch (e) {
-                Errors.Throw(Errors.KeyNotSet);
+                Errors.throw(Errors.KeyNotSet);
             }
             this.storage[key] = item.getState();
             // console.log(JSON.stringify( this.storage[key]));

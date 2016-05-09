@@ -41,7 +41,7 @@ namespace DDDTools.UnitOfWork {
 
             if (this.idMap.isTracked(key)) {
                 if(this.idMap.getItemStatus(key) === ItemStatus.Deleted) {
-                    UnitOfWorkErrors.Throw(UnitOfWorkErrors.ItemMarkedAsDeleted);
+                    UnitOfWorkErrors.throw(UnitOfWorkErrors.ItemMarkedAsDeleted);
                 }
                 return this.idMap.getById(key);
             }

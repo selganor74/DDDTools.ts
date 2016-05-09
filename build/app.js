@@ -10,7 +10,7 @@ var DDDTools;
         var BaseErrors = (function () {
             function BaseErrors() {
             }
-            BaseErrors.Throw = function (name, message) {
+            BaseErrors.throw = function (name, message) {
                 var err = BaseErrors.getErrorInstance(name, message);
                 throw err;
             };
@@ -79,7 +79,7 @@ var DDDTools;
                     StatefulObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
                 }
                 catch (e) {
-                    Errors.Throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
+                    Errors.throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
                 }
                 StatefulObjectUpgrader.isVersionMapBuilt[typeName] = true;
             };
@@ -100,14 +100,14 @@ var DDDTools;
                 var upgraderInstance = StatefulObject.StatefulObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
                 var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
                 if (upgraded.__typeVersion != nextVersion) {
-                    Errors.Throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion);
+                    Errors.throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion);
                 }
                 return StatefulObjectUpgrader.upgrade(upgraded);
             };
             StatefulObjectUpgrader.computeNextVersion = function (typeVersion) {
                 var versionRe = new RegExp("^v[0-9]+");
                 if (!versionRe.test(typeVersion)) {
-                    Errors.Throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
+                    Errors.throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
                 }
                 var version = Number(typeVersion.substr(1));
                 version = version + 1;
@@ -141,7 +141,7 @@ var DDDTools;
                     }
                     toReturn = StatefulObjectFactory.createTypeInstance(typeName);
                     if (toReturn.__typeVersion != typeVersion) {
-                        Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);
+                        Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);
                     }
                     return toReturn;
                 }
@@ -149,16 +149,16 @@ var DDDTools;
                     toReturn = eval("new " + typeName + "()");
                 }
                 catch (e) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
+                    Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
                 }
                 return toReturn;
             };
             StatefulObjectFactory.createObjectsFromState = function (state) {
                 if (state === undefined) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
+                    Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
                 }
                 if (state === null) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
+                    Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
                 }
                 if (typeof state === 'object') {
                     if (StatefulObjectFactory.isStatefulObject(state)) {
@@ -466,10 +466,10 @@ var DDDTools;
             }
             BaseStatefulObject.prototype.getState = function () {
                 if (this.__typeName === "") {
-                    Errors.Throw(Errors.TypeNameNotSet);
+                    Errors.throw(Errors.TypeNameNotSet);
                 }
                 if (this.__typeVersion === "") {
-                    Errors.Throw(Errors.TypeVersionNotSet);
+                    Errors.throw(Errors.TypeVersionNotSet);
                 }
                 var toReconstitute = Serializer.serialize(this);
                 var reconstituted = Deserializer.deserialize(toReconstitute);
@@ -477,7 +477,7 @@ var DDDTools;
             };
             BaseStatefulObject.prototype.setState = function (state) {
                 if (typeof state !== "object") {
-                    Errors.Throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
+                    Errors.throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
                 }
                 for (var element in state) {
                     var currentStateElement = state[element];
@@ -707,14 +707,14 @@ var DDDTools;
                     var toReturn = StatefulObjectFactory.createObjectsFromState(this.storage[key]);
                     return toReturn;
                 }
-                Errors.Throw(Errors.ItemNotFound);
+                Errors.throw(Errors.ItemNotFound);
             };
             BaseInMemoryRepository.prototype.save = function (item) {
                 try {
                     var key = item.getKey().toString();
                 }
                 catch (e) {
-                    Errors.Throw(Errors.KeyNotSet);
+                    Errors.throw(Errors.KeyNotSet);
                 }
                 this.storage[key] = item.getState();
             };
@@ -986,7 +986,7 @@ var DDDTools;
             UnitOfWork.prototype.getById = function (key) {
                 if (this.idMap.isTracked(key)) {
                     if (this.idMap.getItemStatus(key) === UnitOfWork_1.ItemStatus.Deleted) {
-                        UnitOfWork_1.UnitOfWorkErrors.Throw(UnitOfWork_1.UnitOfWorkErrors.ItemMarkedAsDeleted);
+                        UnitOfWork_1.UnitOfWorkErrors.throw(UnitOfWork_1.UnitOfWorkErrors.ItemMarkedAsDeleted);
                     }
                     return this.idMap.getById(key);
                 }

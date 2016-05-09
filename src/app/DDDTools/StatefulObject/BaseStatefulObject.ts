@@ -19,11 +19,11 @@ namespace DDDTools.StatefulObject {
 
         public getState(): any {
             if (this.__typeName === "") {
-                Errors.Throw(Errors.TypeNameNotSet);
+                Errors.throw(Errors.TypeNameNotSet);
             }
 
             if (this.__typeVersion === "") {
-                Errors.Throw(Errors.TypeVersionNotSet);
+                Errors.throw(Errors.TypeVersionNotSet);
             }
 
             var toReconstitute = Serializer.serialize(this);
@@ -38,7 +38,7 @@ namespace DDDTools.StatefulObject {
             // console.log(JSON.stringify(state));
 
             if (typeof state !== "object") {
-                Errors.Throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
+                Errors.throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
             }
 
             for (var element in state) {

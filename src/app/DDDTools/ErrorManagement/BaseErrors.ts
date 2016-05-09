@@ -4,7 +4,7 @@
 namespace DDDTools.ErrorManagement {
     export abstract class BaseErrors {
         
-        static Throw(name: string, message?: string) {
+        static throw(name: string, message?: string) {
             var err = BaseErrors.getErrorInstance(name, message);
             throw err;
         }

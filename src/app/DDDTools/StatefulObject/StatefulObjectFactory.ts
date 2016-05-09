@@ -28,7 +28,7 @@ namespace DDDTools.StatefulObject {
                 }
                 toReturn = StatefulObjectFactory.createTypeInstance<T>(typeName);
                 if (toReturn.__typeVersion != typeVersion) {
-                    Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);    
+                    Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);    
                 }                   
                 return toReturn;
             }
@@ -36,7 +36,7 @@ namespace DDDTools.StatefulObject {
             try {
                 toReturn = <T>eval("new " + typeName + "()");
             } catch (e) {
-                Errors.Throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
+                Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
             }
             return toReturn;
         }
@@ -46,11 +46,11 @@ namespace DDDTools.StatefulObject {
          */
         public static createObjectsFromState(state: any): any {
             if (state === undefined) {
-                Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
+                Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
             }
 
             if (state === null) {
-                Errors.Throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
+                Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
             }
 
             if (typeof state === 'object') {
