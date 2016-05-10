@@ -1,6 +1,6 @@
 /// <reference path="../ValueObject/IValueObject.ts"/>
 /// <reference path="IEntity.ts"/>
-/// <reference path="../StatefulObject/BaseStatefulObject.ts"/>
+/// <reference path="../PersistableObject/BasePersistableObject.ts"/>
 /// <reference path="../DomainEvents/IDomainEvent.ts" />
 /// <reference path="../DomainEvents/DomainDispatcher.ts" />
 
@@ -9,12 +9,12 @@
  */
 namespace DDDTools.Entity {
 	
-	import BaseStatefulObject = StatefulObject.BaseStatefulObject;
+	import BasePersistableObject = PersistableObject.BasePersistableObject;
 	import IDomainEvent = DomainEvents.IDomainEvent;
 	import DomainDispatcher = DomainEvents.DomainDispatcher;
 	
 	export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> 
-			extends BaseStatefulObject {
+			extends BasePersistableObject {
 				
         private key: TKey;
         

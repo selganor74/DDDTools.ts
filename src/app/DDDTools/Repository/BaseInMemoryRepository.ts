@@ -2,20 +2,20 @@
 /// <reference path="../Entity/BaseEntity.ts"/>
 /// <reference path="../Repository/IRepository.ts"/>
 /// <reference path="../Repository/RepositoryErrors.ts"/>
-/// <reference path="../StatefulObject/StatefulObjectFactory.ts"/>
+/// <reference path="../PersistableObject/PersistableObjectFactory.ts"/>
 
 namespace DDDTools.Repository {
     
     import IRepository = Repository.IRepository;
     import Errors = Repository.RepositoryErrors;
-    import IStateful = StatefulObject.IStateful;
-    import StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
+    import IPersistable = PersistableObject.IPersistable;
+    import PersistableObjectFactory = PersistableObject.PersistableObjectFactory;
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     
     export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
         
-        private storage: { [ id: string ]: IStateful };
+        private storage: { [ id: string ]: IPersistable };
         
         constructor( private _managedTypeName: string ) {
             this.storage = {};
@@ -26,7 +26,7 @@ namespace DDDTools.Repository {
             var key = id.toString();
             
             if (this.storage[key]) {
-                var toReturn = StatefulObjectFactory.createObjectsFromState( this.storage[key] );
+                var toReturn = PersistableObjectFactory.createObjectsFromState( this.storage[key] );
                 return <T>toReturn;
             }
             

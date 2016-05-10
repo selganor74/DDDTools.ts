@@ -1,7 +1,7 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../Utils/SimpleIdentityMap.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
-/// <reference path="../StatefulObject/IStateful.ts" />
+/// <reference path="../PersistableObject/IPersistable.ts" />
 /// <reference path="Touch.ts" />
 
 /**
@@ -11,7 +11,7 @@ namespace DDDTools.Serialization {
 
     import SimpleGuid = Utils.SimpleGuid;
     import SimpleIdentityMap = Utils.SimpleIdentityMap;
-    import IStateful =  StatefulObject.IStateful;
+    import IPersistable =  PersistableObject.IPersistable;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
 
     export class Deserializer {

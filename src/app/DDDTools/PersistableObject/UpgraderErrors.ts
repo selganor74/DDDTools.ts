@@ -1,6 +1,6 @@
 /// <reference path="../ErrorManagement/BaseErrors.ts"/>
 
-namespace DDDTools.StatefulObject {
+namespace DDDTools.PersistableObject {
     
     import BaseErrors = ErrorManagement.BaseErrors;
     

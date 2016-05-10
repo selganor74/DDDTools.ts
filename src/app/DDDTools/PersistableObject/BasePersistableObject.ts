@@ -1,18 +1,18 @@
-/// <reference path="IStateful.ts" />
-/// <reference path="StatefulObjectErrors.ts" />
-/// <reference path="StatefulObjectFactory.ts" />
+/// <reference path="IPersistable.ts" />
+/// <reference path="PersistableObjectErrors.ts" />
+/// <reference path="PersistableObjectFactory.ts" />
 /// <reference path="../Serialization/Deserializer.ts" />
 /// <reference path="../Serialization/Serializer.ts" />
 
-namespace DDDTools.StatefulObject {
+namespace DDDTools.PersistableObject {
 
-    import IStateful = StatefulObject.IStateful;
-    import Errors = StatefulObject.StatefulObjectErrors;
-    import StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
+    import IPersistable = PersistableObject.IPersistable;
+    import Errors = PersistableObject.PersistableErrors;
+    import PersistableObjectFactory = PersistableObject.PersistableObjectFactory;
     import Serializer = Serialization.Serializer;
     import Deserializer = Serialization.Deserializer;
     
-    export abstract class BaseStatefulObject implements IStateful {
+    export abstract class BasePersistableObject implements IPersistable {
 
         public __typeName: string = "";
         public __typeVersion: string = "";
@@ -43,7 +43,7 @@ namespace DDDTools.StatefulObject {
 
             for (var element in state) {
                 var currentStateElement = state[element];
-                this[element] = StatefulObjectFactory.createObjectsFromState(currentStateElement);
+                this[element] = PersistableObjectFactory.createObjectsFromState(currentStateElement);
             }
 
             // console.log( JSON.stringify( this.getState() ) );

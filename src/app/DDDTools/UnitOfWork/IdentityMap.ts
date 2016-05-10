@@ -6,7 +6,7 @@ namespace DDDTools.UnitOfWork {
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
-    import IStateful = StatefulObject.IStateful;
+    import IPersistable = PersistableObject.IPersistable;
 
     export enum ItemStatus {
         New,
@@ -24,7 +24,7 @@ namespace DDDTools.UnitOfWork {
         > {
         // Will contain a serialized version of the object as it was when it was loaded from the repository.
 
-        private asLoaded: IStateful // Will contain the state of the object when first added or updated
+        private asLoaded: IPersistable // Will contain the state of the object when first added or updated
 
         constructor(
             private status: ItemStatus,

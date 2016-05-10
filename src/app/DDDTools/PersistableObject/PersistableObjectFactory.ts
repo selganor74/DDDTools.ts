@@ -1,32 +1,32 @@
-/// <reference path="IStateful.ts" />
-/// <reference path="StatefulObjectUpgrader.ts" />
+/// <reference path="IPersistable.ts" />
+/// <reference path="PersistableObjectUpgrader.ts" />
 
-namespace DDDTools.StatefulObject {
+namespace DDDTools.PersistableObject {
 
-    import Errors = DDDTools.StatefulObject.StatefulObjectErrors;
+    import Errors = DDDTools.PersistableObject.PersistableErrors;
 
     /**
-     * StatefulObjectFactory is an helper class to create and reconstitute statfeul objects.
+     * PersistableObjectFactory is an helper class to create and reconstitute statfeul objects.
      * It gurantees that a statful object is always created or reconstituted to its latest version.  
      */
-    export class StatefulObjectFactory {
+    export class PersistableObjectFactory {
         /**
          * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
          * Latest available version is the one whose FQTN matches the one specified by typeName.
          */
-        public static createTypeInstance<T extends IStateful>(typeName: string, typeVersion?: string): T {
+        public static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T {
 
             var toReturn: T;
 
             if (typeVersion) {
-                var typeToInstatiate = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
+                var typeToInstatiate = PersistableObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
                 try {
                     toReturn = <T>eval("new " + typeToInstatiate + "()");
                     return toReturn;
                 } catch (e) {
                     // This failure is expected if we are asking for the latest version available
                 }
-                toReturn = StatefulObjectFactory.createTypeInstance<T>(typeName);
+                toReturn = PersistableObjectFactory.createTypeInstance<T>(typeName);
                 if (toReturn.__typeVersion != typeVersion) {
                     Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);    
                 }                   
@@ -54,21 +54,21 @@ namespace DDDTools.StatefulObject {
             }
 
             if (typeof state === 'object') {
-                if (StatefulObjectFactory.isStatefulObject(state)) {
+                if (PersistableObjectFactory.isPersistableObject(state)) {
 
-                    var stateful: IStateful;
+                    var persistable: IPersistable;
 
-                    stateful = StatefulObjectFactory.createTypeInstance(state.__typeName);
-                    stateful.setState(state);
+                    persistable = PersistableObjectFactory.createTypeInstance(state.__typeName);
+                    persistable.setState(state);
                     // This warranties that a type is always returned at its latest version.
-                    var upgradedStateful = StatefulObjectUpgrader.upgrade(stateful);
-                    return upgradedStateful;
+                    var upgradedPersistable = PersistableObjectUpgrader.upgrade(persistable);
+                    return upgradedPersistable;
                 }
-                // If it is not a statefulObject can be an Array or an Object and must be reconstituted
+                // If it is not a persistableObject can be an Array or an Object and must be reconstituted
                 var toReturn: any = Array.isArray(state) ? [] : {};
                 for (var currentElement in state) {
                     var thisElement = state[currentElement];
-                    toReturn[currentElement] = StatefulObjectFactory.createObjectsFromState(thisElement);
+                    toReturn[currentElement] = PersistableObjectFactory.createObjectsFromState(thisElement);
                 }
                 return toReturn;
             }
@@ -77,20 +77,20 @@ namespace DDDTools.StatefulObject {
         }
 
         /**
-         * Checks if an object implements the "IStateful" interface.
+         * Checks if an object implements the "IPersistable" interface.
          */
-        private static isStatefulObject(objectToTest: any): boolean {
+        private static isPersistableObject(objectToTest: any): boolean {
 
             if (typeof objectToTest !== 'object') {
                 return false;
             }
 
-            var stateful = <IStateful>objectToTest;
-            if (!stateful.__typeName || stateful.__typeName === "") {
+            var persistable = <IPersistable>objectToTest;
+            if (!persistable.__typeName || persistable.__typeName === "") {
                 return false;
             }
 
-            if (!stateful.__typeVersion || stateful.__typeVersion === "") {
+            if (!persistable.__typeVersion || persistable.__typeVersion === "") {
                 return false;
             }
 
@@ -102,7 +102,7 @@ namespace DDDTools.StatefulObject {
          */
         private static isTypeInstantiable(fullyQualifiedTypeName: string): boolean {
             try {
-                var tmpType = StatefulObjectFactory.createTypeInstance(fullyQualifiedTypeName);
+                var tmpType = PersistableObjectFactory.createTypeInstance(fullyQualifiedTypeName);
             } catch (e) {
                 return false;
             }

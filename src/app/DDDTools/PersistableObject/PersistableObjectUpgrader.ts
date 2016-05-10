@@ -1,21 +1,21 @@
-/// <reference path="IStateful.ts" />
+/// <reference path="IPersistable.ts" />
 /// <reference path="UpgraderErrors.ts" />
-/// <reference path="StatefulObjectFactory.ts" />
+/// <reference path="PersistableObjectFactory.ts" />
 
-namespace DDDTools.StatefulObject {
+namespace DDDTools.PersistableObject {
 
-    import Errors = StatefulObject.UpgraderErrors;
+    import Errors = PersistableObject.UpgraderErrors;
 
     /**
-     * The StatefulObjectUpgrader is an helper class to automate the "upgrade process" of an object's state.
+     * The PersistableObjectUpgrader is an helper class to automate the "upgrade process" of an object's state.
      * The Upgrader is found on these principles:
      *  * The latest version FQTN must match the one specified by the property __typeName, which is in the form namespace.objectName.
-     *  * Older versions of a StatefulObject MUST have a FQTN in the form namespace.<version>.objectName.
+     *  * Older versions of a PersistableObject MUST have a FQTN in the form namespace.<version>.objectName.
      *  * __typeVersion MUST be specified as v<versionNumber> where version is an integer.
      *  * All object's versions (excluding v1) MUST provide an getUpgradedInstance method that knows how to modify state to go from 
      *    version v<n - 1> to v<n>, where n is the version of the object containing the getUpgradedInstance method.   
      */
-    export class StatefulObjectUpgrader {
+    export class PersistableObjectUpgrader {
         
         // Contains the latest version possible for each type. 
         private static latestTypeVersionMap: { [typeName: string]: string } = {};
@@ -23,44 +23,44 @@ namespace DDDTools.StatefulObject {
         private static isVersionMapBuilt: { [typeName: string]: boolean } = {};
 
         private static buildVersionMapForType(typeName: string): void {
-            if (StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
+            if (PersistableObjectUpgrader.isVersionMapBuilt[typeName]) {
                 return;
             }
             try {
-                var tmpInstance = StatefulObjectFactory.createTypeInstance(typeName);
-                StatefulObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
+                var tmpInstance = PersistableObjectFactory.createTypeInstance(typeName);
+                PersistableObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
                 // console.log("Latest possible version for " + typeName + " is " + tmpInstance.__typeVersion);
             } catch (e) {
                 Errors.throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
             }
-            StatefulObjectUpgrader.isVersionMapBuilt[typeName] = true;
+            PersistableObjectUpgrader.isVersionMapBuilt[typeName] = true;
         }
 
         public static isLatestVersionForType(typeName: string, typeVersion: string): boolean {
             // Looks for the latest version, if not already done.
-            if (!StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
-                StatefulObjectUpgrader.buildVersionMapForType(typeName);
+            if (!PersistableObjectUpgrader.isVersionMapBuilt[typeName]) {
+                PersistableObjectUpgrader.buildVersionMapForType(typeName);
             }
             // If the version supplied doesn't match the latest version in the map, the instance must be upgraded.
-            if (StatefulObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
+            if (PersistableObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
                 return true;
             }
             return false;
         }
 
-        public static upgrade(instanceFrom: IStateful): IStateful {
+        public static upgrade(instanceFrom: IPersistable): IPersistable {
             // If object doesn't need to upgrade, then we are done!
-            if (!StatefulObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
+            if (!PersistableObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
                 return instanceFrom;
             }
-            var nextVersion = StatefulObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
-            var upgraderInstance = StatefulObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
+            var nextVersion = PersistableObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
+            var upgraderInstance = PersistableObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
             var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
             // Verifies that version is effectively upgraded
             if(upgraded.__typeVersion != nextVersion){
                 Errors.throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion );
             }
-            return StatefulObjectUpgrader.upgrade(upgraded);
+            return PersistableObjectUpgrader.upgrade(upgraded);
         }
 
         public static computeNextVersion(typeVersion: string): string {

@@ -1,7 +1,7 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../Utils/SimpleIdentityMap.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
-/// <reference path="../StatefulObject/IStateful.ts" />
+/// <reference path="../PersistableObject/IPersistable.ts" />
 /// <reference path="Touch.ts" />
 
 namespace DDDTools.Serialization {

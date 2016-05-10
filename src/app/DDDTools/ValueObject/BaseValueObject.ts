@@ -1,13 +1,13 @@
-/// <reference path="../StatefulObject/BaseStatefulObject.ts"/>
+/// <reference path="../PersistableObject/BasePersistableObject.ts"/>
 /// <reference path="IValueObject.ts"/>
 
 
 namespace DDDTools.ValueObject {
 
-	import BaseStatefulObject = StatefulObject.BaseStatefulObject;
+	import BasePersistableObject = PersistableObject.BasePersistableObject;
 
 	export abstract class BaseValueObject<T> 
-		extends BaseStatefulObject
+		extends BasePersistableObject
 		implements IValueObject<T> {
 		
         constructor() {

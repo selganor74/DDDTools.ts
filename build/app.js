@@ -26,27 +26,27 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
+    var PersistableObject;
+    (function (PersistableObject) {
         var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
-        var StatefulObjectErrors = (function (_super) {
-            __extends(StatefulObjectErrors, _super);
-            function StatefulObjectErrors() {
+        var PersistableErrors = (function (_super) {
+            __extends(PersistableErrors, _super);
+            function PersistableErrors() {
                 _super.apply(this, arguments);
             }
-            StatefulObjectErrors.StateIsNotAnObject = "State is not an Object";
-            StatefulObjectErrors.TypeNameNotSet = "TypeName not set";
-            StatefulObjectErrors.TypeVersionNotSet = "TypeVersion not set";
-            StatefulObjectErrors.UnableToInstantiateType = "Unable to Instantiate Type";
-            return StatefulObjectErrors;
+            PersistableErrors.StateIsNotAnObject = "State is not an Object";
+            PersistableErrors.TypeNameNotSet = "TypeName not set";
+            PersistableErrors.TypeVersionNotSet = "TypeVersion not set";
+            PersistableErrors.UnableToInstantiateType = "Unable to Instantiate Type";
+            return PersistableErrors;
         }(BaseErrors));
-        StatefulObject.StatefulObjectErrors = StatefulObjectErrors;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        PersistableObject.PersistableErrors = PersistableErrors;
+    })(PersistableObject = DDDTools.PersistableObject || (DDDTools.PersistableObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
+    var PersistableObject;
+    (function (PersistableObject) {
         var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
         var UpgraderErrors = (function (_super) {
             __extends(UpgraderErrors, _super);
@@ -59,52 +59,52 @@ var DDDTools;
             UpgraderErrors.WrongVersionInUpgradedInstance = "Wrong Version in Upgraded Instance";
             return UpgraderErrors;
         }(BaseErrors));
-        StatefulObject.UpgraderErrors = UpgraderErrors;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        PersistableObject.UpgraderErrors = UpgraderErrors;
+    })(PersistableObject = DDDTools.PersistableObject || (DDDTools.PersistableObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var Errors = StatefulObject.UpgraderErrors;
-        var StatefulObjectUpgrader = (function () {
-            function StatefulObjectUpgrader() {
+    var PersistableObject;
+    (function (PersistableObject) {
+        var Errors = PersistableObject.UpgraderErrors;
+        var PersistableObjectUpgrader = (function () {
+            function PersistableObjectUpgrader() {
             }
-            StatefulObjectUpgrader.buildVersionMapForType = function (typeName) {
-                if (StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
+            PersistableObjectUpgrader.buildVersionMapForType = function (typeName) {
+                if (PersistableObjectUpgrader.isVersionMapBuilt[typeName]) {
                     return;
                 }
                 try {
-                    var tmpInstance = StatefulObject.StatefulObjectFactory.createTypeInstance(typeName);
-                    StatefulObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
+                    var tmpInstance = PersistableObject.PersistableObjectFactory.createTypeInstance(typeName);
+                    PersistableObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
                 }
                 catch (e) {
                     Errors.throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
                 }
-                StatefulObjectUpgrader.isVersionMapBuilt[typeName] = true;
+                PersistableObjectUpgrader.isVersionMapBuilt[typeName] = true;
             };
-            StatefulObjectUpgrader.isLatestVersionForType = function (typeName, typeVersion) {
-                if (!StatefulObjectUpgrader.isVersionMapBuilt[typeName]) {
-                    StatefulObjectUpgrader.buildVersionMapForType(typeName);
+            PersistableObjectUpgrader.isLatestVersionForType = function (typeName, typeVersion) {
+                if (!PersistableObjectUpgrader.isVersionMapBuilt[typeName]) {
+                    PersistableObjectUpgrader.buildVersionMapForType(typeName);
                 }
-                if (StatefulObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
+                if (PersistableObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
                     return true;
                 }
                 return false;
             };
-            StatefulObjectUpgrader.upgrade = function (instanceFrom) {
-                if (!StatefulObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
+            PersistableObjectUpgrader.upgrade = function (instanceFrom) {
+                if (!PersistableObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
                     return instanceFrom;
                 }
-                var nextVersion = StatefulObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
-                var upgraderInstance = StatefulObject.StatefulObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
+                var nextVersion = PersistableObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
+                var upgraderInstance = PersistableObject.PersistableObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
                 var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
                 if (upgraded.__typeVersion != nextVersion) {
                     Errors.throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion);
                 }
-                return StatefulObjectUpgrader.upgrade(upgraded);
+                return PersistableObjectUpgrader.upgrade(upgraded);
             };
-            StatefulObjectUpgrader.computeNextVersion = function (typeVersion) {
+            PersistableObjectUpgrader.computeNextVersion = function (typeVersion) {
                 var versionRe = new RegExp("^v[0-9]+");
                 if (!versionRe.test(typeVersion)) {
                     Errors.throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");
@@ -114,32 +114,32 @@ var DDDTools;
                 var nextVersion = "v" + version;
                 return nextVersion;
             };
-            StatefulObjectUpgrader.latestTypeVersionMap = {};
-            StatefulObjectUpgrader.isVersionMapBuilt = {};
-            return StatefulObjectUpgrader;
+            PersistableObjectUpgrader.latestTypeVersionMap = {};
+            PersistableObjectUpgrader.isVersionMapBuilt = {};
+            return PersistableObjectUpgrader;
         }());
-        StatefulObject.StatefulObjectUpgrader = StatefulObjectUpgrader;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        PersistableObject.PersistableObjectUpgrader = PersistableObjectUpgrader;
+    })(PersistableObject = DDDTools.PersistableObject || (DDDTools.PersistableObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var Errors = DDDTools.StatefulObject.StatefulObjectErrors;
-        var StatefulObjectFactory = (function () {
-            function StatefulObjectFactory() {
+    var PersistableObject;
+    (function (PersistableObject) {
+        var Errors = DDDTools.PersistableObject.PersistableErrors;
+        var PersistableObjectFactory = (function () {
+            function PersistableObjectFactory() {
             }
-            StatefulObjectFactory.createTypeInstance = function (typeName, typeVersion) {
+            PersistableObjectFactory.createTypeInstance = function (typeName, typeVersion) {
                 var toReturn;
                 if (typeVersion) {
-                    var typeToInstatiate = StatefulObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
+                    var typeToInstatiate = PersistableObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
                     try {
                         toReturn = eval("new " + typeToInstatiate + "()");
                         return toReturn;
                     }
                     catch (e) {
                     }
-                    toReturn = StatefulObjectFactory.createTypeInstance(typeName);
+                    toReturn = PersistableObjectFactory.createTypeInstance(typeName);
                     if (toReturn.__typeVersion != typeVersion) {
                         Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);
                     }
@@ -153,7 +153,7 @@ var DDDTools;
                 }
                 return toReturn;
             };
-            StatefulObjectFactory.createObjectsFromState = function (state) {
+            PersistableObjectFactory.createObjectsFromState = function (state) {
                 if (state === undefined) {
                     Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'undefined'");
                 }
@@ -161,45 +161,45 @@ var DDDTools;
                     Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
                 }
                 if (typeof state === 'object') {
-                    if (StatefulObjectFactory.isStatefulObject(state)) {
-                        var stateful;
-                        stateful = StatefulObjectFactory.createTypeInstance(state.__typeName);
-                        stateful.setState(state);
-                        var upgradedStateful = StatefulObject.StatefulObjectUpgrader.upgrade(stateful);
-                        return upgradedStateful;
+                    if (PersistableObjectFactory.isPersistableObject(state)) {
+                        var persistable;
+                        persistable = PersistableObjectFactory.createTypeInstance(state.__typeName);
+                        persistable.setState(state);
+                        var upgradedPersistable = PersistableObject.PersistableObjectUpgrader.upgrade(persistable);
+                        return upgradedPersistable;
                     }
                     var toReturn = Array.isArray(state) ? [] : {};
                     for (var currentElement in state) {
                         var thisElement = state[currentElement];
-                        toReturn[currentElement] = StatefulObjectFactory.createObjectsFromState(thisElement);
+                        toReturn[currentElement] = PersistableObjectFactory.createObjectsFromState(thisElement);
                     }
                     return toReturn;
                 }
                 return state;
             };
-            StatefulObjectFactory.isStatefulObject = function (objectToTest) {
+            PersistableObjectFactory.isPersistableObject = function (objectToTest) {
                 if (typeof objectToTest !== 'object') {
                     return false;
                 }
-                var stateful = objectToTest;
-                if (!stateful.__typeName || stateful.__typeName === "") {
+                var persistable = objectToTest;
+                if (!persistable.__typeName || persistable.__typeName === "") {
                     return false;
                 }
-                if (!stateful.__typeVersion || stateful.__typeVersion === "") {
+                if (!persistable.__typeVersion || persistable.__typeVersion === "") {
                     return false;
                 }
                 return true;
             };
-            StatefulObjectFactory.isTypeInstantiable = function (fullyQualifiedTypeName) {
+            PersistableObjectFactory.isTypeInstantiable = function (fullyQualifiedTypeName) {
                 try {
-                    var tmpType = StatefulObjectFactory.createTypeInstance(fullyQualifiedTypeName);
+                    var tmpType = PersistableObjectFactory.createTypeInstance(fullyQualifiedTypeName);
                 }
                 catch (e) {
                     return false;
                 }
                 return true;
             };
-            StatefulObjectFactory.computeFullyQualifiedTypeName = function (typeName, typeVersion) {
+            PersistableObjectFactory.computeFullyQualifiedTypeName = function (typeName, typeVersion) {
                 var fqtnPartsArray = typeName.split(".");
                 var className = fqtnPartsArray.pop();
                 fqtnPartsArray.push(typeVersion);
@@ -208,10 +208,10 @@ var DDDTools;
                 return newFqtn;
             };
             ;
-            return StatefulObjectFactory;
+            return PersistableObjectFactory;
         }());
-        StatefulObject.StatefulObjectFactory = StatefulObjectFactory;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        PersistableObject.PersistableObjectFactory = PersistableObjectFactory;
+    })(PersistableObject = DDDTools.PersistableObject || (DDDTools.PersistableObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -453,18 +453,18 @@ var DDDTools;
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
-    var StatefulObject;
-    (function (StatefulObject) {
-        var Errors = StatefulObject.StatefulObjectErrors;
-        var StatefulObjectFactory = StatefulObject.StatefulObjectFactory;
+    var PersistableObject;
+    (function (PersistableObject) {
+        var Errors = PersistableObject.PersistableErrors;
+        var PersistableObjectFactory = PersistableObject.PersistableObjectFactory;
         var Serializer = DDDTools.Serialization.Serializer;
         var Deserializer = DDDTools.Serialization.Deserializer;
-        var BaseStatefulObject = (function () {
-            function BaseStatefulObject() {
+        var BasePersistableObject = (function () {
+            function BasePersistableObject() {
                 this.__typeName = "";
                 this.__typeVersion = "";
             }
-            BaseStatefulObject.prototype.getState = function () {
+            BasePersistableObject.prototype.getState = function () {
                 if (this.__typeName === "") {
                     Errors.throw(Errors.TypeNameNotSet);
                 }
@@ -475,19 +475,19 @@ var DDDTools;
                 var reconstituted = Deserializer.deserialize(toReconstitute);
                 return reconstituted;
             };
-            BaseStatefulObject.prototype.setState = function (state) {
+            BasePersistableObject.prototype.setState = function (state) {
                 if (typeof state !== "object") {
                     Errors.throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
                 }
                 for (var element in state) {
                     var currentStateElement = state[element];
-                    this[element] = StatefulObjectFactory.createObjectsFromState(currentStateElement);
+                    this[element] = PersistableObjectFactory.createObjectsFromState(currentStateElement);
                 }
             };
-            return BaseStatefulObject;
+            return BasePersistableObject;
         }());
-        StatefulObject.BaseStatefulObject = BaseStatefulObject;
-    })(StatefulObject = DDDTools.StatefulObject || (DDDTools.StatefulObject = {}));
+        PersistableObject.BasePersistableObject = BasePersistableObject;
+    })(PersistableObject = DDDTools.PersistableObject || (DDDTools.PersistableObject = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
@@ -527,7 +527,7 @@ var DDDTools;
 (function (DDDTools) {
     var Entity;
     (function (Entity) {
-        var BaseStatefulObject = DDDTools.StatefulObject.BaseStatefulObject;
+        var BasePersistableObject = DDDTools.PersistableObject.BasePersistableObject;
         var DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
         var BaseEntity = (function (_super) {
             __extends(BaseEntity, _super);
@@ -553,7 +553,7 @@ var DDDTools;
                 return item.getKey().equals(this.getKey());
             };
             return BaseEntity;
-        }(BaseStatefulObject));
+        }(BasePersistableObject));
         Entity.BaseEntity = BaseEntity;
     })(Entity = DDDTools.Entity || (DDDTools.Entity = {}));
 })(DDDTools || (DDDTools = {}));
@@ -642,7 +642,7 @@ var DDDTools;
 (function (DDDTools) {
     var ValueObject;
     (function (ValueObject) {
-        var BaseStatefulObject = DDDTools.StatefulObject.BaseStatefulObject;
+        var BasePersistableObject = DDDTools.PersistableObject.BasePersistableObject;
         var BaseValueObject = (function (_super) {
             __extends(BaseValueObject, _super);
             function BaseValueObject() {
@@ -654,7 +654,7 @@ var DDDTools;
                 return foreign === local;
             };
             return BaseValueObject;
-        }(BaseStatefulObject));
+        }(BasePersistableObject));
         ValueObject.BaseValueObject = BaseValueObject;
     })(ValueObject = DDDTools.ValueObject || (DDDTools.ValueObject = {}));
 })(DDDTools || (DDDTools = {}));
@@ -695,7 +695,7 @@ var DDDTools;
     var Repository;
     (function (Repository) {
         var Errors = Repository.RepositoryErrors;
-        var StatefulObjectFactory = DDDTools.StatefulObject.StatefulObjectFactory;
+        var PersistableObjectFactory = DDDTools.PersistableObject.PersistableObjectFactory;
         var BaseInMemoryRepository = (function () {
             function BaseInMemoryRepository(_managedTypeName) {
                 this._managedTypeName = _managedTypeName;
@@ -704,7 +704,7 @@ var DDDTools;
             BaseInMemoryRepository.prototype.getById = function (id) {
                 var key = id.toString();
                 if (this.storage[key]) {
-                    var toReturn = StatefulObjectFactory.createObjectsFromState(this.storage[key]);
+                    var toReturn = PersistableObjectFactory.createObjectsFromState(this.storage[key]);
                     return toReturn;
                 }
                 Errors.throw(Errors.ItemNotFound);
@@ -1256,8 +1256,8 @@ var CdC;
 (function (CdC) {
     var Tests;
     (function (Tests) {
-        var BaseStatefulObject;
-        (function (BaseStatefulObject) {
+        var BasePersistableObject;
+        (function (BasePersistableObject) {
             var v2;
             (function (v2) {
                 var BaseEntity = DDDTools.Entity.BaseEntity;
@@ -1265,7 +1265,7 @@ var CdC;
                     __extends(A3StepUpgradableItem, _super);
                     function A3StepUpgradableItem() {
                         _super.apply(this, arguments);
-                        this.__typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+                        this.__typeName = "CdC.Tests.BasePersistableObject.A3StepUpgradableItem";
                         this.__typeVersion = "v2";
                     }
                     A3StepUpgradableItem.prototype.getUpgradedInstance = function (fromInstance) {
@@ -1278,16 +1278,16 @@ var CdC;
                     return A3StepUpgradableItem;
                 }(BaseEntity));
                 v2.A3StepUpgradableItem = A3StepUpgradableItem;
-            })(v2 = BaseStatefulObject.v2 || (BaseStatefulObject.v2 = {}));
-        })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
+            })(v2 = BasePersistableObject.v2 || (BasePersistableObject.v2 = {}));
+        })(BasePersistableObject = Tests.BasePersistableObject || (Tests.BasePersistableObject = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
 (function (CdC) {
     var Tests;
     (function (Tests) {
-        var BaseStatefulObject;
-        (function (BaseStatefulObject) {
+        var BasePersistableObject;
+        (function (BasePersistableObject) {
             var v1;
             (function (v1) {
                 var BaseEntity = DDDTools.Entity.BaseEntity;
@@ -1295,7 +1295,7 @@ var CdC;
                     __extends(TestEntity, _super);
                     function TestEntity() {
                         _super.apply(this, arguments);
-                        this.__typeName = "CdC.Tests.BaseStatefulObject.TestEntity";
+                        this.__typeName = "CdC.Tests.BasePersistableObject.TestEntity";
                         this.__typeVersion = "v1";
                     }
                     return TestEntity;
@@ -1305,30 +1305,30 @@ var CdC;
                     __extends(A3StepUpgradableItem, _super);
                     function A3StepUpgradableItem() {
                         _super.apply(this, arguments);
-                        this.__typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+                        this.__typeName = "CdC.Tests.BasePersistableObject.A3StepUpgradableItem";
                         this.__typeVersion = "v1";
                     }
                     return A3StepUpgradableItem;
                 }(BaseEntity));
                 v1.A3StepUpgradableItem = A3StepUpgradableItem;
-            })(v1 = BaseStatefulObject.v1 || (BaseStatefulObject.v1 = {}));
-        })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
+            })(v1 = BasePersistableObject.v1 || (BasePersistableObject.v1 = {}));
+        })(BasePersistableObject = Tests.BasePersistableObject || (Tests.BasePersistableObject = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
 (function (CdC) {
     var Tests;
     (function (Tests) {
-        var BaseStatefulObject;
-        (function (BaseStatefulObject) {
+        var BasePersistableObject;
+        (function (BasePersistableObject) {
             var BaseEntity = DDDTools.Entity.BaseEntity;
-            var StatefulObjectUpgrader = DDDTools.StatefulObject.StatefulObjectUpgrader;
-            var Errors = DDDTools.StatefulObject.UpgraderErrors;
+            var PersistableObjectUpgrader = DDDTools.PersistableObject.PersistableObjectUpgrader;
+            var Errors = DDDTools.PersistableObject.UpgraderErrors;
             var A3StepUpgradableItem = (function (_super) {
                 __extends(A3StepUpgradableItem, _super);
                 function A3StepUpgradableItem() {
                     _super.apply(this, arguments);
-                    this.__typeName = "CdC.Tests.BaseStatefulObject.A3StepUpgradableItem";
+                    this.__typeName = "CdC.Tests.BasePersistableObject.A3StepUpgradableItem";
                     this.__typeVersion = "v3";
                 }
                 A3StepUpgradableItem.prototype.getUpgradedInstance = function (fromInstance) {
@@ -1340,12 +1340,12 @@ var CdC;
                 };
                 return A3StepUpgradableItem;
             }(BaseEntity));
-            BaseStatefulObject.A3StepUpgradableItem = A3StepUpgradableItem;
+            BasePersistableObject.A3StepUpgradableItem = A3StepUpgradableItem;
             var TestEntity = (function (_super) {
                 __extends(TestEntity, _super);
                 function TestEntity() {
                     _super.apply(this, arguments);
-                    this.__typeName = "CdC.Tests.BaseStatefulObject.TestEntity";
+                    this.__typeName = "CdC.Tests.BasePersistableObject.TestEntity";
                     this.__typeVersion = "v2";
                 }
                 TestEntity.prototype.getUpgradedInstance = function (fromInstance) {
@@ -1357,64 +1357,64 @@ var CdC;
                 };
                 return TestEntity;
             }(BaseEntity));
-            BaseStatefulObject.TestEntity = TestEntity;
+            BasePersistableObject.TestEntity = TestEntity;
             var TestEntityNonUpgradable = (function (_super) {
                 __extends(TestEntityNonUpgradable, _super);
                 function TestEntityNonUpgradable() {
                     _super.apply(this, arguments);
-                    this.__typeName = "CdC.Tests.BaseStatefulObject.TestEntityNonUpgradable";
+                    this.__typeName = "CdC.Tests.BasePersistableObject.TestEntityNonUpgradable";
                     this.__typeVersion = "v1";
                 }
                 return TestEntityNonUpgradable;
             }(BaseEntity));
-            BaseStatefulObject.TestEntityNonUpgradable = TestEntityNonUpgradable;
+            BasePersistableObject.TestEntityNonUpgradable = TestEntityNonUpgradable;
             var AClassWithManyTypes = (function (_super) {
                 __extends(AClassWithManyTypes, _super);
                 function AClassWithManyTypes() {
                     _super.apply(this, arguments);
-                    this.__typeName = "CdC.Tests.BaseStatefulObject.AClassWithManyTypes";
+                    this.__typeName = "CdC.Tests.BasePersistableObject.AClassWithManyTypes";
                     this.__typeVersion = "v1";
                 }
                 return AClassWithManyTypes;
             }(BaseEntity));
-            BaseStatefulObject.AClassWithManyTypes = AClassWithManyTypes;
-            describe("BaseStatefulObjectUpgrader", function () {
+            BasePersistableObject.AClassWithManyTypes = AClassWithManyTypes;
+            describe("BasePersistableObjectUpgrader", function () {
                 it("computeNextVersion deve restituire il valore corretto della versione successiva", function () {
-                    var computed = StatefulObjectUpgrader.computeNextVersion("v1");
+                    var computed = PersistableObjectUpgrader.computeNextVersion("v1");
                     expect(computed).toEqual("v2");
                 });
                 it("computeNextVersion deve restituire un errore se la versione non è corretta.", function () {
                     var expectedError = new Error(Errors.IncorrectVersionFormat);
                     expectedError.message = "Specified version m15 is in incorrect format. Must be in the form v<n> where n is an integer.";
-                    expect(function () { var computed = StatefulObjectUpgrader.computeNextVersion("m15"); }).toThrow(expectedError);
+                    expect(function () { var computed = PersistableObjectUpgrader.computeNextVersion("m15"); }).toThrow(expectedError);
                 });
                 it("isLatestVersionForType deve restituire false per gli oggetti che non hanno versioni oltre alla prima", function () {
                     var te = new TestEntityNonUpgradable();
-                    var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
+                    var needsUpgrade = PersistableObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
                     expect(needsUpgrade).toBeFalsy("isLatestVersionForType should have returned false!");
                 });
                 it("isLatestVersionForType deve restituire true per gli oggetti che hanno versioni oltre alla prima", function () {
-                    var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
-                    var needsUpgrade = StatefulObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
+                    var te = new CdC.Tests.BasePersistableObject.v1.TestEntity();
+                    var needsUpgrade = PersistableObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
                     expect(needsUpgrade).toBeTruthy("isLatestVersionForType should have returned true!");
                 });
-                it("upgrade must be able to upgrade a StatefulObject to its latest version [2 steps]", function () {
-                    var te = new CdC.Tests.BaseStatefulObject.v1.TestEntity();
+                it("upgrade must be able to upgrade a PersistableObject to its latest version [2 steps]", function () {
+                    var te = new CdC.Tests.BasePersistableObject.v1.TestEntity();
                     expect(te.__typeVersion).toEqual("v1");
-                    var upgraded = StatefulObjectUpgrader.upgrade(te);
+                    var upgraded = PersistableObjectUpgrader.upgrade(te);
                     expect(upgraded.__typeVersion).toEqual("v2");
                     expect(upgraded.aNewProperty).toEqual("upgrader was here");
                 });
-                it("upgrade must be able to upgrade a StatefulObject to its latest version [3 steps]", function () {
-                    var te = new CdC.Tests.BaseStatefulObject.v1.A3StepUpgradableItem();
+                it("upgrade must be able to upgrade a PersistableObject to its latest version [3 steps]", function () {
+                    var te = new CdC.Tests.BasePersistableObject.v1.A3StepUpgradableItem();
                     expect(te.__typeVersion).toEqual("v1");
-                    var upgraded = StatefulObjectUpgrader.upgrade(te);
+                    var upgraded = PersistableObjectUpgrader.upgrade(te);
                     expect(upgraded.__typeVersion).toEqual("v3");
                     expect(upgraded.aNewProperty).toEqual("upgrader was here");
                     expect(upgraded.aNewNewProperty).toEqual("upgrader was here");
                 });
                 it("getState must be able to copy RegExp types", function () {
-                    var te = new CdC.Tests.BaseStatefulObject.AClassWithManyTypes();
+                    var te = new CdC.Tests.BasePersistableObject.AClassWithManyTypes();
                     var testRegExp = "/^v[0-9]+";
                     var testString = "v123";
                     te.aRegExp = new RegExp(testRegExp);
@@ -1424,7 +1424,7 @@ var CdC;
                     expect(state.aRegExp.test("v123")).toEqual(regExpResult, "aRegExp non si comporta come la RegularExpression originale");
                 });
                 it("getState must be able to copy Date types", function () {
-                    var te = new CdC.Tests.BaseStatefulObject.AClassWithManyTypes();
+                    var te = new CdC.Tests.BasePersistableObject.AClassWithManyTypes();
                     var testDate = new Date();
                     te.aDate = testDate;
                     var state = te.getState();
@@ -1432,7 +1432,7 @@ var CdC;
                     expect(state.aDate.toString()).toEqual(testDate.toString(), "aDate non è stata ripristinata come Date");
                 });
             });
-        })(BaseStatefulObject = Tests.BaseStatefulObject || (Tests.BaseStatefulObject = {}));
+        })(BasePersistableObject = Tests.BasePersistableObject || (Tests.BasePersistableObject = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 var CdC;
@@ -1786,6 +1786,19 @@ var CdC;
                 });
             });
         })(UnitOfWork = Tests.UnitOfWork || (Tests.UnitOfWork = {}));
+    })(Tests = CdC.Tests || (CdC.Tests = {}));
+})(CdC || (CdC = {}));
+var CdC;
+(function (CdC) {
+    var Tests;
+    (function (Tests) {
+        var NeDBRepository;
+        (function (NeDBRepository) {
+            describe("BaseNeDBRepository", function () {
+                it("Should be possible to instantiate the NeDB Object.", function () {
+                });
+            });
+        })(NeDBRepository = Tests.NeDBRepository || (Tests.NeDBRepository = {}));
     })(Tests = CdC.Tests || (CdC.Tests = {}));
 })(CdC || (CdC = {}));
 //# sourceMappingURL=app.js.map

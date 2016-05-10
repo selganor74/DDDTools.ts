@@ -3,7 +3,7 @@
 /// <reference path="../DDDTools/Aggregate/BaseAggregateRoot.ts" />
 
 import * as Nedb from "nedb";
-//declare type Nedb : Datastore;
+// declare type Nedb : NeDBDatastore;
 
 /**
  * Repository implementation for the NeDB database.
