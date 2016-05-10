@@ -8,7 +8,7 @@ namespace DDDTools.Repository {
 
     import Errors = Repository.RepositoryErrors;
     import IPersistable = PersistableObject.IPersistable;
-    import PersistableObjectFactory = PersistableObject.PersistableObjectFactory;1
+    import PersistableObjectFactory = PersistableObject.Factory;1
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
 

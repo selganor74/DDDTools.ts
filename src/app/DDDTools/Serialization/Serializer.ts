@@ -3,6 +3,9 @@
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 /// <reference path="../PersistableObject/IPersistable.ts" />
 /// <reference path="Touch.ts" />
+/// <reference path="SerializableDate.ts" />
+/// <reference path="SerializableRegExp.ts" />
+
 
 namespace DDDTools.Serialization {
 
@@ -14,11 +17,11 @@ namespace DDDTools.Serialization {
          */
         public static serialize(toSerialize: any): string {
             var toReturn;
-            toSerialize = Serializer.preprocessForFakeSubstitution(toSerialize);
+            toSerialize = Serializer.preprocessForSerializablesSubstitution(toSerialize);
             try {
                 toReturn = JSON.stringify(toSerialize, Serializer.customSerializer);
             } finally {
-                Serializer.postprocessForFakeSubstitution(toSerialize);
+                Serializer.postprocessForSerializableSubstitution(toSerialize);
             }
             return toReturn;
         }
@@ -26,21 +29,21 @@ namespace DDDTools.Serialization {
         /**
          * Preprocess the object tree to be serialized to find and replace Date objects with something different...
          */
-        private static preprocessForFakeSubstitution(sourceObject: any) {
+        private static preprocessForSerializablesSubstitution(sourceObject: any) {
             for (var idx in sourceObject) {
                 var current = sourceObject[idx];
                 if (current instanceof Date) {
-                    var newFakeDate = new FakeDate(current);
+                    var newFakeDate = new SerializableDate(current);
                     sourceObject[idx] = newFakeDate;
                     continue;
                 }
                 if (current instanceof RegExp) {
-                    var newFakeRegExp = new FakeRegExp(current);
+                    var newFakeRegExp = new SerializableRegExp(current);
                     sourceObject[idx] = newFakeRegExp;
                     continue;
                 }
                 if (typeof current === 'object' || Array.isArray(current)) {
-                    sourceObject[idx] = Serializer.preprocessForFakeSubstitution(current);
+                    sourceObject[idx] = Serializer.preprocessForSerializablesSubstitution(current);
                     continue;
                 }
             }
@@ -50,19 +53,19 @@ namespace DDDTools.Serialization {
         /**
          * Postprocess the object tree to be serialized to find and replace FakeDate objects with Dates again...
          */
-        private static postprocessForFakeSubstitution(sourceObject: any) {
+        private static postprocessForSerializableSubstitution(sourceObject: any) {
             for (var idx in sourceObject) {
                 var current = sourceObject[idx];
-                if (current instanceof FakeDate) {
-                    sourceObject[idx] = (<FakeDate>current).getDate();
+                if (current instanceof SerializableDate) {
+                    sourceObject[idx] = (<SerializableDate>current).getDate();
                     continue;
                 }
-                if (current instanceof FakeRegExp) {
-                    sourceObject[idx] = (<FakeRegExp>current).getRegExp();
+                if (current instanceof SerializableRegExp) {
+                    sourceObject[idx] = (<SerializableRegExp>current).getRegExp();
                     continue;
                 }
                 if (typeof current === 'object' || Array.isArray(current)) {
-                    sourceObject[idx] = Serializer.postprocessForFakeSubstitution(current);
+                    sourceObject[idx] = Serializer.postprocessForSerializableSubstitution(current);
                     continue;
                 }
             }

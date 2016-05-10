@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/main.d.ts"/>
-/// <reference path="../../app/DDDTools/PersistableObject/PersistableObjectUpgrader.ts" />
-/// <reference path="../../app/DDDTools/PersistableObject/PersistableObjectFactory.ts" />
+/// <reference path="../../app/DDDTools/PersistableObject/Upgrader.ts" />
+/// <reference path="../../app/DDDTools/PersistableObject/Factory.ts" />
 /// <reference path="../../app/DDDTools/Entity/BaseEntity.ts" />
 
 namespace CdC.Tests.BasePersistableObject.v2 {
@@ -45,9 +45,9 @@ namespace CdC.Tests.BasePersistableObject {
 
     import BaseEntity = DDDTools.Entity.BaseEntity;
     import Guid = DDDTools.ValueObjects.Guid;
-    import PersistableObjectFactory = DDDTools.PersistableObject.PersistableObjectFactory;
-    import PersistableObjectUpgrader = DDDTools.PersistableObject.PersistableObjectUpgrader;
-    import Errors = DDDTools.PersistableObject.UpgraderErrors;
+    import PersistableObjectFactory = DDDTools.PersistableObject.Factory;
+    import Upgrader = DDDTools.PersistableObject.Upgrader;
+    import Errors = DDDTools.PersistableObject.Errors;
 
     export class A3StepUpgradableItem extends BaseEntity<TestEntity, Guid> {
         __typeName = "CdC.Tests.BasePersistableObject.A3StepUpgradableItem";
@@ -105,11 +105,11 @@ namespace CdC.Tests.BasePersistableObject {
         public aDate: Date;
     }
 
-    describe("BasePersistableObjectUpgrader", () => {
+    describe("BaseUpgrader", () => {
 
         it("computeNextVersion deve restituire il valore corretto della versione successiva", () => {
 
-            var computed = PersistableObjectUpgrader.computeNextVersion("v1");
+            var computed = Upgrader.computeNextVersion("v1");
 
             expect(computed).toEqual("v2");
         });
@@ -119,14 +119,14 @@ namespace CdC.Tests.BasePersistableObject {
             var expectedError = new Error(Errors.IncorrectVersionFormat);
             expectedError.message = "Specified version m15 is in incorrect format. Must be in the form v<n> where n is an integer.";
 
-            expect(() => { var computed = PersistableObjectUpgrader.computeNextVersion("m15"); }).toThrow(expectedError);
+            expect(() => { var computed = Upgrader.computeNextVersion("m15"); }).toThrow(expectedError);
 
         });
 
         it("isLatestVersionForType deve restituire false per gli oggetti che non hanno versioni oltre alla prima", () => {
             var te = new TestEntityNonUpgradable();
 
-            var needsUpgrade = PersistableObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
+            var needsUpgrade = Upgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
 
             expect(needsUpgrade).toBeFalsy("isLatestVersionForType should have returned false!");
         });
@@ -134,7 +134,7 @@ namespace CdC.Tests.BasePersistableObject {
         it("isLatestVersionForType deve restituire true per gli oggetti che hanno versioni oltre alla prima", () => {
             var te = new CdC.Tests.BasePersistableObject.v1.TestEntity();
 
-            var needsUpgrade = PersistableObjectUpgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
+            var needsUpgrade = Upgrader.isLatestVersionForType(te.__typeName, te.__typeVersion);
 
             expect(needsUpgrade).toBeTruthy("isLatestVersionForType should have returned true!");
         });
@@ -145,7 +145,7 @@ namespace CdC.Tests.BasePersistableObject {
 
             expect(te.__typeVersion).toEqual("v1");
 
-            var upgraded = <TestEntity>PersistableObjectUpgrader.upgrade(te);
+            var upgraded = <TestEntity>Upgrader.upgrade(te);
 
             expect(upgraded.__typeVersion).toEqual("v2");
             expect(upgraded.aNewProperty).toEqual("upgrader was here");
@@ -157,7 +157,7 @@ namespace CdC.Tests.BasePersistableObject {
 
             expect(te.__typeVersion).toEqual("v1");
 
-            var upgraded = <A3StepUpgradableItem>PersistableObjectUpgrader.upgrade(te);
+            var upgraded = <A3StepUpgradableItem>Upgrader.upgrade(te);
 
             expect(upgraded.__typeVersion).toEqual("v3");
             expect(upgraded.aNewProperty).toEqual("upgrader was here");

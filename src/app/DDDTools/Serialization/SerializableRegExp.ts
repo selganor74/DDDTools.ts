@@ -4,7 +4,7 @@ namespace DDDTools.Serialization {
 
     import ITypeTracking = CommonInterfaces.ITypeTracking;
 
-    export class FakeRegExp implements ITypeTracking {
+    export class SerializableRegExp implements ITypeTracking {
         __typeName: string = "RegExp";
         __typeVersion: string = "v1";
         __regularExpression: string;

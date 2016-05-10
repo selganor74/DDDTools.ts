@@ -4,7 +4,7 @@ namespace DDDTools.Serialization {
     
     import ITypeTracking = CommonInterfaces.ITypeTracking;
 
-    export class FakeDate implements ITypeTracking {
+    export class SerializableDate implements ITypeTracking {
         __typeName: string = "Date";
         __typeVersion: string = "v1";
         __dateAsString: string;

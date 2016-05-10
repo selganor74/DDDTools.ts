@@ -1,15 +1,14 @@
 /// <reference path="IPersistable.ts" />
-/// <reference path="PersistableObjectUpgrader.ts" />
+/// <reference path="Upgrader.ts" />
+/// <reference path="Errors.ts" />
 
 namespace DDDTools.PersistableObject {
-
-    import Errors = DDDTools.PersistableObject.PersistableErrors;
 
     /**
      * PersistableObjectFactory is an helper class to create and reconstitute statfeul objects.
      * It gurantees that a statful object is always created or reconstituted to its latest version.  
      */
-    export class PersistableObjectFactory {
+    export class Factory {
         /**
          * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
          * Latest available version is the one whose FQTN matches the one specified by typeName.
@@ -19,14 +18,14 @@ namespace DDDTools.PersistableObject {
             var toReturn: T;
 
             if (typeVersion) {
-                var typeToInstatiate = PersistableObjectFactory.computeFullyQualifiedTypeName(typeName, typeVersion);
+                var typeToInstatiate = Factory.computeFullyQualifiedTypeName(typeName, typeVersion);
                 try {
                     toReturn = <T>eval("new " + typeToInstatiate + "()");
                     return toReturn;
                 } catch (e) {
                     // This failure is expected if we are asking for the latest version available
                 }
-                toReturn = PersistableObjectFactory.createTypeInstance<T>(typeName);
+                toReturn = Factory.createTypeInstance<T>(typeName);
                 if (toReturn.__typeVersion != typeVersion) {
                     Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);    
                 }                   
@@ -54,21 +53,21 @@ namespace DDDTools.PersistableObject {
             }
 
             if (typeof state === 'object') {
-                if (PersistableObjectFactory.isPersistableObject(state)) {
+                if (Factory.isPersistableObject(state)) {
 
                     var persistable: IPersistable;
 
-                    persistable = PersistableObjectFactory.createTypeInstance(state.__typeName);
+                    persistable = Factory.createTypeInstance(state.__typeName);
                     persistable.setState(state);
                     // This warranties that a type is always returned at its latest version.
-                    var upgradedPersistable = PersistableObjectUpgrader.upgrade(persistable);
+                    var upgradedPersistable = Upgrader.upgrade(persistable);
                     return upgradedPersistable;
                 }
                 // If it is not a persistableObject can be an Array or an Object and must be reconstituted
                 var toReturn: any = Array.isArray(state) ? [] : {};
                 for (var currentElement in state) {
                     var thisElement = state[currentElement];
-                    toReturn[currentElement] = PersistableObjectFactory.createObjectsFromState(thisElement);
+                    toReturn[currentElement] = Factory.createObjectsFromState(thisElement);
                 }
                 return toReturn;
             }
@@ -102,7 +101,7 @@ namespace DDDTools.PersistableObject {
          */
         private static isTypeInstantiable(fullyQualifiedTypeName: string): boolean {
             try {
-                var tmpType = PersistableObjectFactory.createTypeInstance(fullyQualifiedTypeName);
+                var tmpType = Factory.createTypeInstance(fullyQualifiedTypeName);
             } catch (e) {
                 return false;
             }

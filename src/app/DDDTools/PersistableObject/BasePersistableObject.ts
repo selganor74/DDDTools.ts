@@ -1,14 +1,14 @@
 /// <reference path="IPersistable.ts" />
-/// <reference path="PersistableObjectErrors.ts" />
-/// <reference path="PersistableObjectFactory.ts" />
+/// <reference path="Errors.ts" />
+/// <reference path="Factory.ts" />
 /// <reference path="../Serialization/Deserializer.ts" />
 /// <reference path="../Serialization/Serializer.ts" />
 
 namespace DDDTools.PersistableObject {
 
     import IPersistable = PersistableObject.IPersistable;
-    import Errors = PersistableObject.PersistableErrors;
-    import PersistableObjectFactory = PersistableObject.PersistableObjectFactory;
+    import Errors = PersistableObject.Errors;
+    import PersistableObjectFactory = PersistableObject.Factory;
     import Serializer = Serialization.Serializer;
     import Deserializer = Serialization.Deserializer;
     

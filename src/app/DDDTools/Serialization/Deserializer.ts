@@ -99,7 +99,7 @@ namespace DDDTools.Serialization {
         private static FakeDateDeserializer(value: any): any {
             if (value.__typeName) {
                 if (value.__typeName === "Date") {
-                    value = new Date((<FakeDate>value).__dateAsString);
+                    value = new Date((<SerializableDate>value).__dateAsString);
                 }
             }
             return value;

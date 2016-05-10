@@ -2,14 +2,14 @@
 /// <reference path="../Entity/BaseEntity.ts"/>
 /// <reference path="../Repository/IRepository.ts"/>
 /// <reference path="../Repository/RepositoryErrors.ts"/>
-/// <reference path="../PersistableObject/PersistableObjectFactory.ts"/>
+/// <reference path="../PersistableObject/Factory.ts"/>
 
 namespace DDDTools.Repository {
     
     import IRepository = Repository.IRepository;
     import Errors = Repository.RepositoryErrors;
     import IPersistable = PersistableObject.IPersistable;
-    import PersistableObjectFactory = PersistableObject.PersistableObjectFactory;
+    import PersistableObjectFactory = PersistableObject.Factory;
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     

@@ -5,7 +5,6 @@
  */
 namespace DDDTools.PersistableObject {
 	
-	import IEquatable = CommonInterfaces.IEquatable;
 	import ITypeTracking = CommonInterfaces.ITypeTracking;
     
 	export interface IPersistable extends ITypeTracking {

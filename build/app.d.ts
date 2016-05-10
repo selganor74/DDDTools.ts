@@ -47,16 +47,11 @@ declare namespace DDDTools.ErrorManagement {
 }
 declare namespace DDDTools.PersistableObject {
     import BaseErrors = ErrorManagement.BaseErrors;
-    class PersistableErrors extends BaseErrors {
+    class Errors extends BaseErrors {
         static StateIsNotAnObject: string;
         static TypeNameNotSet: string;
         static TypeVersionNotSet: string;
         static UnableToInstantiateType: string;
-    }
-}
-declare namespace DDDTools.PersistableObject {
-    import BaseErrors = ErrorManagement.BaseErrors;
-    class UpgraderErrors extends BaseErrors {
         static TypeNotInstatiable: string;
         static UpgradePathNotFound: string;
         static IncorrectVersionFormat: string;
@@ -64,7 +59,7 @@ declare namespace DDDTools.PersistableObject {
     }
 }
 declare namespace DDDTools.PersistableObject {
-    class PersistableObjectUpgrader {
+    class Upgrader {
         private static latestTypeVersionMap;
         private static isVersionMapBuilt;
         private static buildVersionMapForType(typeName);
@@ -74,7 +69,7 @@ declare namespace DDDTools.PersistableObject {
     }
 }
 declare namespace DDDTools.PersistableObject {
-    class PersistableObjectFactory {
+    class Factory {
         static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T;
         static createObjectsFromState(state: any): any;
         private static isPersistableObject(objectToTest);
@@ -119,10 +114,30 @@ declare namespace DDDTools.Serialization {
     }
 }
 declare namespace DDDTools.Serialization {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class SerializableDate implements ITypeTracking {
+        __typeName: string;
+        __typeVersion: string;
+        __dateAsString: string;
+        constructor(date: Date);
+        getDate(): Date;
+    }
+}
+declare namespace DDDTools.Serialization {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class SerializableRegExp implements ITypeTracking {
+        __typeName: string;
+        __typeVersion: string;
+        __regularExpression: string;
+        constructor(regExp: RegExp);
+        getRegExp(): RegExp;
+    }
+}
+declare namespace DDDTools.Serialization {
     class Serializer {
         static serialize(toSerialize: any): string;
-        private static preprocessForFakeSubstitution(sourceObject);
-        private static postprocessForFakeSubstitution(sourceObject);
+        private static preprocessForSerializablesSubstitution(sourceObject);
+        private static postprocessForSerializableSubstitution(sourceObject);
         private static customSerializer(key, value);
     }
 }
@@ -253,26 +268,6 @@ declare namespace DDDTools.Repository {
         protected getByIdImplementation(id: TKey): T;
         protected saveImplementation(item: T): void;
         protected deleteImplementation(id: TKey): void;
-    }
-}
-declare namespace DDDTools.Serialization {
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class FakeDate implements ITypeTracking {
-        __typeName: string;
-        __typeVersion: string;
-        __dateAsString: string;
-        constructor(date: Date);
-        getDate(): Date;
-    }
-}
-declare namespace DDDTools.Serialization {
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class FakeRegExp implements ITypeTracking {
-        __typeName: string;
-        __typeVersion: string;
-        __regularExpression: string;
-        constructor(regExp: RegExp);
-        getRegExp(): RegExp;
     }
 }
 declare namespace DDDTools.UnitOfWork {

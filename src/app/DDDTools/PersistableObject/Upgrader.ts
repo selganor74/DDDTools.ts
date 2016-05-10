@@ -1,13 +1,13 @@
 /// <reference path="IPersistable.ts" />
-/// <reference path="UpgraderErrors.ts" />
-/// <reference path="PersistableObjectFactory.ts" />
+/// <reference path="Errors.ts" />
+/// <reference path="Factory.ts" />
 
 namespace DDDTools.PersistableObject {
 
-    import Errors = PersistableObject.UpgraderErrors;
+    import Errors = PersistableObject.Errors;
 
     /**
-     * The PersistableObjectUpgrader is an helper class to automate the "upgrade process" of an object's state.
+     * The Upgrader is an helper class to automate the "upgrade process" of an object's state.
      * The Upgrader is found on these principles:
      *  * The latest version FQTN must match the one specified by the property __typeName, which is in the form namespace.objectName.
      *  * Older versions of a PersistableObject MUST have a FQTN in the form namespace.<version>.objectName.
@@ -15,7 +15,7 @@ namespace DDDTools.PersistableObject {
      *  * All object's versions (excluding v1) MUST provide an getUpgradedInstance method that knows how to modify state to go from 
      *    version v<n - 1> to v<n>, where n is the version of the object containing the getUpgradedInstance method.   
      */
-    export class PersistableObjectUpgrader {
+    export class Upgrader {
         
         // Contains the latest version possible for each type. 
         private static latestTypeVersionMap: { [typeName: string]: string } = {};
@@ -23,26 +23,26 @@ namespace DDDTools.PersistableObject {
         private static isVersionMapBuilt: { [typeName: string]: boolean } = {};
 
         private static buildVersionMapForType(typeName: string): void {
-            if (PersistableObjectUpgrader.isVersionMapBuilt[typeName]) {
+            if (Upgrader.isVersionMapBuilt[typeName]) {
                 return;
             }
             try {
-                var tmpInstance = PersistableObjectFactory.createTypeInstance(typeName);
-                PersistableObjectUpgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
+                var tmpInstance = Factory.createTypeInstance(typeName);
+                Upgrader.latestTypeVersionMap[typeName] = tmpInstance.__typeVersion;
                 // console.log("Latest possible version for " + typeName + " is " + tmpInstance.__typeVersion);
             } catch (e) {
                 Errors.throw(Errors.TypeNotInstatiable, "The type " + typeName + " cannot be instantiated, so it is impossible to identify the latest possible version.");
             }
-            PersistableObjectUpgrader.isVersionMapBuilt[typeName] = true;
+            Upgrader.isVersionMapBuilt[typeName] = true;
         }
 
         public static isLatestVersionForType(typeName: string, typeVersion: string): boolean {
             // Looks for the latest version, if not already done.
-            if (!PersistableObjectUpgrader.isVersionMapBuilt[typeName]) {
-                PersistableObjectUpgrader.buildVersionMapForType(typeName);
+            if (!Upgrader.isVersionMapBuilt[typeName]) {
+                Upgrader.buildVersionMapForType(typeName);
             }
             // If the version supplied doesn't match the latest version in the map, the instance must be upgraded.
-            if (PersistableObjectUpgrader.latestTypeVersionMap[typeName] !== typeVersion) {
+            if (Upgrader.latestTypeVersionMap[typeName] !== typeVersion) {
                 return true;
             }
             return false;
@@ -50,17 +50,17 @@ namespace DDDTools.PersistableObject {
 
         public static upgrade(instanceFrom: IPersistable): IPersistable {
             // If object doesn't need to upgrade, then we are done!
-            if (!PersistableObjectUpgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
+            if (!Upgrader.isLatestVersionForType(instanceFrom.__typeName, instanceFrom.__typeVersion)) {
                 return instanceFrom;
             }
-            var nextVersion = PersistableObjectUpgrader.computeNextVersion(instanceFrom.__typeVersion);
-            var upgraderInstance = PersistableObjectFactory.createTypeInstance(instanceFrom.__typeName, nextVersion);
+            var nextVersion = Upgrader.computeNextVersion(instanceFrom.__typeVersion);
+            var upgraderInstance = Factory.createTypeInstance(instanceFrom.__typeName, nextVersion);
             var upgraded = upgraderInstance.getUpgradedInstance(instanceFrom);
             // Verifies that version is effectively upgraded
             if(upgraded.__typeVersion != nextVersion){
                 Errors.throw(Errors.WrongVersionInUpgradedInstance, "The expected version of the upgraded instance was " + nextVersion + " while was found to be " + upgraderInstance.__typeVersion );
             }
-            return PersistableObjectUpgrader.upgrade(upgraded);
+            return Upgrader.upgrade(upgraded);
         }
 
         public static computeNextVersion(typeVersion: string): string {

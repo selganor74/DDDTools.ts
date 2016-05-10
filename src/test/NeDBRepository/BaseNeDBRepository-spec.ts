@@ -7,7 +7,7 @@ namespace CdC.Tests.NeDBRepository {
         
     describe("BaseNeDBRepository", () => {
         it("Should be possible to instantiate the NeDB Object.", () => {
-            
+            pending("No clue on how to use NeDB's d.ts");
         });
     });
         
