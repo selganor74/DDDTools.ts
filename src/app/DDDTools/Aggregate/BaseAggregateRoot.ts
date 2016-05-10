@@ -35,6 +35,22 @@ namespace DDDTools.Aggregate {
         public incrementRevisionId(){
             this.__revisionId ++;
         }
+        
+        public perfectlyMatch( other: BaseAggregateRoot<T, TKey> ): boolean {
+            
+            if (!other) {
+                return false;
+            }
+            
+            var thisOne = this.getState();
+            var theOther = other.getState();
+            
+            // do the comparison just like value objects... naive but functional at this time.
+            var thisOneAsString = JSON.stringify(thisOne);
+            var theOtherAsString = JSON.stringify(theOther);
+            
+            return thisOneAsString === theOtherAsString;
+        }
 
     }
 }

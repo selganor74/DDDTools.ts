@@ -40,23 +40,18 @@ namespace DDDTools.Repository {
                 Errors.throw(Errors.KeyNotSet);
             }
 
-            var howItWas: string;
-            
-            var howItIs = JSON.stringify( item );
-            
             var asItWas: T = null;
             try {
-                var asItWas = this.getById(item.getKey());                
+                asItWas = this.getById(item.getKey());                
             } catch(e) {
                 // This is expected if the do not exists in the Repo.
             }
 
-            
-            
-            if (howItIs !== howItWas) {
+            if (!item.perfectlyMatch( asItWas )) {
                 item.incrementRevisionId();
             }
             
+            // finally saves aggregate into the repository.
             this.storage[key] = item.getState();
         }
         

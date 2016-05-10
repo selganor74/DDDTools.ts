@@ -2,9 +2,10 @@
 
 namespace DDDTools.Entity {
 	
-	import IEquatable = DDDTools.CommonInterfaces.IEquatable;
+	import IPersistable = PersistableObject.IPersistable
+	import IEquatable = CommonInterfaces.IEquatable;
 	
-	export interface IEntity<T, TKey extends IEquatable<TKey>> extends IEquatable<T> {
+	export interface IEntity<T, TKey extends IEquatable<TKey>> extends IEquatable<T>, IPersistable {
 		getKey() : TKey;
 		setKey(key: TKey) : void; 
 	}

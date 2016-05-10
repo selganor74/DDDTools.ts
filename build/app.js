@@ -574,6 +574,16 @@ var DDDTools;
             BaseAggregateRoot.prototype.incrementRevisionId = function () {
                 this.__revisionId++;
             };
+            BaseAggregateRoot.prototype.perfectlyMatch = function (other) {
+                if (!other) {
+                    return false;
+                }
+                var thisOne = this.getState();
+                var theOther = other.getState();
+                var thisOneAsString = JSON.stringify(thisOne);
+                var theOtherAsString = JSON.stringify(theOther);
+                return thisOneAsString === theOtherAsString;
+            };
             return BaseAggregateRoot;
         }(BaseEntity));
         Aggregate.BaseAggregateRoot = BaseAggregateRoot;
@@ -723,15 +733,13 @@ var DDDTools;
                 catch (e) {
                     Errors.throw(Errors.KeyNotSet);
                 }
-                var howItWas;
-                var howItIs = JSON.stringify(item);
                 var asItWas = null;
                 try {
-                    var asItWas = this.getById(item.getKey());
+                    asItWas = this.getById(item.getKey());
                 }
                 catch (e) {
                 }
-                if (howItIs !== howItWas) {
+                if (!item.perfectlyMatch(asItWas)) {
                     item.incrementRevisionId();
                 }
                 this.storage[key] = item.getState();
@@ -1269,7 +1277,6 @@ var CdC;
                 expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
             });
             it("RevisionId must be incremented only if object to be saved differs from object saved", function () {
-                pending("Need to refactor IPErsistable to add functions for State Comparison.");
                 var repo = new TestRepository();
                 var e = new TestAggregate();
                 e.setKey(new Key());

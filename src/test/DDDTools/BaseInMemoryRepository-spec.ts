@@ -195,7 +195,7 @@ namespace CdC.Tests {
         });
         
         it("RevisionId must be incremented only if object to be saved differs from object saved", () => {
-            pending("Need to refactor IPErsistable to add functions for State Comparison.");
+            // pending("Need to refactor IPErsistable to add functions for State Comparison.");
 
             var repo = new TestRepository();
             var e = new TestAggregate();

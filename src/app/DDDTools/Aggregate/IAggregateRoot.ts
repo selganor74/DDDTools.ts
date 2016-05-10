@@ -12,6 +12,8 @@ namespace DDDTools.Aggregate {
                  extends IEntity<T, TKey> {
 
                 getRevisionId(): number
-                incrementRevisionId();	
+                incrementRevisionId();
+                
+                perfectlyMatch(another: IAggregateRoot<T, TKey>): boolean;
         }
 }

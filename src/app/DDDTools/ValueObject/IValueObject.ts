@@ -5,9 +5,10 @@
  */
 namespace DDDTools.ValueObject {
 	
+	import IPersistable = PersistableObject.IPersistable;
 	import IEquatable = CommonInterfaces.IEquatable;
 	
-	export interface IValueObject<T> extends IEquatable<T> {
+	export interface IValueObject<T> extends IEquatable<T>, IPersistable {
 		
 	}
 }
