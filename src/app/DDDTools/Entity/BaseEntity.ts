@@ -14,7 +14,8 @@ namespace DDDTools.Entity {
 	import DomainDispatcher = DomainEvents.DomainDispatcher;
 	
 	export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> 
-			extends BasePersistableObject {
+			extends BasePersistableObject
+            implements IEntity<T, TKey> {
 				
         private key: TKey;
         

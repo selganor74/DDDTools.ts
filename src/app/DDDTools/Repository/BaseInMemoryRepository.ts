@@ -1,18 +1,20 @@
 /// <reference path="../ValueObject/BaseValueObject.ts"/>
 /// <reference path="../Entity/BaseEntity.ts"/>
 /// <reference path="../Repository/IRepository.ts"/>
-/// <reference path="../Repository/RepositoryErrors.ts"/>
+/// <reference path="../Repository/Errors.ts"/>
 /// <reference path="BaseRepository.ts" />
 
 namespace DDDTools.Repository {
 
-    import Errors = Repository.RepositoryErrors;
+    import Errors = Repository.Errors;
     import IPersistable = PersistableObject.IPersistable;
     import PersistableObjectFactory = PersistableObject.Factory;1
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
 
-    export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> {
+    export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> 
+        extends BaseRepository<T, TKey>
+        implements IRepository<T, TKey> {
 
         private storage: { [id: string]: IPersistable };
 

@@ -15,7 +15,7 @@ namespace CdC.Tests.UnitOfWork {
     import ObjectRetrievedEvent = DDDTools.UnitOfWork.ObjectRetrievedEvent;
     import Events = DDDTools.UnitOfWork.Events;
     import UnitOfWorkErrors = DDDTools.UnitOfWork.UnitOfWorkErrors;
-    import RepositoryErrors = DDDTools.Repository.RepositoryErrors;
+    import Errors = DDDTools.Repository.Errors;
     
     export class TestKey extends Guid {
         constructor() {
@@ -230,7 +230,7 @@ namespace CdC.Tests.UnitOfWork {
                 expect(false).toBeTruthy("The element has been marked as deleted and deleted, but it is still returned by the UoW.");
             } catch (e) {
                 expect(e instanceof Error).toBeTruthy();
-                expect(e.name).toEqual(RepositoryErrors.ItemNotFound);            
+                expect(e.name).toEqual(Errors.ItemNotFound);            
             }                         
         });
     });

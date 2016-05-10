@@ -16,14 +16,6 @@ declare namespace DDDTools.Entity {
         toString(): string;
     }
 }
-declare namespace DDDTools.Entity {
-    import IPersistable = PersistableObject.IPersistable;
-    import IEquatable = CommonInterfaces.IEquatable;
-    interface IEntity<T, TKey extends IEquatable<TKey>> extends IEquatable<T>, IPersistable {
-        getKey(): TKey;
-        setKey(key: TKey): void;
-    }
-}
 declare namespace DDDTools.CommonInterfaces {
     interface ITypeTracking {
         __typeName: string;
@@ -37,6 +29,14 @@ declare namespace DDDTools.PersistableObject {
         getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
         getState(): any;
         setState(state: any): any;
+    }
+}
+declare namespace DDDTools.Entity {
+    import IPersistable = PersistableObject.IPersistable;
+    import IEquatable = CommonInterfaces.IEquatable;
+    interface IEntity<T, TKey extends IKeyValueObject<TKey>> extends IEquatable<T>, IPersistable {
+        getKey(): TKey;
+        setKey(key: TKey): void;
     }
 }
 declare namespace DDDTools.ErrorManagement {
@@ -178,7 +178,7 @@ declare namespace DDDTools.DomainEvents {
 }
 declare namespace DDDTools.Entity {
     import BasePersistableObject = PersistableObject.BasePersistableObject;
-    abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BasePersistableObject {
+    abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BasePersistableObject implements IEntity<T, TKey> {
         private key;
         private raiseEvent(event);
         getKey(): TKey;
@@ -240,7 +240,7 @@ declare namespace DDDTools.Repository {
 }
 declare namespace DDDTools.Repository {
     import BaseErrors = ErrorManagement.BaseErrors;
-    class RepositoryErrors extends BaseErrors {
+    class Errors extends BaseErrors {
         static KeyNotSet: string;
         static ItemNotFound: string;
     }
@@ -261,7 +261,7 @@ declare namespace DDDTools.Repository {
 declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
-    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> {
+    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
         private _managedTypeName;
         private storage;
         constructor(_managedTypeName: string);

@@ -715,23 +715,23 @@ var DDDTools;
     var Repository;
     (function (Repository) {
         var BaseErrors = DDDTools.ErrorManagement.BaseErrors;
-        var RepositoryErrors = (function (_super) {
-            __extends(RepositoryErrors, _super);
-            function RepositoryErrors() {
+        var Errors = (function (_super) {
+            __extends(Errors, _super);
+            function Errors() {
                 _super.apply(this, arguments);
             }
-            RepositoryErrors.KeyNotSet = "Key not set";
-            RepositoryErrors.ItemNotFound = "Item Not Found";
-            return RepositoryErrors;
+            Errors.KeyNotSet = "Key not set";
+            Errors.ItemNotFound = "Item Not Found";
+            return Errors;
         }(BaseErrors));
-        Repository.RepositoryErrors = RepositoryErrors;
+        Repository.Errors = Errors;
     })(Repository = DDDTools.Repository || (DDDTools.Repository = {}));
 })(DDDTools || (DDDTools = {}));
 var DDDTools;
 (function (DDDTools) {
     var Repository;
     (function (Repository) {
-        var Errors = Repository.RepositoryErrors;
+        var Errors = Repository.Errors;
         var BaseRepository = (function () {
             function BaseRepository() {
             }
@@ -774,7 +774,7 @@ var DDDTools;
 (function (DDDTools) {
     var Repository;
     (function (Repository) {
-        var Errors = Repository.RepositoryErrors;
+        var Errors = Repository.Errors;
         var PersistableObjectFactory = DDDTools.PersistableObject.Factory;
         1;
         var BaseInMemoryRepository = (function (_super) {
@@ -1132,7 +1132,7 @@ var CdC;
         var BaseEntity = DDDTools.Entity.BaseEntity;
         var BaseValueObject = DDDTools.ValueObject.BaseValueObject;
         var BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-        var RepoErrors = DDDTools.Repository.RepositoryErrors;
+        var RepoErrors = DDDTools.Repository.Errors;
         var BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
         var Key = (function (_super) {
             __extends(Key, _super);
@@ -1668,7 +1668,7 @@ var CdC;
             var UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
             var Events = DDDTools.UnitOfWork.Events;
             var UnitOfWorkErrors = DDDTools.UnitOfWork.UnitOfWorkErrors;
-            var RepositoryErrors = DDDTools.Repository.RepositoryErrors;
+            var Errors = DDDTools.Repository.Errors;
             var TestKey = (function (_super) {
                 __extends(TestKey, _super);
                 function TestKey() {
@@ -1838,7 +1838,7 @@ var CdC;
                     }
                     catch (e) {
                         expect(e instanceof Error).toBeTruthy();
-                        expect(e.name).toEqual(RepositoryErrors.ItemNotFound);
+                        expect(e.name).toEqual(Errors.ItemNotFound);
                     }
                 });
             });

@@ -1,13 +1,13 @@
 /// <reference path="../ValueObject/BaseValueObject.ts"/>
 /// <reference path="../Entity/BaseEntity.ts"/>
 /// <reference path="../Repository/IRepository.ts"/>
-/// <reference path="../Repository/RepositoryErrors.ts"/>
+/// <reference path="../Repository/Errors.ts"/>
 /// <reference path="../PersistableObject/Factory.ts"/>
 
 namespace DDDTools.Repository {
     
     import IRepository = Repository.IRepository;
-    import Errors = Repository.RepositoryErrors;
+    import Errors = Repository.Errors;
     import IPersistable = PersistableObject.IPersistable;
     import PersistableObjectFactory = PersistableObject.Factory;
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
@@ -16,7 +16,8 @@ namespace DDDTools.Repository {
     /**
      * Captures common behavior of repository, using theTemplate Method Pattern.
      */
-    export abstract class BaseRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
+    export abstract class BaseRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> 
+                implements IRepository<T, TKey> {
                 
         /**
          * You MUST override this method to provide functionality to access to the repository and get an "stateObject" to use for object "reconstruction".
@@ -34,7 +35,7 @@ namespace DDDTools.Repository {
         }
         
         /**
-         * You MUST override this method to provide "save" functionality in your implementation. The entry pont method "save" will manage the revisionId for you.
+         * You MUST override this method to provide "save" functionality in your implementation. The template method "save" will manage the revisionId logic.
          */
         protected abstract saveImplementation(item: T): void;
  

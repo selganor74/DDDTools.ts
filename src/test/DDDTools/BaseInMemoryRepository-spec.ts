@@ -6,7 +6,7 @@ namespace CdC.Tests {
     import BaseEntity = DDDTools.Entity.BaseEntity;
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-    import RepoErrors = DDDTools.Repository.RepositoryErrors;
+    import RepoErrors = DDDTools.Repository.Errors;
     import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
 
     export class Key extends BaseValueObject<Key> {
