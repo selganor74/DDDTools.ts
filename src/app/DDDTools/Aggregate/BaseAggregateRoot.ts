@@ -26,6 +26,15 @@ namespace DDDTools.Aggregate {
         extends BaseEntity<T, TKey>
         implements IAggregateRoot<T, TKey>
     {   
+        private __revisionId: number = 0;
+
+        public getRevisionId(): number {
+            return this.__revisionId;
+        }
+		
+        public incrementRevisionId(){
+            this.__revisionId ++;
+        }
 
     }
 }

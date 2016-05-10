@@ -5,11 +5,12 @@
  */
 namespace DDDTools.PersistableObject {
 	
+	import IEquatable = CommonInterfaces.IEquatable;
 	import ITypeTracking = CommonInterfaces.ITypeTracking;
     
 	export interface IPersistable extends ITypeTracking {
         getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
 		getState(): any;
-		setState(state: any);
+		setState(state: any); 
 	}
 }

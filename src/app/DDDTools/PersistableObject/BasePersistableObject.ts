@@ -16,7 +16,7 @@ namespace DDDTools.PersistableObject {
 
         public __typeName: string = "";
         public __typeVersion: string = "";
-
+        
         public getState(): any {
             if (this.__typeName === "") {
                 Errors.throw(Errors.TypeNameNotSet);
@@ -33,7 +33,7 @@ namespace DDDTools.PersistableObject {
         }
 
 
-        public setState(state: any) {
+        public setState<TState>(state: TState) {
 
             // console.log(JSON.stringify(state));
 
@@ -47,6 +47,6 @@ namespace DDDTools.PersistableObject {
             }
 
             // console.log( JSON.stringify( this.getState() ) );
-        }
+        }        
     }
 }

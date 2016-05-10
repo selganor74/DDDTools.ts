@@ -53,7 +53,7 @@ var DDDTools;
             function UpgraderErrors() {
                 _super.apply(this, arguments);
             }
-            UpgraderErrors.TypeNotInstatiable = "Type in not instantiable";
+            UpgraderErrors.TypeNotInstatiable = "Type is not instantiable";
             UpgraderErrors.UpgradePathNotFound = "Upgrade Path not Found";
             UpgraderErrors.IncorrectVersionFormat = "Incorrect Version Format";
             UpgraderErrors.WrongVersionInUpgradedInstance = "Wrong Version in Upgraded Instance";
@@ -566,7 +566,14 @@ var DDDTools;
             __extends(BaseAggregateRoot, _super);
             function BaseAggregateRoot() {
                 _super.apply(this, arguments);
+                this.__revisionId = 0;
             }
+            BaseAggregateRoot.prototype.getRevisionId = function () {
+                return this.__revisionId;
+            };
+            BaseAggregateRoot.prototype.incrementRevisionId = function () {
+                this.__revisionId++;
+            };
             return BaseAggregateRoot;
         }(BaseEntity));
         Aggregate.BaseAggregateRoot = BaseAggregateRoot;
@@ -715,6 +722,17 @@ var DDDTools;
                 }
                 catch (e) {
                     Errors.throw(Errors.KeyNotSet);
+                }
+                var howItWas;
+                var howItIs = JSON.stringify(item);
+                var asItWas = null;
+                try {
+                    var asItWas = this.getById(item.getKey());
+                }
+                catch (e) {
+                }
+                if (howItIs !== howItWas) {
+                    item.incrementRevisionId();
                 }
                 this.storage[key] = item.getState();
             };
@@ -1117,26 +1135,27 @@ var CdC;
             return ChildEntity;
         }(BaseEntity));
         Tests.ChildEntity = ChildEntity;
-        var TestEntity = (function (_super) {
-            __extends(TestEntity, _super);
-            function TestEntity() {
+        var TestAggregate = (function (_super) {
+            __extends(TestAggregate, _super);
+            function TestAggregate() {
                 _super.call(this);
                 this.arrayOfEntities = [];
                 this.anonymousObject = {};
                 this.anObjectReference = {};
                 this.anotherObjectReference = {};
-                this.__typeName = "CdC.Tests.TestEntity";
+                this.__typeName = "CdC.Tests.TestAggregate";
                 this.__typeVersion = "v1";
+                this.aTestProperty = "a test value !";
             }
-            return TestEntity;
+            return TestAggregate;
         }(BaseAggregateRoot));
-        Tests.TestEntity = TestEntity;
+        Tests.TestAggregate = TestAggregate;
         var TestRepository = (function (_super) {
             __extends(TestRepository, _super);
             function TestRepository() {
                 _super.call(this, TestRepository.managedTypeName);
             }
-            TestRepository.managedTypeName = "CdC.Tests.TestEntity";
+            TestRepository.managedTypeName = "CdC.Tests.TestAggregate";
             return TestRepository;
         }(BaseInMemoryRepository));
         describe("BaseInMemoryRepository", function () {
@@ -1146,7 +1165,7 @@ var CdC;
             });
             it("It must throw 'KeyNotSet' when saving an entity without key set", function () {
                 var repo = new TestRepository();
-                var item = new TestEntity();
+                var item = new TestAggregate();
                 try {
                     repo.save(item);
                     expect(false).toBeTruthy();
@@ -1157,7 +1176,7 @@ var CdC;
             });
             it("It must be possible to save an entity with the key set", function () {
                 var repo = new TestRepository();
-                var item = new TestEntity();
+                var item = new TestAggregate();
                 try {
                     repo.save(item);
                     expect(false).toBeTruthy();
@@ -1168,7 +1187,7 @@ var CdC;
             });
             it("it should throw ItemNotFound if a key is not present in the repository", function () {
                 var repo = new TestRepository();
-                var item = new TestEntity();
+                var item = new TestAggregate();
                 var key = new Key();
                 var key2 = new Key();
                 item.setKey(key);
@@ -1178,7 +1197,7 @@ var CdC;
             it("It must correctly reconstitute an array", function () {
                 var repo = new TestRepository();
                 var numberOfElementsToAdd = 10;
-                var item = new TestEntity();
+                var item = new TestAggregate();
                 var key = new Key();
                 item.setKey(key);
                 for (var i = 0; i < numberOfElementsToAdd; i++) {
@@ -1196,7 +1215,7 @@ var CdC;
                 catch (e) {
                     expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message);
                 }
-                expect(reloaded instanceof TestEntity).toBeTruthy("Reconstituted object is not an instance of the original type.");
+                expect(reloaded instanceof TestAggregate).toBeTruthy("Reconstituted object is not an instance of the original type.");
                 expect(Array.isArray(reloaded.arrayOfEntities)).toBeTruthy("Property arrayOfEntities is not an Array");
                 expect(reloaded.arrayOfEntities.length).toEqual(numberOfElementsToAdd, "Property arrayOfEntities does not contain " + numberOfElementsToAdd + " elements");
                 for (var t = 0; t < numberOfElementsToAdd; t++) {
@@ -1208,10 +1227,10 @@ var CdC;
             it("It must correctly reconstitute 'anonymous' objects.", function () {
                 var repo = new TestRepository();
                 var numberOfElementsToAdd = 10;
-                var item = new TestEntity();
+                var item = new TestAggregate();
                 var key = new Key();
                 item.setKey(key);
-                var anotherEntity = new TestEntity();
+                var anotherEntity = new TestAggregate();
                 anotherEntity.setKey(new Key());
                 item.anonymousObject.anotherEntity = anotherEntity;
                 item.anonymousObject.aNumberType = 42;
@@ -1222,13 +1241,13 @@ var CdC;
                 catch (e) {
                     expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message);
                 }
-                expect(reloaded.anonymousObject.anotherEntity instanceof TestEntity).toBeTruthy("Reconstituted object is not an instance of the original type.");
+                expect(reloaded.anonymousObject.anotherEntity instanceof TestAggregate).toBeTruthy("Reconstituted object is not an instance of the original type.");
                 expect(reloaded.anonymousObject.aNumberType).toEqual(42, "Property aNumberType was not correctly reconstituted.");
             });
             it("It must correctly reconstitute references to the same instance.", function () {
                 var repo = new TestRepository();
                 var numberOfElementsToAdd = 10;
-                var item = new TestEntity();
+                var item = new TestAggregate();
                 var key = new Key();
                 item.setKey(key);
                 var anObjectReferencedInMoreThanOneProperty = {
@@ -1248,6 +1267,21 @@ var CdC;
                     expect(false).toBeTruthy("Exception while saving or retrieving the item. " + e.message);
                 }
                 expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
+            });
+            it("RevisionId must be incremented only if object to be saved differs from object saved", function () {
+                pending("Need to refactor IPErsistable to add functions for State Comparison.");
+                var repo = new TestRepository();
+                var e = new TestAggregate();
+                e.setKey(new Key());
+                e.aTestProperty = "Before saving...";
+                expect(e.getRevisionId()).toEqual(0);
+                repo.save(e);
+                expect(e.getRevisionId()).toEqual(1);
+                repo.save(e);
+                expect(e.getRevisionId()).toEqual(1);
+                e.aTestProperty = "... after saving";
+                repo.save(e);
+                expect(e.getRevisionId()).toEqual(2);
             });
         });
     })(Tests = CdC.Tests || (CdC.Tests = {}));

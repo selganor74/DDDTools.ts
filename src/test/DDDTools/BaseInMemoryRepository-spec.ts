@@ -33,25 +33,26 @@ namespace CdC.Tests {
         }
     }
 
-    export class TestEntity extends BaseAggregateRoot<TestEntity, Key> {
+    export class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
         public arrayOfEntities: ChildEntity[] = [];
         public anonymousObject: any = {};
         // Used to test objects references reconstitution.
         public anObjectReference: any = {};
         public anotherObjectReference: any = {};
 
-        __typeName = "CdC.Tests.TestEntity";
+        __typeName = "CdC.Tests.TestAggregate";
         __typeVersion = "v1";
 
+        aTestProperty: string = "a test value !";
         constructor() {
             super();
         }
 
     }
 
-    class TestRepository extends BaseInMemoryRepository<TestEntity, Key> {
+    class TestRepository extends BaseInMemoryRepository<TestAggregate, Key> {
 
-        private static managedTypeName = "CdC.Tests.TestEntity";
+        private static managedTypeName = "CdC.Tests.TestAggregate";
 
         constructor() {
             super(TestRepository.managedTypeName);
@@ -68,7 +69,7 @@ namespace CdC.Tests {
         it("It must throw 'KeyNotSet' when saving an entity without key set", () => {
             var repo = new TestRepository();
 
-            var item = new TestEntity();
+            var item = new TestAggregate();
             try {
                 repo.save(item);
                 expect(false).toBeTruthy();
@@ -80,7 +81,7 @@ namespace CdC.Tests {
         it("It must be possible to save an entity with the key set", () => {
             var repo = new TestRepository();
 
-            var item = new TestEntity();
+            var item = new TestAggregate();
             try {
                 repo.save(item);
                 expect(false).toBeTruthy();
@@ -92,7 +93,7 @@ namespace CdC.Tests {
         it("it should throw ItemNotFound if a key is not present in the repository", () => {
             var repo = new TestRepository();
 
-            var item = new TestEntity();
+            var item = new TestAggregate();
             var key = new Key();
             var key2 = new Key();
             item.setKey(key);
@@ -108,7 +109,7 @@ namespace CdC.Tests {
             var repo = new TestRepository();
             var numberOfElementsToAdd = 10;
 
-            var item = new TestEntity();
+            var item = new TestAggregate();
             var key = new Key();
             item.setKey(key);
 
@@ -128,7 +129,7 @@ namespace CdC.Tests {
             } catch (e) {
                 expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
             }
-            expect(reloaded instanceof TestEntity).toBeTruthy("Reconstituted object is not an instance of the original type.");
+            expect(reloaded instanceof TestAggregate).toBeTruthy("Reconstituted object is not an instance of the original type.");
             expect(Array.isArray(reloaded.arrayOfEntities)).toBeTruthy("Property arrayOfEntities is not an Array");
             expect(reloaded.arrayOfEntities.length).toEqual(numberOfElementsToAdd, "Property arrayOfEntities does not contain " + numberOfElementsToAdd + " elements");
             for (var t = 0; t < numberOfElementsToAdd; t++) {
@@ -141,11 +142,11 @@ namespace CdC.Tests {
         it("It must correctly reconstitute 'anonymous' objects.", () => {
             var repo = new TestRepository();
             var numberOfElementsToAdd = 10;
-            var item = new TestEntity();
+            var item = new TestAggregate();
             var key = new Key();
             item.setKey(key);
 
-            var anotherEntity = new TestEntity();
+            var anotherEntity = new TestAggregate();
             anotherEntity.setKey(new Key());
             item.anonymousObject.anotherEntity = anotherEntity;
             item.anonymousObject.aNumberType = 42;
@@ -156,7 +157,7 @@ namespace CdC.Tests {
                 expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
             }
 
-            expect(reloaded.anonymousObject.anotherEntity instanceof TestEntity).toBeTruthy("Reconstituted object is not an instance of the original type.");
+            expect(reloaded.anonymousObject.anotherEntity instanceof TestAggregate).toBeTruthy("Reconstituted object is not an instance of the original type.");
             expect(reloaded.anonymousObject.aNumberType).toEqual(42, "Property aNumberType was not correctly reconstituted.");
         });
 
@@ -166,7 +167,7 @@ namespace CdC.Tests {
 
             var repo = new TestRepository();
             var numberOfElementsToAdd = 10;
-            var item = new TestEntity();
+            var item = new TestAggregate();
             var key = new Key();
             item.setKey(key);
 
@@ -192,5 +193,29 @@ namespace CdC.Tests {
             expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
             
         });
-    })
+        
+        it("RevisionId must be incremented only if object to be saved differs from object saved", () => {
+            pending("Need to refactor IPErsistable to add functions for State Comparison.");
+
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            e.setKey(new Key());
+            e.aTestProperty = "Before saving...";
+            
+            expect(e.getRevisionId()).toEqual(0);
+
+            repo.save(e);
+            
+            expect(e.getRevisionId()).toEqual(1);
+            
+            repo.save(e);
+            
+            expect(e.getRevisionId()).toEqual(1);
+            
+            e.aTestProperty = "... after saving";
+            repo.save(e);
+            
+            expect(e.getRevisionId()).toEqual(2);
+        });
+    });
 } 
