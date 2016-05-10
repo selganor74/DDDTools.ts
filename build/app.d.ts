@@ -234,13 +234,25 @@ declare namespace DDDTools.Repository {
     import IRepository = Repository.IRepository;
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
-    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
+    abstract class BaseRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
+        protected abstract getByIdImplementation(id: TKey): T;
+        getById(id: TKey): T;
+        protected abstract saveImplementation(item: T): void;
+        save(item: T): void;
+        protected abstract deleteImplementation(id: TKey): void;
+        delete(id: TKey): void;
+    }
+}
+declare namespace DDDTools.Repository {
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> {
         private _managedTypeName;
         private storage;
         constructor(_managedTypeName: string);
-        getById(id: TKey): T;
-        save(item: T): void;
-        delete(id: TKey): void;
+        protected getByIdImplementation(id: TKey): T;
+        protected saveImplementation(item: T): void;
+        protected deleteImplementation(id: TKey): void;
     }
 }
 declare namespace DDDTools.Serialization {

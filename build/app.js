@@ -712,21 +712,19 @@ var DDDTools;
     var Repository;
     (function (Repository) {
         var Errors = Repository.RepositoryErrors;
-        var PersistableObjectFactory = DDDTools.PersistableObject.PersistableObjectFactory;
-        var BaseInMemoryRepository = (function () {
-            function BaseInMemoryRepository(_managedTypeName) {
-                this._managedTypeName = _managedTypeName;
-                this.storage = {};
+        var BaseRepository = (function () {
+            function BaseRepository() {
             }
-            BaseInMemoryRepository.prototype.getById = function (id) {
-                var key = id.toString();
-                if (this.storage[key]) {
-                    var toReturn = PersistableObjectFactory.createObjectsFromState(this.storage[key]);
+            BaseRepository.prototype.getById = function (id) {
+                try {
+                    var toReturn = this.getByIdImplementation(id);
                     return toReturn;
                 }
-                Errors.throw(Errors.ItemNotFound);
+                catch (e) {
+                    Errors.throw(Errors.ItemNotFound, e.message);
+                }
             };
-            BaseInMemoryRepository.prototype.save = function (item) {
+            BaseRepository.prototype.save = function (item) {
                 try {
                     var key = item.getKey().toString();
                 }
@@ -742,14 +740,48 @@ var DDDTools;
                 if (!item.perfectlyMatch(asItWas)) {
                     item.incrementRevisionId();
                 }
+                this.saveImplementation(item);
+            };
+            BaseRepository.prototype.delete = function (id) {
+                this.deleteImplementation(id);
+            };
+            return BaseRepository;
+        }());
+        Repository.BaseRepository = BaseRepository;
+    })(Repository = DDDTools.Repository || (DDDTools.Repository = {}));
+})(DDDTools || (DDDTools = {}));
+var DDDTools;
+(function (DDDTools) {
+    var Repository;
+    (function (Repository) {
+        var Errors = Repository.RepositoryErrors;
+        var PersistableObjectFactory = DDDTools.PersistableObject.PersistableObjectFactory;
+        1;
+        var BaseInMemoryRepository = (function (_super) {
+            __extends(BaseInMemoryRepository, _super);
+            function BaseInMemoryRepository(_managedTypeName) {
+                _super.call(this);
+                this._managedTypeName = _managedTypeName;
+                this.storage = {};
+            }
+            BaseInMemoryRepository.prototype.getByIdImplementation = function (id) {
+                var key = id.toString();
+                if (this.storage[key]) {
+                    var toReturn = PersistableObjectFactory.createObjectsFromState(this.storage[key]);
+                    return toReturn;
+                }
+                Errors.throw(Errors.ItemNotFound);
+            };
+            BaseInMemoryRepository.prototype.saveImplementation = function (item) {
+                var key = item.getKey().toString();
                 this.storage[key] = item.getState();
             };
-            BaseInMemoryRepository.prototype.delete = function (id) {
+            BaseInMemoryRepository.prototype.deleteImplementation = function (id) {
                 var key = id.toString();
                 this.storage[key] = undefined;
             };
             return BaseInMemoryRepository;
-        }());
+        }(Repository.BaseRepository));
         Repository.BaseInMemoryRepository = BaseInMemoryRepository;
     })(Repository = DDDTools.Repository || (DDDTools.Repository = {}));
 })(DDDTools || (DDDTools = {}));
