@@ -1,3 +1,4 @@
+/// <reference path="../../../typings/browser.d.ts"/>
 /// <reference path="../../app/DDDTools/DomainEvents/DomainDispatcher.ts" />
 /// <reference path="../../app/DDDTools/DomainEvents/IDomainEvent.ts" />
 /// <reference path="../../app/DDDTools/ValueObject/BaseValueObject.ts" />

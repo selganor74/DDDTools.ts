@@ -39,10 +39,10 @@ module.exports = function(grunt) {
         },
         ts: {
             build: {
-                tsconfig: 'src/tsconfig.json'
+                tsconfig: 'src/DDDTools/tsconfig.json'
             },
             "build-tests": {
-                tsconfig: 'src/tsconfig.json'
+                tsconfig: 'src/test/tsconfig.json'
             }
         },
         "http-server": {

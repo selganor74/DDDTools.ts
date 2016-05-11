@@ -1,0 +1,10 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"sourceMap": true,
+        "sourceRoot": "../src/DDDTools",
+		"rootDir": "src/DDDTools",
+        "outFile": "../../build/ddd-tools.js",
+        "diagnostics": true
+	}
+}

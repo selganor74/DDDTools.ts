@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"sourceMap": true,
+        "sourceRoot": "../src/app/NeDBRepository",
+		"rootDir": "src/app/NeDBRepository",
+		"declaration": true,
+        "outFile": "../../../build/ddd-tools-nedbrepository.js",
+        "diagnostics": true
+	}
+}

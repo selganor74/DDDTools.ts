@@ -1,4 +1,4 @@
-/// <reference path="../../../typings/main.d.ts"/>
+/// <reference path="../../../typings/browser.d.ts"/>
 /// <reference path="../../app/DDDTools/PersistableObject/Upgrader.ts" />
 /// <reference path="../../app/DDDTools/PersistableObject/Factory.ts" />
 /// <reference path="../../app/DDDTools/Entity/BaseEntity.ts" />
