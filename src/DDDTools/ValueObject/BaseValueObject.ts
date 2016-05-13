@@ -3,7 +3,6 @@ import {BasePersistableObject} from "../PersistableObject/BasePersistableObject"
 
 // namespace DDDTools.ValueObject {
 
-
 export abstract class BaseValueObject<T>
 	extends BasePersistableObject
 	implements IValueObject<T> {

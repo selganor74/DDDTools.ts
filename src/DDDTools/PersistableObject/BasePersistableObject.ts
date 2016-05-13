@@ -1,12 +1,10 @@
-
-// namespace DDDTools.PersistableObject {
-
 import {IPersistable} from "./IPersistable";
 import {Errors} from "./Errors";
 import {Factory as PersistableObjectFactory} from "./Factory";
 import {Serializer} from "../Serialization/Serializer";
 import {Deserializer} from "../Serialization/Deserializer";
 
+// namespace DDDTools.PersistableObject {
 export abstract class BasePersistableObject implements IPersistable {
 
     public __typeName: string = "";

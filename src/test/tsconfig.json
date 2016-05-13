@@ -5,8 +5,8 @@
         "sourceRoot": "../src/test",
 		"rootDir": "src",
 		"declaration": true,
-        "outFile": "../../../build/test.js",
-        "diagnostics": false,
-		""
+        "outDir": "../../test",
+        "diagnostics": true,
+		"module": "amd"
 	}
 }

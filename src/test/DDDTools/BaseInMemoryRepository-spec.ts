@@ -2,14 +2,15 @@
 
 // import DDDTools = require("./DDDTools")
 
+import {Guid} from "../../DDDTools/ValueObjects/Guid";
+import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
+import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
+import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
+import {Errors as RepoErrors} from "../../DDDTools/Repository/Errors";
+import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+
 namespace CdC.Tests {
 
-    import Guid = DDDTools.ValueObjects.Guid;
-    import BaseEntity = DDDTools.Entity.BaseEntity;
-    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
-    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-    import RepoErrors = DDDTools.Repository.Errors;
-    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
 
     export class Key extends BaseValueObject<Key> {
         private id: Guid;
@@ -180,7 +181,7 @@ namespace CdC.Tests {
                 }
             };
 
-            item.anObjectReference      = anObjectReferencedInMoreThanOneProperty;
+            item.anObjectReference = anObjectReferencedInMoreThanOneProperty;
             item.anotherObjectReference = anObjectReferencedInMoreThanOneProperty;
 
             expect(item.anObjectReference).toEqual(item.anotherObjectReference);
@@ -193,9 +194,9 @@ namespace CdC.Tests {
             }
 
             expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
-            
+
         });
-        
+
         it("RevisionId must be incremented only if object to be saved differs from object saved", () => {
             // pending("Need to refactor IPErsistable to add functions for State Comparison.");
 
@@ -203,20 +204,20 @@ namespace CdC.Tests {
             var e = new TestAggregate();
             e.setKey(new Key());
             e.aTestProperty = "Before saving...";
-            
+
             expect(e.getRevisionId()).toEqual(0);
 
             repo.save(e);
-            
+
             expect(e.getRevisionId()).toEqual(1);
-            
+
             repo.save(e);
-            
+
             expect(e.getRevisionId()).toEqual(1);
-            
+
             e.aTestProperty = "... after saving";
             repo.save(e);
-            
+
             expect(e.getRevisionId()).toEqual(2);
         });
     });

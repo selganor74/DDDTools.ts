@@ -1,9 +1,10 @@
-// namespace DDDTools.UnitOfWork {
 
 import {IAggregateRoot} from "../Aggregate/IAggregateRoot";
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
 import {IPersistable} from "../PersistableObject/IPersistable";
+
+// namespace DDDTools.UnitOfWork {
 
 export enum ItemStatus {
     New,

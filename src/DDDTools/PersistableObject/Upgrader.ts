@@ -1,8 +1,8 @@
-// namespace DDDTools.PersistableObject {
 
 import {Errors} from "./Errors";
 import {Factory} from "./Factory";
 import {IPersistable} from "../PersistableObject/IPersistable";
+// namespace DDDTools.PersistableObject {
 
 /**
  * The Upgrader is an helper class to automate the "upgrade process" of an object's state.

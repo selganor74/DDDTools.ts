@@ -1,19 +1,16 @@
-/// <reference path="../DDDTools/Repository/IRepository.ts" />
-/// <reference path="../DDDTools/Entity/IKeyValueObject.ts" />
-/// <reference path="../DDDTools/Aggregate/BaseAggregateRoot.ts" />
-/// <reference path="../../../typings/browser.d.ts" />
+/// <reference path="../../typings/browser.d.ts" />
 
 import NeDBDataStore = require( "nedb" );
+
+import {BaseAggregateRoot} from "../../src/DDDTools/Aggregate/BaseAggregateRoot";
+import {IKeyValueObject} from "../../src/DDDTools/Entity/IKeyValueObject";
+import {IRepository} from "../../src/DDDTools/Repository/IRepository";
 
 /**
  * Repository implementation for the NeDB database.
  */
-namespace Repository.NeDBImplementation {
+// namespace Repository.NeDBImplementation {
     declare var Nedb : typeof NeDBDataStore;
-
-    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-    import IKeyValueObject = DDDTools.Entity.IKeyValueObject;
-    import IRepository = DDDTools.Repository.IRepository;
     
     class DbItem<
         T extends BaseAggregateRoot<T, TKey>, 
@@ -91,6 +88,4 @@ namespace Repository.NeDBImplementation {
                 }
             }
         }
-}
-
-export = Repository;
+// }

@@ -1,15 +1,12 @@
 /// <reference path="../../../typings/browser.d.ts"/>
-/// <reference path="../../app/DDDTools/DomainEvents/DomainDispatcher.ts" />
-/// <reference path="../../app/DDDTools/DomainEvents/IDomainEvent.ts" />
-/// <reference path="../../app/DDDTools/ValueObject/BaseValueObject.ts" />
 
-namespace CdC.Tests.Dispatcher {
+import {DomainDispatcher} from "../../DDDTools/DomainEvents/DomainDispatcher";
+import {IEventHandler} from "../../DDDTools/DomainEvents/IEventHandler";
+import {IDomainEvent} from "../../DDDTools/DomainEvents/IDomainEvent";
+import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
+import {InProcessDispatcher} from "../../DDDTools/DomainEvents/InProcessDispatcher";
 
-    import DomainDispatcher = DDDTools.DomainEvents.DomainDispatcher;
-    import IEventHandler = DDDTools.DomainEvents.IEventHandler;
-    import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
-    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
-    import InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
+namespace CdC.Tests.ForDispatcher {
 
     class aDomainEvent extends BaseValueObject<aDomainEvent> implements IDomainEvent {
         __typeName = "CdC.Tests.Dispatcher.aDomainEvent";
@@ -29,7 +26,7 @@ namespace CdC.Tests.Dispatcher {
             var event = new aDomainEvent;
 
             DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
-            
+
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
             DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
 

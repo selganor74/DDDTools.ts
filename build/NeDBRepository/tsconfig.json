@@ -3,9 +3,10 @@
 		"target": "es5",
 		"sourceMap": true,
         "sourceRoot": "../src/app/NeDBRepository",
-		"rootDir": "src/app/NeDBRepository",
+		"rootDir": "src/",
 		"declaration": true,
-        "outFile": "../../../build/ddd-tools-nedbrepository.js",
-        "diagnostics": true
+        "outDir": "../../build/",
+        "diagnostics": true,
+		"module": "amd"
 	}
 }

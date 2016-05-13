@@ -1,17 +1,11 @@
-/// <reference path="../ValueObject/BaseValueObject.ts"/>
-/// <reference path="../Entity/BaseEntity.ts"/>
-/// <reference path="../Repository/IRepository.ts"/>
-/// <reference path="../Repository/Errors.ts"/>
-/// <reference path="../PersistableObject/Factory.ts"/>
-
-// namespace DDDTools.Repository {
-
 import {IRepository} from "./IRepository";
 import {Errors} from "./Errors";
 import {IPersistable} from "../PersistableObject/IPersistable";
 import {Factory as PersistableObjectFactory} from "../PersistableObject/Factory";
 import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
+
+// namespace DDDTools.Repository {
 
 /**
  * Captures common behavior of repository, using theTemplate Method Pattern.

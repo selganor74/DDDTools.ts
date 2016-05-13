@@ -1,8 +1,7 @@
-/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
+import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
 // namespace DDDTools.Serialization {
 
-import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
 export class SerializableRegExp implements ITypeTracking {
     __typeName: string = "RegExp";

@@ -1,15 +1,13 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-import Repository = require("../../app/NeDBRepository/BaseNeDBRepository.ts");
+import {Guid} from "../../../src/DDDTools/ValueObjects/Guid";
+import {IAggregateRoot} from "../../../src/DDDTools/Aggregate/IAggregateRoot";
+import {BaseAggregateRoot} from "../../../src/DDDTools/Aggregate/BaseAggregateRoot";
+import {BaseNeDBRepository} from "../../../src/NeDBRepository/BaseNeDBRepository";
+import {BaseKeyValueObject} from "../../../src/DDDTools/Entity/BaseKeyValueObject";
 
 namespace CdC.Tests.NeDBRepository {
-        
-    import BaseNeDBRepository = Repository.NeDBImplementation.BaseNeDBRepository;
-    import BaseKeyValueObject = DDDTools.Entity.BaseKeyValueObject;
-    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-    import IAggregateRoot = DDDTools.Aggregate.IAggregateRoot;
-    import Guid = DDDTools.ValueObjects.Guid;
-    
+
     export class TestKey extends Guid {
         constructor() {
             super();
@@ -17,17 +15,17 @@ namespace CdC.Tests.NeDBRepository {
             this.__typeVersion = "v1";
         }
     }
-    
+
     export class TestAggregate extends BaseAggregateRoot<TestAggregate, TestKey> {
         constructor() {
             super();
             this.__typeName = "CdC.Tests.NeDBRepository.TestAggregate";
-            this.__typeVersion = "v1";            
+            this.__typeVersion = "v1";
         }
     }
-    
+
     class TestRepo extends BaseNeDBRepository<TestAggregate, TestKey> {
-        
+
     }
 
     describe("BaseNeDBRepository", () => {

@@ -1,22 +1,22 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-namespace CdC.Tests.UnitOfWork {
+import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
+import {IAggregateRoot} from "../../DDDTools/Aggregate/IAggregateRoot";
+import {Guid} from "../../DDDTools/ValueObjects/Guid";
+import {UnitOfWork} from "../../DDDTools/UnitOfWork/UnitOfWork";
+import {IRepository} from "../../DDDTools/Repository/IRepository";
+import {IDomainEvent} from "../../DDDTools/DomainEvents/IDomainEvent";
+import {IEventHandler} from "../../DDDTools/DomainEvents/IEventHandler";
+import {ObjectSavedEvent} from "../../DDDTools/UnitOfWork/ObjectSavedEvent";
+import {ObjectDeletedEvent} from "../../DDDTools/UnitOfWork/ObjectDeletedEvent";
+import {ObjectRetrievedEvent} from "../../DDDTools/UnitOfWork/ObjectRetrievedEvent";
+import {Events} from "../../DDDTools/UnitOfWork/Events";
+import {UnitOfWorkErrors} from "../../DDDTools/UnitOfWork/UnitOfWorkErrors";
+import {Errors} from "../../DDDTools/Repository/Errors";
 
-    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
-    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-    import IAggregateRoot = DDDTools.Aggregate.IAggregateRoot;
-    import Guid = DDDTools.ValueObjects.Guid;
-    import UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
-    import IRepository = DDDTools.Repository.IRepository;
-    import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
-    import IEventHandler = DDDTools.DomainEvents.IEventHandler;
-    import ObjectSavedEvent = DDDTools.UnitOfWork.ObjectSavedEvent;
-    import ObjectDeletedEvent = DDDTools.UnitOfWork.ObjectDeletedEvent;
-    import ObjectRetrievedEvent = DDDTools.UnitOfWork.ObjectRetrievedEvent;
-    import Events = DDDTools.UnitOfWork.Events;
-    import UnitOfWorkErrors = DDDTools.UnitOfWork.UnitOfWorkErrors;
-    import Errors = DDDTools.Repository.Errors;
-    
+namespace CdC.Tests.ForUnitOfWork {
+
     export class TestKey extends Guid {
         constructor() {
             super();
@@ -219,9 +219,9 @@ namespace CdC.Tests.UnitOfWork {
                 expect(false).toBeTruthy("The element has been marked as deleted, but it is still returned by the UoW.");
             } catch (e) {
                 expect(e instanceof Error).toBeTruthy();
-                expect(e.name).toEqual(UnitOfWorkErrors.ItemMarkedAsDeleted);            
+                expect(e.name).toEqual(UnitOfWorkErrors.ItemMarkedAsDeleted);
             }
-            
+
             uow.saveAll();
 
             // ... while after the saveAll we expect to get an Exception from the underlying Repository ...
@@ -230,8 +230,8 @@ namespace CdC.Tests.UnitOfWork {
                 expect(false).toBeTruthy("The element has been marked as deleted and deleted, but it is still returned by the UoW.");
             } catch (e) {
                 expect(e instanceof Error).toBeTruthy();
-                expect(e.name).toEqual(Errors.ItemNotFound);            
-            }                         
+                expect(e.name).toEqual(Errors.ItemNotFound);
+            }
         });
     });
 }

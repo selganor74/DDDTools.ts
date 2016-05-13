@@ -3,16 +3,20 @@
 <head>
   <meta charset="utf-8">
   <title>Jasmine Spec Runner</title>
-  <link rel="shortcut icon" type="image/png" href=".grunt/grunt-contrib-jasmine/jasmine_favicon.png">
-
-  <link rel="stylesheet" type="text/css" href=".grunt/grunt-contrib-jasmine/jasmine.css">
-
-
-</head>
-<body>
 
   
-  <script src=".grunt/grunt-contrib-jasmine/es5-shim.js"></script>
+  <link rel="stylesheet" type="text/css" href=".grunt/grunt-contrib-jasmine/jasmine.css">
+  
+
+  
+  
+  <script src="test/lib/nedb.js"></script>
+  
+  
+
+  <script src=".grunt\grunt-contrib-jasmine/require.js"></script>
+
+  
   
   <script src=".grunt/grunt-contrib-jasmine/jasmine.js"></script>
   
@@ -22,12 +26,171 @@
   
   <script src=".grunt/grunt-contrib-jasmine/boot.js"></script>
   
-  <script src="build/ddd-tools.js"></script>
-  
-  <script src="build/lib/nedb.js"></script>
-  
-  <script src=".grunt/grunt-contrib-jasmine/reporter.js"></script>
   
 
+  <script>
+    require.onError = function(error) {
+      var message = error.requireType + ': ';
+      if (error.requireType === 'scripterror' || error.requireType === 'notloaded' && error.requireModules) {
+        message += 'Illegal path or script error: ' + '[\'' + error.requireModules.join("', '") + '\']';
+      } else {
+        message += error.message;
+      }
+
+      throw Error(message);
+    };
+  </script>
+
+  <script>
+    
+
+    
+  </script>
+
+  <script>
+    // Delay onLoad function until we are ready
+    var startTests = window.onload;
+    window.onload = null;
+
+    function launchTest() {
+    require([
+      
+        
+        'test/DDDTools/CommonInterfaces/IEquatable' ,
+      
+        
+        'test/DDDTools/CommonInterfaces/ITypeTracking' ,
+      
+        
+        'test/DDDTools/Utils/SimpleGuid' ,
+      
+        
+        'test/DDDTools/Utils/SimpleIdentityMap' ,
+      
+        
+        'test/DDDTools/ErrorManagement/BaseErrors' ,
+      
+        
+        'test/DDDTools/PersistableObject/BasePersistableObject' ,
+      
+        
+        'test/DDDTools/PersistableObject/Errors' ,
+      
+        
+        'test/DDDTools/PersistableObject/Factory' ,
+      
+        
+        'test/DDDTools/PersistableObject/IPersistable' ,
+      
+        
+        'test/DDDTools/PersistableObject/Upgrader' ,
+      
+        
+        'test/DDDTools/Serialization/Deserializer' ,
+      
+        
+        'test/DDDTools/Serialization/SerializableDate' ,
+      
+        
+        'test/DDDTools/Serialization/SerializableRegExp' ,
+      
+        
+        'test/DDDTools/Serialization/Serializer' ,
+      
+        
+        'test/DDDTools/Serialization/Touch' ,
+      
+        
+        'test/DDDTools/DomainEvents/DomainDispatcher' ,
+      
+        
+        'test/DDDTools/DomainEvents/IDispatcher' ,
+      
+        
+        'test/DDDTools/DomainEvents/IDomainEvent' ,
+      
+        
+        'test/DDDTools/DomainEvents/IEventHandler' ,
+      
+        
+        'test/DDDTools/DomainEvents/InProcessDispatcher' ,
+      
+        
+        'test/DDDTools/ValueObject/BaseValueObject' ,
+      
+        
+        'test/DDDTools/ValueObject/IValueObject' ,
+      
+        
+        'test/DDDTools/ValueObjects/Guid' ,
+      
+        
+        'test/DDDTools/Entity/BaseEntity' ,
+      
+        
+        'test/DDDTools/Entity/BaseKeyValueObject' ,
+      
+        
+        'test/DDDTools/Entity/IEntity' ,
+      
+        
+        'test/DDDTools/Entity/IKeyValueObject' ,
+      
+        
+        'test/DDDTools/Aggregate/BaseAggregateRoot' ,
+      
+        
+        'test/DDDTools/Aggregate/IAggregateRoot' ,
+      
+        
+        'test/DDDTools/Repository/BaseInMemoryRepository' ,
+      
+        
+        'test/DDDTools/Repository/BaseRepository' ,
+      
+        
+        'test/DDDTools/Repository/Errors' ,
+      
+        
+        'test/DDDTools/Repository/IRepository' ,
+      
+        
+        'test/DDDTools/UnitOfWork/Events' ,
+      
+        
+        'test/DDDTools/UnitOfWork/IdentityMap' ,
+      
+        
+        'test/DDDTools/UnitOfWork/ObjectDeletedEvent' ,
+      
+        
+        'test/DDDTools/UnitOfWork/ObjectRetrievedEvent' ,
+      
+        
+        'test/DDDTools/UnitOfWork/ObjectSavedEvent' ,
+      
+        
+        'test/DDDTools/UnitOfWork/UnitOfWork' ,
+      
+        
+        'test/DDDTools/UnitOfWork/UnitOfWorkErrors' 
+      
+    ],
+    function(){
+      require(['test/test/DDDTools/BaseInMemoryRepository-spec.js','test/test/DDDTools/BasePersistableObject-spec.js','test/test/DDDTools/BaseValueObject-spec.js','test/test/DDDTools/InProcessDispatcher-spec.js','test/test/DDDTools/UnitOfWork-spec.js','test/test/NeDBRepository/BaseNeDBRepository-spec.js','.grunt/grunt-contrib-jasmine/reporter.js'], function(){
+        startTests();
+      });
+    }
+    )
+  }
+  </script>
+
+  
+  <script>
+  launchTest();
+  </script>
+  
+</head>
+<body>
 </body>
 </html>

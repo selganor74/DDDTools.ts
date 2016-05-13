@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
@@ -28,6 +28,12 @@ module.exports = function(grunt) {
                         ],
                         dest: 'build/'
                     },
+                    { // pulls in systemjs
+                        expand: true,
+                        cwd: 'node_modules/systemjs/dist/',
+                        src: ['system.js'],
+                        dest: 'build/lib'
+                    },
                     { // pulls in nedb
                         expand: true,
                         cwd: 'node_modules/nedb/browser-version/out',
@@ -35,11 +41,31 @@ module.exports = function(grunt) {
                         dest: 'build/lib'
                     }
                 ]
+            },
+            "build-tests": {
+                files: [
+                    { // pulls in systemjs
+                        expand: true,
+                        cwd: 'node_modules/systemjs/dist/',
+                        src: ['system.js'],
+                        dest: 'test/lib'
+                    },
+                    { // pulls in nedb
+                        expand: true,
+                        cwd: 'node_modules/nedb/browser-version/out',
+                        src: ['nedb.js'],
+                        dest: 'test/lib'
+                    }
+                ]
+
             }
         },
         ts: {
-            build: {
+            "build": {
                 tsconfig: 'src/DDDTools/tsconfig.json'
+            },
+            "build-nedbrepo": {
+                tsconfig: "src/NeDBRepository/tsconfig.json"
             },
             "build-tests": {
                 tsconfig: 'src/test/tsconfig.json'
@@ -57,12 +83,29 @@ module.exports = function(grunt) {
         "jasmine": {
             "run-tests": {
                 src: [
-                    "build/**/*.js"
+                        "test/DDDTools/CommonInterfaces/*.js",
+                        "test/DDDTools/Utils/*.js",
+                        "test/DDDTools/ErrorManagement/*.js",
+                        "test/DDDTools/PersistableObject/*.js",
+                        "test/DDDTools/Serialization/*.js",
+                        "test/DDDTools/DomainEvents/*.js",
+                        "test/DDDTools/ValueObject/*.js",
+                        "test/DDDTools/ValueObjects/*.js",
+                        "test/DDDTools/Entity/*.js",
+                        "test/DDDTools/Aggregate/*.js",
+                        "test/DDDTools/Repository/*.js",
+                        "test/DDDTools/UnitOfWork/*.js",
+                        "test/DDDTools/NeDBRepository/*.js"
                 ],
                 options: {
+                    vendor:
+                    [
+                        "test/lib/nedb.js"
+                    ],
                     specs: [
-                        "test/**/*-spec.js"
-                    ]
+                        "test/test/**/*-spec.js"
+                    ],
+                    template: require('grunt-template-jasmine-requirejs')
                 }
             }
         },
@@ -87,5 +130,5 @@ module.exports = function(grunt) {
     grunt.registerTask('run', ['http-server']);
     grunt.registerTask('build', ['clean', 'ts:build', 'copy', 'clean:after-build']);
     grunt.registerTask('build-tests', ['clean', 'ts:build', 'copy', 'clean:after-build', 'ts:build-tests']);
-    grunt.registerTask('run-tests', ['ts:build-tests', 'jasmine:run-tests']);
+    grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };

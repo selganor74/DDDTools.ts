@@ -1,10 +1,9 @@
-
-// namespace DDDTools.Serialization {
-
 import {SimpleGuid} from "../Utils/SimpleGuid";
 import {SerializableDate} from "./SerializableDate";
 import {SerializableRegExp} from "./SerializableRegExp";
 import {Touch} from "./Touch";
+
+// namespace DDDTools.Serialization {
 
 export class Serializer {
     /**
