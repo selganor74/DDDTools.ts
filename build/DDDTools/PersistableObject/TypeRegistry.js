@@ -4,9 +4,9 @@ define(["require", "exports", "./Errors", "../ValueObjects/Guid"], function (req
         function TypeRegistry() {
             this.registry = {};
             this.latestVersions = {};
-            this.registerLibraryValueObjects();
+            this.registerValueObjectsLibrary();
         }
-        TypeRegistry.prototype.registerLibraryValueObjects = function () {
+        TypeRegistry.prototype.registerValueObjectsLibrary = function () {
             this.registerType("DDDTools.ValueObjects.Guid", "v1", Guid_1.Guid);
         };
         TypeRegistry.prototype.registerType = function (typeName, typeVersion, typePrototype) {

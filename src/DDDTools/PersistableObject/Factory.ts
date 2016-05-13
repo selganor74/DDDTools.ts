@@ -13,15 +13,17 @@ import {TypeRegistry} from "./TypeRegistry";
  */
 export class Factory {
     
-    private static typeRegistry: TypeRegistry;
+    private static typeRegistry: TypeRegistry = new TypeRegistry();
     
-    public static setTypeRegistry( tr: TypeRegistry ) {
-        this.typeRegistry = tr;
-    };
+    /**
+     * Registers a new IPersistable type with the Factory
+     */
+    public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable) {
+        this.typeRegistry.registerType(typeName, typeVersion, typePrototype);
+    }
 
     /**
      * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
-     * Latest available version is the one whose FQTN matches the one specified by typeName.
      */
     public static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T {
         
@@ -29,7 +31,7 @@ export class Factory {
             Errors.throw(Errors.TypeRegistryNotSet, "Please define a type registry and set it on the Factory calling 'setTypeRegistry' method.");
         }
                 
-        return <T>this.typeRegistry.getTypeInstance(typeName, typeVersion);
+        return this.typeRegistry.getTypeInstance<T>(typeName, typeVersion);
         
         // if (typeVersion) {
         //     var typeToInstatiate = Factory.computeFullyQualifiedTypeName(typeName, typeVersion);
@@ -130,14 +132,14 @@ export class Factory {
      * version: v2
      * return: Application.Model.v2.Offerta
      */
-    private static computeFullyQualifiedTypeName(typeName: string, typeVersion: string): string {
-        var fqtnPartsArray = typeName.split(".");
-        var className = fqtnPartsArray.pop();
-        fqtnPartsArray.push(typeVersion);
-        fqtnPartsArray.push(className);
-        var newFqtn = fqtnPartsArray.join(".");
-        return newFqtn;
-    };
+    // private static computeFullyQualifiedTypeName(typeName: string, typeVersion: string): string {
+    //     var fqtnPartsArray = typeName.split(".");
+    //     var className = fqtnPartsArray.pop();
+    //     fqtnPartsArray.push(typeVersion);
+    //     fqtnPartsArray.push(className);
+    //     var newFqtn = fqtnPartsArray.join(".");
+    //     return newFqtn;
+    // };
 
 }
 // }

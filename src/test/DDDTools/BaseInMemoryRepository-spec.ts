@@ -65,13 +65,11 @@ namespace CdC.Tests {
     }
 
     beforeEach(() => {
-        var typeRegistry = new TypeRegistry();
         
-        typeRegistry.registerType("CdC.Tests.Key","v1",<any>Key);
-        typeRegistry.registerType("CdC.Tests.ChildEntity","v1",<any>ChildEntity);
-        typeRegistry.registerType("CdC.Tests.TestAggregate","v1",<any>TestAggregate);
+        Factory.registerType("CdC.Tests.Key","v1",<any>Key);
+        Factory.registerType("CdC.Tests.ChildEntity","v1",<any>ChildEntity);
+        Factory.registerType("CdC.Tests.TestAggregate","v1",<any>TestAggregate);
         
-        Factory.setTypeRegistry(typeRegistry);
     });
 
     describe("BaseInMemoryRepository", () => {

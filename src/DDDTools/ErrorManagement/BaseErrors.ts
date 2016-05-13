@@ -1,7 +1,6 @@
 /**
  * Minimal Error handling base behaviors for the domain model.
  */
-// namespace DDDTools.ErrorManagement {
 export abstract class BaseErrors {
 
     static throw(name: string, message?: string) {
@@ -15,4 +14,3 @@ export abstract class BaseErrors {
         return err;
     }
 }
-// }

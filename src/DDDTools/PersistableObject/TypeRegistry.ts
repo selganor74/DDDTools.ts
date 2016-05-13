@@ -6,25 +6,25 @@ import {Guid} from "../ValueObjects/Guid";
 
 export class TypeRegistry {
     
-    private registry: { [typeName: string]: { [typeVersion: string] : IPersistable } };
+    private registry: { [typeName: string]: { [typeVersion: string] : new () => IPersistable } };
     private latestVersions: { [typeName: string]: string }
     
     constructor() {
         this.registry = {};
         this.latestVersions = {};
         
-        this.registerLibraryValueObjects();
+        this.registerValueObjectsLibrary();
     }
     
     /**
      * Always Register Library Value Objects.
      */
-    private registerLibraryValueObjects() {
+    private registerValueObjectsLibrary() {
         this.registerType("DDDTools.ValueObjects.Guid", "v1", <any>Guid);
     }
     
 
-    public registerType(typeName: string, typeVersion: string, typePrototype: IPersistable): void {
+    public registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void {
         if(!this.versionIsInCorrectFormat(typeVersion)) {
             Errors.throw(Errors.IncorrectVersionFormat);
         }
@@ -74,6 +74,8 @@ export class TypeRegistry {
         
         try {
             toReturn = <T>(new (<any>toInstantiate)());
+            //toReturn.__typeName = typeName;
+            //toReturn.__typeVersion = typeVersion;
         } catch (e) {
             Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
         }
@@ -115,5 +117,4 @@ export class TypeRegistry {
         var nextVersion = "v" + version;
         return nextVersion;
     }
-        
 }

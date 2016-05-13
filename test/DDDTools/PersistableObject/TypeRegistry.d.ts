@@ -4,8 +4,8 @@ export declare class TypeRegistry {
     private registry;
     private latestVersions;
     constructor();
-    private registerLibraryValueObjects();
-    registerType(typeName: string, typeVersion: string, typePrototype: IPersistable): void;
+    private registerValueObjectsLibrary();
+    registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
     private updateLatestVersions(typeName, typeVersion);
     private isVersionGreater(vSubject, vReference);
     private extractVersionNumber(typeVersion);

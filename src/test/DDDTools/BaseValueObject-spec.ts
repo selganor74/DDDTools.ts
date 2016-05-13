@@ -2,10 +2,11 @@
 
 import {Guid} from "../../DDDTools/ValueObjects/Guid";
 import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
+import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 namespace CdC.Tests.ForBaseValueObject {
 
-    class TestValueObject extends BaseValueObject<TestValueObject> {
+    export class TestValueObject extends BaseValueObject<TestValueObject> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject";
         __typeVersion = "v1";
 
@@ -19,7 +20,7 @@ namespace CdC.Tests.ForBaseValueObject {
         }
     }
 
-    class TestValueObject_Array extends BaseValueObject<TestValueObject_Array> {
+    export class TestValueObject_Array extends BaseValueObject<TestValueObject_Array> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject_Array";
         __typeVersion = "v1";
 
@@ -30,8 +31,8 @@ namespace CdC.Tests.ForBaseValueObject {
         }
     }
 
-    class TestValueObject_Object extends BaseValueObject<TestValueObject_Object> {
-        __typeName = "CdC.Tests.BaseValueObject.TestValueObject_Array";
+    export class TestValueObject_Object extends BaseValueObject<TestValueObject_Object> {
+        __typeName = "CdC.Tests.BaseValueObject.TestValueObject_Object";
         __typeVersion = "v1";
 
         constructor(
@@ -42,6 +43,14 @@ namespace CdC.Tests.ForBaseValueObject {
     }
 
     describe("BaseValueObject", () => {
+
+        beforeEach(() => {
+
+            Factory.registerType("CdC.Tests.BaseValueObject.TestValueObject", "v1", <any>CdC.Tests.ForBaseValueObject.TestValueObject);
+            Factory.registerType("CdC.Tests.BaseValueObject.TestValueObject_Array", "v1", <any>CdC.Tests.ForBaseValueObject.TestValueObject_Array);
+            Factory.registerType("CdC.Tests.BaseValueObject.TestValueObject_Object", "v1", <any>CdC.Tests.ForBaseValueObject.TestValueObject_Object);
+            
+        });
 
         it("ValueObjects must be compared against their content. - Base types", () => {
             var vo1 = new TestValueObject(

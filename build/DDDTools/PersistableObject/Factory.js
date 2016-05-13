@@ -1,12 +1,11 @@
-define(["require", "exports", "./Errors", "./Upgrader"], function (require, exports, Errors_1, Upgrader_1) {
+define(["require", "exports", "./Errors", "./Upgrader", "./TypeRegistry"], function (require, exports, Errors_1, Upgrader_1, TypeRegistry_1) {
     "use strict";
     var Factory = (function () {
         function Factory() {
         }
-        Factory.setTypeRegistry = function (tr) {
-            this.typeRegistry = tr;
+        Factory.registerType = function (typeName, typeVersion, typePrototype) {
+            this.typeRegistry.registerType(typeName, typeVersion, typePrototype);
         };
-        ;
         Factory.createTypeInstance = function (typeName, typeVersion) {
             if (!Factory.typeRegistry) {
                 Errors_1.Errors.throw(Errors_1.Errors.TypeRegistryNotSet, "Please define a type registry and set it on the Factory calling 'setTypeRegistry' method.");
@@ -59,15 +58,7 @@ define(["require", "exports", "./Errors", "./Upgrader"], function (require, expo
             }
             return true;
         };
-        Factory.computeFullyQualifiedTypeName = function (typeName, typeVersion) {
-            var fqtnPartsArray = typeName.split(".");
-            var className = fqtnPartsArray.pop();
-            fqtnPartsArray.push(typeVersion);
-            fqtnPartsArray.push(className);
-            var newFqtn = fqtnPartsArray.join(".");
-            return newFqtn;
-        };
-        ;
+        Factory.typeRegistry = new TypeRegistry_1.TypeRegistry();
         return Factory;
     }());
     exports.Factory = Factory;

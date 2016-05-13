@@ -104,7 +104,8 @@ module.exports = function (grunt) {
                     ],
                     specs: [
                         //"test/test/**/*-spec.js"
-                        "test/test/DDDTools/*-spec.js"
+                        //"test/test/DDDTools/*-spec.js"
+                        "test/test/DDDTools/BaseInMemoryRepository-spec.js"
                     ],
                     template: require('grunt-template-jasmine-requirejs'),
                     keepRunner: true,

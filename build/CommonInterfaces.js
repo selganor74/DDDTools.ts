@@ -1,0 +1,4 @@
+define(["require", "exports"], function (require, exports) {
+    "use strict";
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQ29tbW9uSW50ZXJmYWNlcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy9ERERUb29scy9Db21tb25JbnRlcmZhY2VzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0lBQytEIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IHtJRXF1YXRhYmxlfSBmcm9tIFwiLi9Db21tb25JbnRlcmZhY2VzL0lFcXVhdGFibGVcIjtcclxuZXhwb3J0IHtJVHlwZVRyYWNraW5nfSBmcm9tIFwiLi9Db21tb25JbnRlcmZhY2VzL0lUeXBlVHJhY2tpbmdcIjtcclxuIl19

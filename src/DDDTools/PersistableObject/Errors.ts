@@ -1,5 +1,3 @@
-// namespace DDDTools.PersistableObject {
-
 import {BaseErrors} from "../ErrorManagement/BaseErrors";
 
 export class Errors extends BaseErrors {
@@ -20,4 +18,3 @@ export class Errors extends BaseErrors {
     static IncorrectVersionFormat = "Incorrect Version Format";
     static WrongVersionInUpgradedInstance = "Wrong Version in Upgraded Instance";
 }
-// }

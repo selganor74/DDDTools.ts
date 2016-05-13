@@ -1,0 +1,5 @@
+define(["require", "exports", "./Aggregate/BaseAggregateRoot"], function (require, exports, BaseAggregateRoot_1) {
+    "use strict";
+    exports.BaseAggregateRoot = BaseAggregateRoot_1.BaseAggregateRoot;
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQWdncmVnYXRlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL0RERFRvb2xzL0FnZ3JlZ2F0ZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztJQUFRLGtFQUF3RDtJQUNOIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IHtCYXNlQWdncmVnYXRlUm9vdH0gZnJvbSBcIi4vQWdncmVnYXRlL0Jhc2VBZ2dyZWdhdGVSb290XCI7XHJcbmV4cG9ydCB7SUFnZ3JlZ2F0ZVJvb3R9IGZyb20gXCIuL0FnZ3JlZ2F0ZS9JQWdncmVnYXRlUm9vdFwiO1xyXG4iXX0=
