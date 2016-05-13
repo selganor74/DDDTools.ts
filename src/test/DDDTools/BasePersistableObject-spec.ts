@@ -2,8 +2,7 @@
 
 import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
 import {Guid} from "../../DDDTools/ValueObjects/Guid";
-import {Factory as PersistableObjectFactory} from "../../DDDTools/PersistableObject/Factory";
-import {Upgrader} from "../../DDDTools/PersistableObject/Upgrader";
+import {Factory as PersistableObjectFactory, Upgrader} from "../../DDDTools/PersistableObject/Factory";
 import {Errors} from "../../DDDTools/PersistableObject/Errors";
 import {Factory} from "../../DDDTools/PersistableObject/Factory";
 

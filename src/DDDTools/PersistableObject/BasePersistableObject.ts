@@ -1,6 +1,6 @@
 import {IPersistable} from "./IPersistable";
 import {Errors} from "./Errors";
-import {Factory as PersistableObjectFactory} from "./Factory";
+import {Factory} from "./Factory";
 import {Serializer} from "../Serialization/Serializer";
 import {Deserializer} from "../Serialization/Deserializer";
 
@@ -36,7 +36,7 @@ export abstract class BasePersistableObject implements IPersistable {
 
         for (var element in state) {
             var currentStateElement = state[element];
-            this[element] = PersistableObjectFactory.createObjectsFromState(currentStateElement);
+            this[element] = Factory.createObjectsFromState(currentStateElement);
         }
 
         // console.log( JSON.stringify( this.getState() ) );

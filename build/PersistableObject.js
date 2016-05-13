@@ -1,9 +1,0 @@
-define(["require", "exports", "./PersistableObject/BasePersistableObject", "./PersistableObject/Errors", "./PersistableObject/Factory", "./PersistableObject/TypeRegistry", "./PersistableObject/Upgrader"], function (require, exports, BasePersistableObject_1, Errors_1, Factory_1, TypeRegistry_1, Upgrader_1) {
-    "use strict";
-    exports.BasePersistableObject = BasePersistableObject_1.BasePersistableObject;
-    exports.Errors = Errors_1.Errors;
-    exports.Factory = Factory_1.Factory;
-    exports.TypeRegistry = TypeRegistry_1.TypeRegistry;
-    exports.Upgrader = Upgrader_1.Upgrader;
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiUGVyc2lzdGFibGVPYmplY3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvREREVG9vbHMvUGVyc2lzdGFibGVPYmplY3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7SUFBUSw4RUFBd0U7SUFDeEUsaUNBQTBDO0lBQzFDLG9DQUE0QztJQUU1QyxtREFBc0Q7SUFDdEQsdUNBQThDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IHtCYXNlUGVyc2lzdGFibGVPYmplY3R9IGZyb20gXCIuL1BlcnNpc3RhYmxlT2JqZWN0L0Jhc2VQZXJzaXN0YWJsZU9iamVjdFwiO1xyXG5leHBvcnQge0Vycm9yc30gZnJvbSBcIi4vUGVyc2lzdGFibGVPYmplY3QvRXJyb3JzXCI7XHJcbmV4cG9ydCB7RmFjdG9yeX0gZnJvbSBcIi4vUGVyc2lzdGFibGVPYmplY3QvRmFjdG9yeVwiO1xyXG5leHBvcnQge0lQZXJzaXN0YWJsZX0gZnJvbSBcIi4vUGVyc2lzdGFibGVPYmplY3QvSVBlcnNpc3RhYmxlXCI7XHJcbmV4cG9ydCB7VHlwZVJlZ2lzdHJ5fSBmcm9tIFwiLi9QZXJzaXN0YWJsZU9iamVjdC9UeXBlUmVnaXN0cnlcIjtcclxuZXhwb3J0IHtVcGdyYWRlcn0gZnJvbSBcIi4vUGVyc2lzdGFibGVPYmplY3QvVXBncmFkZXJcIjtcclxuIl19

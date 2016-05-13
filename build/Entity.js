@@ -1,6 +1,0 @@
-define(["require", "exports", "./Entity/BaseEntity", "./Entity/BaseKeyValueObject"], function (require, exports, BaseEntity_1, BaseKeyValueObject_1) {
-    "use strict";
-    exports.BaseEntity = BaseEntity_1.BaseEntity;
-    exports.BaseKeyValueObject = BaseKeyValueObject_1.BaseKeyValueObject;
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRW50aXR5LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vc3JjL0RERFRvb2xzL0VudGl0eS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztJQUFRLDZDQUF1QztJQUN2QyxxRUFBdUQ7SUFFTiIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCB7QmFzZUVudGl0eX0gZnJvbSBcIi4vRW50aXR5L0Jhc2VFbnRpdHlcIjtcclxuZXhwb3J0IHtCYXNlS2V5VmFsdWVPYmplY3R9IGZyb20gXCIuL0VudGl0eS9CYXNlS2V5VmFsdWVPYmplY3RcIjtcclxuZXhwb3J0IHtJRW50aXR5fSBmcm9tIFwiLi9FbnRpdHkvSUVudGl0eVwiO1xyXG5leHBvcnQge0lLZXlWYWx1ZU9iamVjdH0gZnJvbSBcIi4vRW50aXR5L0lLZXlWYWx1ZU9iamVjdFwiO1xyXG4iXX0=

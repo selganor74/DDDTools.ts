@@ -1,7 +1,0 @@
-define(["require", "exports", "./Repository/BaseInMemoryRepository", "./Repository/BaseRepository", "./Repository/Errors"], function (require, exports, BaseInMemoryRepository_1, BaseRepository_1, Errors_1) {
-    "use strict";
-    exports.BaseInMemoryRepository = BaseInMemoryRepository_1.BaseInMemoryRepository;
-    exports.BaseRepository = BaseRepository_1.BaseRepository;
-    exports.Errors = Errors_1.Errors;
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiUmVwb3NpdG9yeS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uL3NyYy9ERERUb29scy9SZXBvc2l0b3J5LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0lBQVEsaUZBQW1FO0lBQ25FLHlEQUFtRDtJQUNuRCxpQ0FBbUM7SUFDVSIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCB7QmFzZUluTWVtb3J5UmVwb3NpdG9yeX0gZnJvbSBcIi4vUmVwb3NpdG9yeS9CYXNlSW5NZW1vcnlSZXBvc2l0b3J5XCI7XHJcbmV4cG9ydCB7QmFzZVJlcG9zaXRvcnl9IGZyb20gXCIuL1JlcG9zaXRvcnkvQmFzZVJlcG9zaXRvcnlcIjtcclxuZXhwb3J0IHtFcnJvcnN9IGZyb20gXCIuL1JlcG9zaXRvcnkvRXJyb3JzXCI7XHJcbmV4cG9ydCB7SVJlcG9zaXRvcnl9IGZyb20gXCIuL1JlcG9zaXRvcnkvSVJlcG9zaXRvcnlcIjtcclxuIl19

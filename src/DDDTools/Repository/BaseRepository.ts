@@ -1,7 +1,7 @@
 import {IRepository} from "./IRepository";
 import {Errors} from "./Errors";
 import {IPersistable} from "../PersistableObject/IPersistable";
-import {Factory as PersistableObjectFactory} from "../PersistableObject/Factory";
+import {Factory as Factory} from "../PersistableObject/Factory";
 import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 

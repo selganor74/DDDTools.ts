@@ -1,5 +1,6 @@
 import { IDomainEvent } from "../DomainEvents/IDomainEvent";
-export declare class ObjectRetrievedEvent implements IDomainEvent {
+import { BaseValueObject } from "../ValueObject/BaseValueObject";
+export declare class ObjectRetrievedEvent extends BaseValueObject<ObjectRetrievedEvent> implements IDomainEvent {
     typeName: string;
     typeVersion: string;
     id: string;

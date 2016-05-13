@@ -1,5 +1,0 @@
-define(["require", "exports", "./ValueObject/BaseValueObject"], function (require, exports, BaseValueObject_1) {
-    "use strict";
-    exports.BaseValueObject = BaseValueObject_1.BaseValueObject;
-});
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiVmFsdWVPYmplY3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi9zcmMvREREVG9vbHMvVmFsdWVPYmplY3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7SUFBUSw0REFBc0Q7SUFDTiIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCB7QmFzZVZhbHVlT2JqZWN0fSBmcm9tIFwiLi9WYWx1ZU9iamVjdC9CYXNlVmFsdWVPYmplY3RcIjtcclxuZXhwb3J0IHtJVmFsdWVPYmplY3R9IGZyb20gXCIuL1ZhbHVlT2JqZWN0L0lWYWx1ZU9iamVjdFwiO1xyXG4iXX0=

@@ -1,8 +1,5 @@
-import {DomainDispatcher} from "../DomainEvents/DomainDispatcher";
-import {IEventHandler} from  "../DomainEvents/IEventHandler";
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {BaseEntity} from "../Entity/BaseEntity";
-import {IDomainEvent} from "../DomainEvents/IDomainEvent";
 import {IAggregateRoot} from "./IAggregateRoot";
 
 /**

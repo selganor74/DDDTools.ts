@@ -1,5 +1,6 @@
 import { IDomainEvent } from "../DomainEvents/IDomainEvent";
-export declare class ObjectDeletedEvent implements IDomainEvent {
+import { BaseValueObject } from "../ValueObject/BaseValueObject";
+export declare class ObjectDeletedEvent extends BaseValueObject<ObjectDeletedEvent> implements IDomainEvent {
     typeName: string;
     typeVersion: string;
     id: string;

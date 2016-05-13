@@ -1,5 +1,5 @@
 import {Errors} from "./Errors";
-import {Factory as PersistableObjectFactory} from "../PersistableObject/Factory";
+import {Factory as Factory} from "../PersistableObject/Factory";
 import {IPersistable} from "../PersistableObject/IPersistable";
 import {BaseRepository} from "./BaseRepository";
 import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
@@ -24,7 +24,7 @@ export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey
         var key = id.toString();
 
         if (this.storage[key]) {
-            var toReturn = PersistableObjectFactory.createObjectsFromState(this.storage[key]);
+            var toReturn = Factory.createObjectsFromState(this.storage[key]);
             return <T>toReturn;
         }
 

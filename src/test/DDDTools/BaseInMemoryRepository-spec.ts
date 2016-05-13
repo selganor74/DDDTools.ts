@@ -232,5 +232,3 @@ namespace CdC.Tests {
         });
     });
 } 
-
-(<any>window).CdC = CdC;

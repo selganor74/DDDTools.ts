@@ -1,6 +1,5 @@
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {IEntity} from "../Entity/IEntity";
-import {IDomainEvent} from "../DomainEvents/IDomainEvent";
 
 // namespace DDDTools.Aggregate {
 
