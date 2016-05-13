@@ -2,11 +2,12 @@
 	"compilerOptions": {
 		"target": "es5",
 		"sourceMap": true,
-        "sourceRoot": "../src/test",
 		"rootDir": "src",
 		"declaration": true,
-        "outDir": "../../test",
-        "diagnostics": true,
-		"module": "amd"
+		"outDir": "../../test",
+		"diagnostics": true,
+		"module": "amd",
+		"inlineSourceMap": true,
+		"inlineSources": true
 	}
 }

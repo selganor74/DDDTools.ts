@@ -1,6 +1,9 @@
+/// <reference path="../../../typings/browser.d.ts" />
+
 import {IPersistable} from "./IPersistable";
 import {Errors} from "./Errors";
 import {Upgrader} from "./Upgrader";
+import {TypeRegistry} from "./TypeRegistry";
 
 // namespace DDDTools.PersistableObject {
 
@@ -9,35 +12,46 @@ import {Upgrader} from "./Upgrader";
  * It gurantees that a statful object is always created or reconstituted to its latest version.  
  */
 export class Factory {
+    
+    private static typeRegistry: TypeRegistry;
+    
+    public static setTypeRegistry( tr: TypeRegistry ) {
+        this.typeRegistry = tr;
+    };
+
     /**
      * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
      * Latest available version is the one whose FQTN matches the one specified by typeName.
      */
     public static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T {
-
-        var toReturn: T;
-
-        if (typeVersion) {
-            var typeToInstatiate = Factory.computeFullyQualifiedTypeName(typeName, typeVersion);
-            try {
-                toReturn = <T>eval("new " + typeToInstatiate + "()");
-                return toReturn;
-            } catch (e) {
-                // This failure is expected if we are asking for the latest version available
-            }
-            toReturn = Factory.createTypeInstance<T>(typeName);
-            if (toReturn.__typeVersion != typeVersion) {
-                Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);
-            }
-            return toReturn;
+        
+        if (!Factory.typeRegistry) {
+            Errors.throw(Errors.TypeRegistryNotSet, "Please define a type registry and set it on the Factory calling 'setTypeRegistry' method.");
         }
+                
+        return <T>this.typeRegistry.getTypeInstance(typeName, typeVersion);
+        
+        // if (typeVersion) {
+        //     var typeToInstatiate = Factory.computeFullyQualifiedTypeName(typeName, typeVersion);
+        //     try {
+        //         toReturn = <T>eval("new " + typeToInstatiate + "()");
+        //         return toReturn;
+        //     } catch (e) {
+        //         // This failure is expected if we are asking for the latest version available
+        //     }
+        //     toReturn = Factory.createTypeInstance<T>(typeName);
+        //     if (toReturn.__typeVersion != typeVersion) {
+        //         Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + typeVersion);
+        //     }
+        //     return toReturn;
+        // }
 
-        try {
-            toReturn = <T>eval("new " + typeName + "()");
-        } catch (e) {
-            Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
-        }
-        return toReturn;
+        // try {
+        //     toReturn = <T>eval("new " + typeName + "()");
+        // } catch (e) {
+        //     Errors.throw(Errors.UnableToInstantiateType, "Unable to create instance of " + typeName + " " + e.message);
+        // }
+        // return toReturn;
     }
 
     /**
@@ -99,9 +113,9 @@ export class Factory {
     /**
      * Checks if a type can be instatiated (at its latest version). 
      */
-    private static isTypeInstantiable(fullyQualifiedTypeName: string): boolean {
+    private static isTypeInstantiable(typeName: string): boolean {
         try {
-            var tmpType = Factory.createTypeInstance(fullyQualifiedTypeName);
+            var tmpType = Factory.createTypeInstance(typeName);
         } catch (e) {
             return false;
         }

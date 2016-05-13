@@ -5,6 +5,7 @@
   "ambientDependencies": {
     "jasmine": "registry:dt/jasmine#2.2.0+20160317120654",
     "jquery": "registry:dt/jquery#1.10.0+20160316155526",
-    "nedb": "registry:dt/nedb#0.0.0+20160505185910"
+    "nedb": "registry:dt/nedb#0.0.0+20160505185910",
+    "require": "registry:dt/require#2.1.20+20160316155526"
   }
 }

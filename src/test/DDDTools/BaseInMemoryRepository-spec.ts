@@ -8,6 +8,8 @@ import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
 import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
 import {Errors as RepoErrors} from "../../DDDTools/Repository/Errors";
 import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+import {TypeRegistry} from "../../DDDTools/PersistableObject/TypeRegistry";
+import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 namespace CdC.Tests {
 
@@ -61,6 +63,16 @@ namespace CdC.Tests {
             super(TestRepository.managedTypeName);
         }
     }
+
+    beforeEach(() => {
+        var typeRegistry = new TypeRegistry();
+        
+        typeRegistry.registerType("CdC.Tests.Key","v1",<any>Key);
+        typeRegistry.registerType("CdC.Tests.ChildEntity","v1",<any>ChildEntity);
+        typeRegistry.registerType("CdC.Tests.TestAggregate","v1",<any>TestAggregate);
+        
+        Factory.setTypeRegistry(typeRegistry);
+    });
 
     describe("BaseInMemoryRepository", () => {
 
@@ -222,3 +234,5 @@ namespace CdC.Tests {
         });
     });
 } 
+
+(<any>window).CdC = CdC;

@@ -9,7 +9,11 @@ export class Errors extends BaseErrors {
     static TypeNameNotSet = "TypeName not set";
     static TypeVersionNotSet = "TypeVersion not set";
     static UnableToInstantiateType = "Unable to Instantiate Type";
+    static TypeRegistryNotSet = "TypeRegistry not set";
 
+    // Thrown by the Factory/TypeRegistry
+    static TypeNotRegistered = "Type has not been registered with the TypeRegistry";
+    
     // Thrown by the Upgrader
     static TypeNotInstatiable = "Type is not instantiable";
     static UpgradePathNotFound = "Upgrade Path not Found";

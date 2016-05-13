@@ -103,9 +103,12 @@ module.exports = function (grunt) {
                         "test/lib/nedb.js"
                     ],
                     specs: [
-                        "test/test/**/*-spec.js"
+                        //"test/test/**/*-spec.js"
+                        "test/test/DDDTools/*-spec.js"
                     ],
-                    template: require('grunt-template-jasmine-requirejs')
+                    template: require('grunt-template-jasmine-requirejs'),
+                    keepRunner: true,
+                    outFile: "SpecRunner.html"
                 }
             }
         },
@@ -129,6 +132,6 @@ module.exports = function (grunt) {
     // TASKS
     grunt.registerTask('run', ['http-server']);
     grunt.registerTask('build', ['clean', 'ts:build', 'copy', 'clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build', 'copy', 'clean:after-build', 'ts:build-tests']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build', "ts:build-nedbrepo", 'copy', 'clean:after-build', 'ts:build-tests']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };

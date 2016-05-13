@@ -1,0 +1,1 @@
+"d:\DDDTools\src\NeDBRepository\BaseNeDBRepository.ts" "d:\DDDTools\src\NeDBRepository\.baseDir.ts" --sourcemap --declaration --removeComments --rootDir src/ --target ES5 --module amd --outDir build/ --sourceRoot ../src/app/NeDBRepository

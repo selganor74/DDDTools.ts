@@ -7,6 +7,7 @@ import {SimpleGuid} from "../Utils/SimpleGuid";
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {BaseValueObject} from "../ValueObject/BaseValueObject";
 
+
 export class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
 
     public __typeName = "DDDTools.ValueObjects.Guid";
@@ -33,4 +34,3 @@ export class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid>
         return this.guid;
     }
 }
-// }

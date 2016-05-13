@@ -5,6 +5,9 @@ import {Guid} from "../../DDDTools/ValueObjects/Guid";
 import {Factory as PersistableObjectFactory} from "../../DDDTools/PersistableObject/Factory";
 import {Upgrader} from "../../DDDTools/PersistableObject/Upgrader";
 import {Errors} from "../../DDDTools/PersistableObject/Errors";
+import {TypeRegistry} from "../../DDDTools/PersistableObject/TypeRegistry";
+import {Factory} from "../../DDDTools/PersistableObject/Factory";
+
 
 namespace CdC.Tests.BasePersistableObject.v2 {
 
@@ -99,6 +102,20 @@ namespace CdC.Tests.BasePersistableObject {
     }
 
     describe("BaseUpgrader", () => {
+
+    beforeEach(() => {
+        var typeRegistry = new TypeRegistry();
+        
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.A3StepUpgradableItem","v1",<any>CdC.Tests.BasePersistableObject.v1.A3StepUpgradableItem);
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.A3StepUpgradableItem","v2",<any>CdC.Tests.BasePersistableObject.v2.A3StepUpgradableItem);
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.A3StepUpgradableItem","v3",<any>A3StepUpgradableItem);
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.TestEntity","v1",<any>CdC.Tests.BasePersistableObject.v1.TestEntity);
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.TestEntity","v2",<any>TestEntity);
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.TestEntityNonUpgradable","v1",<any>TestEntityNonUpgradable);
+        typeRegistry.registerType("CdC.Tests.BasePersistableObject.AClassWithManyTypes","v1",<any>AClassWithManyTypes);
+        
+        Factory.setTypeRegistry(typeRegistry);
+    });
 
         it("computeNextVersion deve restituire il valore corretto della versione successiva", () => {
 
