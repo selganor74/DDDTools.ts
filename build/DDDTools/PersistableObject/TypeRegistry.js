@@ -2,52 +2,62 @@ define(["require", "exports", "./Errors", "../ValueObjects/Guid"], function (req
     "use strict";
     var TypeRegistry = (function () {
         function TypeRegistry() {
-            this.registry = {};
-            this.latestVersions = {};
-            this.registerValueObjectsLibrary();
         }
-        TypeRegistry.prototype.registerValueObjectsLibrary = function () {
-            this.registerType("DDDTools.ValueObjects.Guid", "v1", Guid_1.Guid);
+        TypeRegistry.registerValueObjectsLibrary = function () {
+            var sThis = TypeRegistry;
+            sThis.registerType("DDDTools.ValueObjects.Guid", "v1", Guid_1.Guid);
         };
-        TypeRegistry.prototype.registerType = function (typeName, typeVersion, typePrototype) {
-            if (!this.versionIsInCorrectFormat(typeVersion)) {
+        TypeRegistry.registerType = function (typeName, typeVersion, typePrototype) {
+            var sThis = TypeRegistry;
+            if (!typePrototype) {
+                Errors_1.Errors.throw(Errors_1.Errors.CannotRegisterUndefined, "typePrototype supplied for " + typeName + " " + typeVersion + " is null or undefined!");
+            }
+            if (!sThis.versionIsInCorrectFormat(typeVersion)) {
                 Errors_1.Errors.throw(Errors_1.Errors.IncorrectVersionFormat);
             }
-            this.registry[typeName] = this.registry[typeName] || {};
-            this.registry[typeName][typeVersion] = typePrototype;
-            this.updateLatestVersions(typeName, typeVersion);
+            sThis.registry[typeName] = this.registry[typeName] || {};
+            sThis.registry[typeName][typeVersion] = typePrototype;
+            sThis.updateLatestVersions(typeName, typeVersion);
+            if (!sThis.libraryRegistered) {
+                sThis.libraryRegistered = true;
+                sThis.registerValueObjectsLibrary();
+            }
         };
-        TypeRegistry.prototype.updateLatestVersions = function (typeName, typeVersion) {
-            if (!this.latestVersions[typeName]) {
-                this.latestVersions[typeName] = typeVersion;
+        TypeRegistry.updateLatestVersions = function (typeName, typeVersion) {
+            var sThis = TypeRegistry;
+            if (!sThis.latestVersions[typeName]) {
+                sThis.latestVersions[typeName] = typeVersion;
                 return;
             }
-            var reference = this.latestVersions[typeName];
-            if (this.isVersionGreater(typeVersion, reference)) {
-                this.latestVersions[typeName] = typeVersion;
+            var reference = sThis.latestVersions[typeName];
+            if (sThis.isVersionGreater(typeVersion, reference)) {
+                sThis.latestVersions[typeName] = typeVersion;
             }
         };
-        TypeRegistry.prototype.isVersionGreater = function (vSubject, vReference) {
-            var vS = this.extractVersionNumber(vSubject);
-            var vR = this.extractVersionNumber(vReference);
+        TypeRegistry.isVersionGreater = function (vSubject, vReference) {
+            var sThis = TypeRegistry;
+            var vS = sThis.extractVersionNumber(vSubject);
+            var vR = sThis.extractVersionNumber(vReference);
             return vS > vR;
         };
-        TypeRegistry.prototype.extractVersionNumber = function (typeVersion) {
+        TypeRegistry.extractVersionNumber = function (typeVersion) {
+            var sThis = TypeRegistry;
             var version = typeVersion.replace("v", "");
             var asNumber = Number(version);
             return asNumber;
         };
-        TypeRegistry.prototype.getTypeInstance = function (typeName, typeVersion) {
+        TypeRegistry.getTypeInstance = function (typeName, typeVersion) {
+            var sThis = TypeRegistry;
             if (!typeVersion) {
-                typeVersion = this.getLatestVersionForType(typeName);
+                typeVersion = sThis.getLatestVersionForType(typeName);
             }
-            if (!this.registry[typeName]) {
+            if (!sThis.registry[typeName]) {
                 Errors_1.Errors.throw(Errors_1.Errors.TypeNotRegistered, "Type " + typeName + " does not exist in the TypeRegistry.");
             }
-            if (!this.registry[typeName][typeVersion]) {
+            if (!sThis.registry[typeName][typeVersion]) {
                 Errors_1.Errors.throw(Errors_1.Errors.TypeNotRegistered, "Version " + typeVersion + " of Type " + typeName + " does not exist in the TypeRegistry.");
             }
-            var toInstantiate = this.registry[typeName][typeVersion];
+            var toInstantiate = sThis.registry[typeName][typeVersion];
             var toReturn;
             try {
                 toReturn = (new toInstantiate());
@@ -57,22 +67,26 @@ define(["require", "exports", "./Errors", "../ValueObjects/Guid"], function (req
             }
             return toReturn;
         };
-        TypeRegistry.prototype.isLatestVersionForType = function (typeName, typeVersion) {
-            return this.getLatestVersionForType(typeName) === typeVersion;
+        TypeRegistry.isLatestVersionForType = function (typeName, typeVersion) {
+            var sThis = TypeRegistry;
+            return sThis.getLatestVersionForType(typeName) === typeVersion;
         };
-        TypeRegistry.prototype.getLatestVersionForType = function (typeName) {
-            return this.latestVersions[typeName] || undefined;
+        TypeRegistry.getLatestVersionForType = function (typeName) {
+            var sThis = TypeRegistry;
+            return sThis.latestVersions[typeName] || undefined;
         };
-        TypeRegistry.prototype.versionIsInCorrectFormat = function (typeVersion) {
+        TypeRegistry.versionIsInCorrectFormat = function (typeVersion) {
+            var sThis = TypeRegistry;
             var versionRe = new RegExp("^v[0-9]+");
             if (!versionRe.test(typeVersion)) {
                 return false;
             }
             return true;
         };
-        TypeRegistry.prototype.computeNextVersion = function (typeVersion) {
+        TypeRegistry.computeNextVersion = function (typeVersion) {
+            var sThis = TypeRegistry;
             var versionRe = new RegExp("^v[0-9]+");
-            if (!this.versionIsInCorrectFormat(typeVersion)) {
+            if (!sThis.versionIsInCorrectFormat(typeVersion)) {
                 throw new Error();
             }
             var version = Number(typeVersion.substr(1));
@@ -80,6 +94,9 @@ define(["require", "exports", "./Errors", "../ValueObjects/Guid"], function (req
             var nextVersion = "v" + version;
             return nextVersion;
         };
+        TypeRegistry.registry = {};
+        TypeRegistry.latestVersions = {};
+        TypeRegistry.libraryRegistered = false;
         return TypeRegistry;
     }());
     exports.TypeRegistry = TypeRegistry;

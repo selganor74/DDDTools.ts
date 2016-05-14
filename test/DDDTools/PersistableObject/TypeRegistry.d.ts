@@ -1,17 +1,17 @@
 /// <reference path="../../../typings/browser.d.ts" />
 import { IPersistable } from "../PersistableObject/IPersistable";
 export declare class TypeRegistry {
-    private registry;
-    private latestVersions;
-    constructor();
-    private registerValueObjectsLibrary();
-    registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
-    private updateLatestVersions(typeName, typeVersion);
-    private isVersionGreater(vSubject, vReference);
-    private extractVersionNumber(typeVersion);
-    getTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): any;
-    isLatestVersionForType(typeName: string, typeVersion: string): boolean;
-    getLatestVersionForType(typeName: string): string;
-    private versionIsInCorrectFormat(typeVersion);
-    computeNextVersion(typeVersion: string): string;
+    private static registry;
+    private static latestVersions;
+    private static libraryRegistered;
+    private static registerValueObjectsLibrary();
+    static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
+    private static updateLatestVersions(typeName, typeVersion);
+    private static isVersionGreater(vSubject, vReference);
+    private static extractVersionNumber(typeVersion);
+    static getTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): any;
+    static isLatestVersionForType(typeName: string, typeVersion: string): boolean;
+    static getLatestVersionForType(typeName: string): string;
+    private static versionIsInCorrectFormat(typeVersion);
+    static computeNextVersion(typeVersion: string): string;
 }

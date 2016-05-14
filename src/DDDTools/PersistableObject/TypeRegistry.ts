@@ -5,73 +5,82 @@ import {Errors} from "./Errors";
 import {Guid} from "../ValueObjects/Guid";
 
 export class TypeRegistry {
-    
-    private registry: { [typeName: string]: { [typeVersion: string] : new () => IPersistable } };
-    private latestVersions: { [typeName: string]: string }
-    
-    constructor() {
-        this.registry = {};
-        this.latestVersions = {};
-        
-        this.registerValueObjectsLibrary();
-    }
-    
+
+    private static registry: { [typeName: string]: { [typeVersion: string]: new () => IPersistable } } = {};
+    private static latestVersions: { [typeName: string]: string } = {}
+    private static libraryRegistered: boolean = false;
+
     /**
      * Always Register Library Value Objects.
      */
-    private registerValueObjectsLibrary() {
-        this.registerType("DDDTools.ValueObjects.Guid", "v1", <any>Guid);
+    private static registerValueObjectsLibrary() {
+        var sThis = TypeRegistry;
+        sThis.registerType("DDDTools.ValueObjects.Guid", "v1", <any>Guid);
     }
-    
 
-    public registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void {
-        if(!this.versionIsInCorrectFormat(typeVersion)) {
+
+    public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void {
+        var sThis = TypeRegistry;
+        if (!typePrototype) {
+            Errors.throw(Errors.CannotRegisterUndefined, "typePrototype supplied for " + typeName + " " + typeVersion + " is null or undefined!");
+        }
+
+        if (!sThis.versionIsInCorrectFormat(typeVersion)) {
             Errors.throw(Errors.IncorrectVersionFormat);
         }
-        this.registry[typeName] = this.registry[typeName] || {};
-        this.registry[typeName][typeVersion] = typePrototype;
-        
-        this.updateLatestVersions(typeName, typeVersion);
+        sThis.registry[typeName] = this.registry[typeName] || {};
+        sThis.registry[typeName][typeVersion] = typePrototype;
+
+        sThis.updateLatestVersions(typeName, typeVersion);
+
+        if (!sThis.libraryRegistered) {
+            sThis.libraryRegistered = true;
+            sThis.registerValueObjectsLibrary();
+        }
     }
-    
-    private updateLatestVersions(typeName: string, typeVersion: string): void {
-        if(!this.latestVersions[typeName]) {
-            this.latestVersions[typeName] = typeVersion;
+
+    private static updateLatestVersions(typeName: string, typeVersion: string): void {
+        var sThis = TypeRegistry;
+        if (!sThis.latestVersions[typeName]) {
+            sThis.latestVersions[typeName] = typeVersion;
             return;
         }
-        var reference = this.latestVersions[typeName];
-        if (this.isVersionGreater(typeVersion,reference)) {
-            this.latestVersions[typeName] = typeVersion;
+        var reference = sThis.latestVersions[typeName];
+        if (sThis.isVersionGreater(typeVersion, reference)) {
+            sThis.latestVersions[typeName] = typeVersion;
         }
     }
-        
-    private isVersionGreater(vSubject: string, vReference: string): boolean {
-        var vS: number = this.extractVersionNumber(vSubject);
-        var vR: number = this.extractVersionNumber(vReference);
+
+    private static isVersionGreater(vSubject: string, vReference: string): boolean {
+        var sThis = TypeRegistry;
+        var vS: number = sThis.extractVersionNumber(vSubject);
+        var vR: number = sThis.extractVersionNumber(vReference);
         return vS > vR;
-    }   
-     
-    private extractVersionNumber(typeVersion: string): number {
-        var version: string = typeVersion.replace("v","");
+    }
+
+    private static extractVersionNumber(typeVersion: string): number {
+        var sThis = TypeRegistry;
+        var version: string = typeVersion.replace("v", "");
         var asNumber = Number(version);
         return asNumber;
     }
-    
-    public getTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string) {
-        if(!typeVersion) {
-            typeVersion = this.getLatestVersionForType(typeName);
+
+    public static getTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string) {
+        var sThis = TypeRegistry;
+        if (!typeVersion) {
+            typeVersion = sThis.getLatestVersionForType(typeName);
         }
-        if (!this.registry[typeName]) {
+        if (!sThis.registry[typeName]) {
             Errors.throw(Errors.TypeNotRegistered, "Type " + typeName + " does not exist in the TypeRegistry.")
         }
 
-        if (!this.registry[typeName][typeVersion]) {
+        if (!sThis.registry[typeName][typeVersion]) {
             Errors.throw(Errors.TypeNotRegistered, "Version " + typeVersion + " of Type " + typeName + " does not exist in the TypeRegistry.")
         }
 
-        var toInstantiate = this.registry[typeName][typeVersion];
+        var toInstantiate = sThis.registry[typeName][typeVersion];
         var toReturn;
-        
+
         try {
             toReturn = <T>(new (<any>toInstantiate)());
             //toReturn.__typeName = typeName;
@@ -81,33 +90,38 @@ export class TypeRegistry {
         }
         return toReturn;
     }
-    
+
     /**
      * True if specified version is the latest for type.
      */
-    public isLatestVersionForType(typeName: string, typeVersion: string) {
-        return this.getLatestVersionForType(typeName) === typeVersion;
+    public static isLatestVersionForType(typeName: string, typeVersion: string) {
+        var sThis = TypeRegistry;
+        return sThis.getLatestVersionForType(typeName) === typeVersion;
     }
-    
+
     /**
      * Will return undefined if the no version type is defined
      */
-    public getLatestVersionForType(typeName: string): string {
-        return this.latestVersions[typeName] || undefined;
+    public static getLatestVersionForType(typeName: string): string {
+        var sThis = TypeRegistry;
+
+        return sThis.latestVersions[typeName] || undefined;
     }
-    
-    private versionIsInCorrectFormat(typeVersion: string) : boolean {
+
+    private static versionIsInCorrectFormat(typeVersion: string): boolean {
+        var sThis = TypeRegistry;
         var versionRe = new RegExp("^v[0-9]+");
         if (!versionRe.test(typeVersion)) {
             return false;
-        }        
+        }
         return true;
     }
 
-    public computeNextVersion(typeVersion: string): string {
+    public static computeNextVersion(typeVersion: string): string {
+        var sThis = TypeRegistry;
         // Version must be in the form vN where v is a constant and N is an integer.
         var versionRe = new RegExp("^v[0-9]+");
-        if (!this.versionIsInCorrectFormat(typeVersion)) {
+        if (!sThis.versionIsInCorrectFormat(typeVersion)) {
             // TODO Throw the correct exception;
             throw new Error();
             // Errors.throw(Errors.IncorrectVersionFormat, "Specified version " + typeVersion + " is in incorrect format. Must be in the form v<n> where n is an integer.");

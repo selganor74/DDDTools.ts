@@ -4,13 +4,13 @@ define(["require", "exports", "./Errors", "./TypeRegistry"], function (require, 
         function Factory() {
         }
         Factory.registerType = function (typeName, typeVersion, typePrototype) {
-            this.typeRegistry.registerType(typeName, typeVersion, typePrototype);
+            TypeRegistry_1.TypeRegistry.registerType(typeName, typeVersion, typePrototype);
         };
         Factory.createTypeInstance = function (typeName, typeVersion) {
             if (!Factory.typeRegistry) {
                 Errors_1.Errors.throw(Errors_1.Errors.TypeRegistryNotSet, "Please define a type registry and set it on the Factory calling 'setTypeRegistry' method.");
             }
-            return this.typeRegistry.getTypeInstance(typeName, typeVersion);
+            return TypeRegistry_1.TypeRegistry.getTypeInstance(typeName, typeVersion);
         };
         Factory.createObjectsFromState = function (state) {
             if (state === undefined) {

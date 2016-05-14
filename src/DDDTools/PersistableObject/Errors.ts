@@ -11,6 +11,7 @@ export class Errors extends BaseErrors {
 
     // Thrown by the Factory/TypeRegistry
     static TypeNotRegistered = "Type has not been registered with the TypeRegistry";
+    static CannotRegisterUndefined = "typePrototype cannot be null or undefined"
     
     // Thrown by the Upgrader
     static TypeNotInstatiable = "Type is not instantiable";

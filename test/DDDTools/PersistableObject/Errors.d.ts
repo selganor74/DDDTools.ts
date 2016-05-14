@@ -6,6 +6,7 @@ export declare class Errors extends BaseErrors {
     static UnableToInstantiateType: string;
     static TypeRegistryNotSet: string;
     static TypeNotRegistered: string;
+    static CannotRegisterUndefined: string;
     static TypeNotInstatiable: string;
     static UpgradePathNotFound: string;
     static IncorrectVersionFormat: string;

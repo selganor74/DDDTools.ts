@@ -83,19 +83,8 @@ module.exports = function (grunt) {
         "jasmine": {
             "run-tests": {
                 src: [
-                        "test/DDDTools/CommonInterfaces/*.js",
-                        "test/DDDTools/Utils/*.js",
-                        "test/DDDTools/ErrorManagement/*.js",
-                        "test/DDDTools/PersistableObject/*.js",
-                        "test/DDDTools/Serialization/*.js",
-                        "test/DDDTools/DomainEvents/*.js",
-                        "test/DDDTools/ValueObject/*.js",
-                        "test/DDDTools/ValueObjects/*.js",
-                        "test/DDDTools/Entity/*.js",
-                        "test/DDDTools/Aggregate/*.js",
-                        "test/DDDTools/Repository/*.js",
-                        "test/DDDTools/UnitOfWork/*.js",
-                        "test/DDDTools/NeDBRepository/*.js"
+                        "test/DDDTools/*.js",
+                        "test/NeDBRepository/*.js"
                 ],
                 options: {
                     vendor:
@@ -104,8 +93,9 @@ module.exports = function (grunt) {
                     ],
                     specs: [
                         //"test/test/**/*-spec.js"
-                        //"test/test/DDDTools/*-spec.js"
-                        "test/test/DDDTools/BaseInMemoryRepository-spec.js"
+                        "test/test/DDDTools/*-spec.js"
+                        //"test/test/DDDTools/BaseInMemoryRepository-spec.js"
+                        //"test/test/DDDTools/FakeTest-spec.ts"
                     ],
                     template: require('grunt-template-jasmine-requirejs'),
                     keepRunner: true,

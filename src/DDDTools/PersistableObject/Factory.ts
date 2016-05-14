@@ -18,7 +18,7 @@ export class Factory {
      * Registers a new IPersistable type with the Factory
      */
     public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable) {
-        this.typeRegistry.registerType(typeName, typeVersion, typePrototype);
+        TypeRegistry.registerType(typeName, typeVersion, typePrototype);
     }
 
     /**
@@ -30,7 +30,7 @@ export class Factory {
             Errors.throw(Errors.TypeRegistryNotSet, "Please define a type registry and set it on the Factory calling 'setTypeRegistry' method.");
         }
                 
-        return this.typeRegistry.getTypeInstance<T>(typeName, typeVersion);
+        return TypeRegistry.getTypeInstance<T>(typeName, typeVersion);
         
         // if (typeVersion) {
         //     var typeToInstatiate = Factory.computeFullyQualifiedTypeName(typeName, typeVersion);

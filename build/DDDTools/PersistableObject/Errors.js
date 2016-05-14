@@ -16,6 +16,7 @@ define(["require", "exports", "../ErrorManagement/BaseErrors"], function (requir
         Errors.UnableToInstantiateType = "Unable to Instantiate Type";
         Errors.TypeRegistryNotSet = "TypeRegistry not set";
         Errors.TypeNotRegistered = "Type has not been registered with the TypeRegistry";
+        Errors.CannotRegisterUndefined = "typePrototype cannot be null or undefined";
         Errors.TypeNotInstatiable = "Type is not instantiable";
         Errors.UpgradePathNotFound = "Upgrade Path not Found";
         Errors.IncorrectVersionFormat = "Incorrect Version Format";

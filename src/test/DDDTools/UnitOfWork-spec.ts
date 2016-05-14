@@ -14,6 +14,7 @@ import {ObjectRetrievedEvent} from "../../DDDTools/UnitOfWork/ObjectRetrievedEve
 import {Events} from "../../DDDTools/UnitOfWork/Events";
 import {UnitOfWorkErrors} from "../../DDDTools/UnitOfWork/UnitOfWorkErrors";
 import {Errors} from "../../DDDTools/Repository/Errors";
+import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 namespace CdC.Tests.ForUnitOfWork {
 
@@ -85,6 +86,9 @@ namespace CdC.Tests.ForUnitOfWork {
         }
 
         beforeEach(() => {
+            
+            Factory.registerType("CdC.Tests.UnitOfWork.TestAggregate", "v1", <any>TestAggregate);
+            
             repo = new TestRepository("CdC.Tests.UnitOfWork.TestAggregate");
             initKeys();
             initAggregates(keys);
