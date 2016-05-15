@@ -50,9 +50,9 @@ import IPromise = Q.IPromise;
             /**
              * Override this method to create the indexes needed by the repository
              */
-            public abstract setupIndexes();
+            protected abstract setupIndexes();
             
-            public getByIdImplementation(id:TKey): IPromise<T> {
+            protected getByIdImplementation(id:TKey): IPromise<T> {
                 var deferred = Q.defer<T>();
                 
                 this.datastore.findOne<DbItem<T,TKey>>({key: id.toString()}, function(err, document) {
@@ -94,7 +94,7 @@ import IPromise = Q.IPromise;
                 });
             }
 
-            public saveImplementation(item: T): IPromise<{}> {
+            protected saveImplementation(item: T): IPromise<{}> {
                 var deferred = Q.defer<{}>();
 
                 this.datastore.findOne({id: item.getKey()},(err, document) => {
@@ -114,7 +114,7 @@ import IPromise = Q.IPromise;
                 return deferred.promise;
             }
             
-            public deleteImplementation(id: TKey): IPromise<{}> {
+            protected deleteImplementation(id: TKey): IPromise<{}> {
                 var deferred = Q.defer<{}>();
 
                 this.datastore.remove({id: id.toString()},(err, document) => {

@@ -34,7 +34,10 @@ class TestRepo extends BaseNeDBRepositoryAsync<TestAggregate, TestKey> {
 }
 
 describe("BaseNeDBRepository", () => {
-
+    
+    var key: TestKey; // needed by persistence tests
+    var persistenceTestAggregate: TestAggregate;
+    
     Factory.registerType("TestKey", "v1", TestKey);
     Factory.registerType("TestAggregate", "v1", TestAggregate);
 
@@ -97,4 +100,36 @@ describe("BaseNeDBRepository", () => {
         });
     });
 
+    it("A repository built with filename option MUST be persistent - part 1 saving", (done) => {
+        var repo1 = new TestRepo("TestAggregate", { filename: "TestAggregate", autoload: true });
+
+        persistenceTestAggregate = new TestAggregate();
+        persistenceTestAggregate.aTestProperty = "Wow this has been saved.";
+        key = new TestKey();
+        persistenceTestAggregate.setKey(key);
+        
+        repo1.save(persistenceTestAggregate).then(() => {
+            expect(true).toBeTruthy();
+            done();
+        },
+            (err) => {
+                expect(false).toBeTruthy("First Save failed");
+                done();
+            });
+    });
+
+    it("A repository built with filename option MUST be persistent - part 2 retrieving", (done) => {
+        var repo2 = new TestRepo("TestAggregate", { filename: "TestAggregate", autoload: true });
+
+        repo2.getById(key).then(
+            (doc) => {
+                expect(doc.perfectlyMatch(persistenceTestAggregate)).toBeTruthy();
+                done();
+            },
+            (err) => {
+                expect(false).toBeTruthy(JSON.stringify(err));
+                done();
+            }
+        );         
+    });
 });

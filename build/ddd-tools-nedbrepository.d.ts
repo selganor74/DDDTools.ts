@@ -313,11 +313,11 @@ declare module "NeDBRepository/BaseNeDBRepositoryAsync" {
         private options;
         private datastore;
         constructor(managedType: string, options?: NeDB.DataStoreOptions);
-        abstract setupIndexes(): any;
-        getByIdImplementation(id: TKey): IPromise<T>;
+        protected abstract setupIndexes(): any;
+        protected getByIdImplementation(id: TKey): IPromise<T>;
         private doAnInsert(toSave, deferred);
         private doAnUpdate(toSave, deferred);
-        saveImplementation(item: T): IPromise<{}>;
-        deleteImplementation(id: TKey): IPromise<{}>;
+        protected saveImplementation(item: T): IPromise<{}>;
+        protected deleteImplementation(id: TKey): IPromise<{}>;
     }
 }
