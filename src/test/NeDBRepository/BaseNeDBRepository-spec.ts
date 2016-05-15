@@ -17,6 +17,9 @@ export class TestKey extends Guid {
 }
 
 export class TestAggregate extends BaseAggregateRoot<TestAggregate, TestKey> {
+
+    public aTestProperty: string;
+
     constructor() {
         super();
         this.__typeName = "TestAggregate";
@@ -52,6 +55,8 @@ describe("BaseNeDBRepository", () => {
             testRepo.getById(testKey).then(
                 (retrieved) => {
                     expect(retrieved).toEqual(testItem);
+                    // Being Entities the equals method should return true if we are talking about the same entity.
+                    expect(retrieved.equals(testItem)).toBeTruthy();
                     expect(retrieved.perfectlyMatch(testItem)).toBeTruthy();
                     done();
                 },
@@ -67,5 +72,29 @@ describe("BaseNeDBRepository", () => {
             }
         );
 
-    })
+    });
+
+    it("RevisionId must be incremented only if object to be saved differs from object saved", (done) => {
+        // pending("Need to refactor IPErsistable to add functions for State Comparison.");
+
+        var repo = new TestRepo("TestAggregate");
+        var e = new TestAggregate();
+        e.setKey(new TestKey());
+        e.aTestProperty = "Before saving...";
+
+        expect(e.getRevisionId()).toEqual(0);
+
+        repo.save(e).then(() => {
+            expect(e.getRevisionId()).toEqual(1);
+            repo.save(e).then(() => {
+                expect(e.getRevisionId()).toEqual(1);
+                e.aTestProperty = "... after saving";
+                repo.save(e).then(() => {
+                    expect(e.getRevisionId()).toEqual(2);
+                    done();
+                });
+            });
+        });
+    });
+
 });

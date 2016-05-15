@@ -5,5 +5,6 @@ export declare class TestKey extends Guid {
     constructor();
 }
 export declare class TestAggregate extends BaseAggregateRoot<TestAggregate, TestKey> {
+    aTestProperty: string;
     constructor();
 }

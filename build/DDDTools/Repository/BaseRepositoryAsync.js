@@ -60,6 +60,7 @@ define(["require", "exports", "./Errors", "../PersistableObject/Factory"], funct
             }, function (error) {
                 var reason;
                 if (error instanceof Error && error.name == Errors_1.Errors.ItemNotFound) {
+                    item.incrementRevisionId();
                     _this.doSave(item, deferred);
                     return;
                 }
