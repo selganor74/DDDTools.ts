@@ -6,7 +6,8 @@ import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
 import {BaseNeDBRepositoryAsync} from "../../NeDBRepository/BaseNeDBRepositoryAsync";
 import {BaseKeyValueObject} from "../../DDDTools/Entity/BaseKeyValueObject";
 import {Factory} from "../../DDDTools/PersistableObject/Factory";
-import {IEntity} from "../../DDDTools/Entity/IEntity"
+import {IEntity} from "../../DDDTools/Entity/IEntity";
+import {NeDBDatabaseFactory} from "../../NeDBRepository/NeDBDatabaseFactory";
 
 export class TestKey extends Guid {
     constructor() {
@@ -41,8 +42,11 @@ describe("BaseNeDBRepository", () => {
     Factory.registerType("TestKey", "v1", TestKey);
     Factory.registerType("TestAggregate", "v1", TestAggregate);
 
+    var inMemoryDb = NeDBDatabaseFactory.getAndRegisterInMemoryDb("TestAggregateInMemory");
+    var persistentDb = NeDBDatabaseFactory.getAndRegisterPersistentDb("TestAggregatePersistent");
+    
     it("Should be possible to instantiate the NeDB Object.", () => {
-        var nedbRepo = new TestRepo("TestAggregate");
+        var nedbRepo = new TestRepo("TestAggregate", inMemoryDb);
         expect(true).toBeTruthy();
     });
 
@@ -50,7 +54,7 @@ describe("BaseNeDBRepository", () => {
 
         var testItem = new TestAggregate();
         var testKey = new TestKey();
-        var testRepo = new TestRepo("TestAggregate");
+        var testRepo = new TestRepo("TestAggregate", inMemoryDb);
 
         testItem.setKey(testKey);
 
@@ -80,7 +84,7 @@ describe("BaseNeDBRepository", () => {
     it("RevisionId must be incremented only if object to be saved differs from object saved", (done) => {
         // pending("Need to refactor IPErsistable to add functions for State Comparison.");
 
-        var repo = new TestRepo("TestAggregate");
+        var repo = new TestRepo("TestAggregate", inMemoryDb);
         var e = new TestAggregate();
         e.setKey(new TestKey());
         e.aTestProperty = "Before saving...";
@@ -101,7 +105,7 @@ describe("BaseNeDBRepository", () => {
     });
 
     it("A repository built with filename option MUST be persistent - part 1 saving", (done) => {
-        var repo1 = new TestRepo("TestAggregate", { filename: "TestAggregate", autoload: true });
+        var repo1 = new TestRepo("TestAggregate", persistentDb);
 
         persistenceTestAggregate = new TestAggregate();
         persistenceTestAggregate.aTestProperty = "Wow this has been saved.";
@@ -119,7 +123,7 @@ describe("BaseNeDBRepository", () => {
     });
 
     it("A repository built with filename option MUST be persistent - part 2 retrieving", (done) => {
-        var repo2 = new TestRepo("TestAggregate", { filename: "TestAggregate", autoload: true });
+        var repo2 = new TestRepo("TestAggregate", persistentDb);
 
         repo2.getById(key).then(
             (doc) => {

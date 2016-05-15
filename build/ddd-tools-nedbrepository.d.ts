@@ -304,20 +304,39 @@ declare module "DDDTools/Repository/BaseRepositoryAsync" {
     }
 }
 declare module "NeDBRepository/BaseNeDBRepositoryAsync" {
+    import NeDBDataStore = require("nedb");
     import { BaseAggregateRoot } from "DDDTools/Aggregate/BaseAggregateRoot";
     import { IKeyValueObject } from "DDDTools/Entity/IKeyValueObject";
     import { IRepositoryAsync } from "DDDTools/Repository/IRepositoryAsync";
     import { BaseRepositoryAsync } from "DDDTools/Repository/BaseRepositoryAsync";
     import IPromise = Q.IPromise;
     export abstract class BaseNeDBRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
-        private options;
         private datastore;
-        constructor(managedType: string, options?: NeDB.DataStoreOptions);
+        constructor(managedType: string, nedbDatastore: NeDBDataStore);
         protected abstract setupIndexes(): any;
         protected getByIdImplementation(id: TKey): IPromise<T>;
         private doAnInsert(toSave, deferred);
         private doAnUpdate(toSave, deferred);
         protected saveImplementation(item: T): IPromise<{}>;
         protected deleteImplementation(id: TKey): IPromise<{}>;
+    }
+}
+declare module "NeDBRepository/Errors" {
+    import { BaseErrors } from "DDDTools/ErrorManagement/BaseErrors";
+    export class Errors extends BaseErrors {
+        static DatabaseAlreadyRegistered: string;
+        static DatabaseNotRegistered: string;
+    }
+}
+declare module "NeDBRepository/NeDBDatabaseFactory" {
+    import NeDBDataStore = require("nedb");
+    export class NeDBDatabaseFactory {
+        private static datastoreRegistry;
+        static registerDatabase(dbname: string, database: NeDBDataStore): void;
+        static isDatabaseRegistered(dbname: string): boolean;
+        static getDatabase(dbname: string): NeDBDataStore;
+        static unregisterDatabase(dbname: string): void;
+        static getAndRegisterPersistentDb(dbname: string): NeDBDataStore;
+        static getAndRegisterInMemoryDb(dbname: string): NeDBDataStore;
     }
 }

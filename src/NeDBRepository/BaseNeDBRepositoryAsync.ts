@@ -41,10 +41,10 @@ import IPromise = Q.IPromise;
             
             constructor(
                 managedType: string,
-                private options?: NeDB.DataStoreOptions
+                nedbDatastore: NeDBDataStore
             ) {
                 super(managedType);
-                this.datastore = new Nedb(options);
+                this.datastore = nedbDatastore;
             }
             
             /**
