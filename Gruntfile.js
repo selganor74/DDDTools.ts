@@ -14,32 +14,32 @@ module.exports = function (grunt) {
         },
         clean: {
             build: ['build/*'],
-            "after-build": ['build/**/*.d.ts']
+            "after-build": ['build/**/.baseDir.*']
         },
-        copy: {
-            build: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'src',
-                        src: [
-                            '**/*.html', '**/*.json', '!tsconfig.json', '**/*.css',
-                            'assets/**/*', 'Scripts/**/*', 'images/**/*'
-                        ],
-                        dest: 'build/'
-                    },
-                    { // pulls in nedb
-                        expand: true,
-                        cwd: 'node_modules/nedb/browser-version/out',
-                        src: ['nedb.js'],
-                        dest: 'build/lib'
-                    },
-                    { // pulls in nedb
-                        expand: true,
-                        cwd: 'node_modules/q/',
-                        src: ['q.js'],
-                        dest: 'build/lib'
-                    }
+        "copy": {
+            "build": {
+                "files": [
+                    // {
+                    //     "expand": true,
+                    //     "cwd": 'src',
+                    //     "src": [
+                    //         '**/*.html', '**/*.json', '!tsconfig.json', '**/*.css',
+                    //         'assets/**/*', 'Scripts/**/*', 'images/**/*'
+                    //     ],
+                    //     dest: 'build/'
+                    // },
+                    // { // pulls in nedb
+                    //     expand: true,
+                    //     cwd: 'node_modules/nedb/browser-version/out',
+                    //     src: ['nedb.js'],
+                    //     dest: 'build/lib'
+                    // },
+                    // { // pulls in nedb
+                    //     expand: true,
+                    //     cwd: 'node_modules/q/',
+                    //     src: ['q.js'],
+                    //     dest: 'build/lib'
+                    // }
                 ]
             },
             "build-tests": {
@@ -123,7 +123,7 @@ module.exports = function (grunt) {
 
     // TASKS
     grunt.registerTask('run', ['http-server']);
-    grunt.registerTask('build', ['clean', 'ts:build','ts:build-nedbrepo', 'copy', 'clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build', "ts:build-nedbrepo", 'ts:build-tests', 'copy', 'clean:after-build' ]);
+    grunt.registerTask('build', ['clean', 'ts:build','ts:build-nedbrepo','clean:after-build']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build', "ts:build-nedbrepo", 'ts:build-tests', 'copy' ]);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };

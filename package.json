@@ -1,16 +1,14 @@
 {
-  "name": "CdCOfflinePOC",
-  "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "typescript-ddd-tools",
+  "version": "0.0.1",
+  "description": "A typescript library that implements the basic DDD patterns.",
+  "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt test"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Gabriele Rossetti",
+  "license": "MIT",
   "devDependencies": {
-    "electron": "^0.4.1",
-    "electron-prebuilt": "^0.37.2",
     "grunt": "^0.4.5",
     "grunt-cli": "^1.1.0",
     "grunt-contrib-clean": "^1.0.0",
@@ -24,14 +22,10 @@
     "jasmine": "^2.4.1",
     "jasmine-core": "^2.4.1",
     "jquery": "^2.2.3",
-    "node": "0.0.0",
-    "systemjs": "^0.19.27",
     "typescript": "^1.8.9",
     "typings": "^0.8.1"
   },
   "dependencies": {
-    "electron": "^0.4.1",
-    "electron-prebuilt": "^0.37.2",
     "nedb": "^1.8.0",
     "q": "^1.4.1"
   }

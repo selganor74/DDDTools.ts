@@ -3,11 +3,14 @@
 		"target": "es5",
 		"sourceMap": true,
 		"rootDir": "src/DDDTools",
-        "diagnostics": true,
-		"outDir": "../../build/",
+		"diagnostics": true,
+		"outFile": "../../build/ddd-tools.js",
 		"declaration": true,
 		"module": "amd",
 		"inlineSourceMap": true,
 		"inlineSources": true
-	}
+	},
+	"exclude": [
+		"**/.baseDir.*"
+	]
 }

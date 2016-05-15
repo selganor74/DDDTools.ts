@@ -1,0 +1,9 @@
+/.bin/**/*
+/.grunt/**/*
+/.settings/**/*
+/.tscache/**/*
+/.vscode/**/*
+/build-test/**/*
+/src/**/*
+/typings/**/*
+/*.*
