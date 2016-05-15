@@ -30,8 +30,9 @@
     "typings": "^0.8.1"
   },
   "dependencies": {
-    "nedb": "^1.8.0",
     "electron": "^0.4.1",
-    "electron-prebuilt": "^0.37.2"
+    "electron-prebuilt": "^0.37.2",
+    "nedb": "^1.8.0",
+    "q": "^1.4.1"
   }
 }

@@ -11,11 +11,13 @@ export class Serializer {
      */
     public static serialize(toSerialize: any): string {
         var toReturn;
+        Touch.resetTouchIndex();
         toSerialize = Serializer.preprocessForSerializablesSubstitution(toSerialize);
         try {
             toReturn = JSON.stringify(toSerialize, Serializer.customSerializer);
         } finally {
             Serializer.postprocessForSerializableSubstitution(toSerialize);
+            Serializer.untouchSourceObject(toSerialize);
         }
         return toReturn;
     }
@@ -42,6 +44,21 @@ export class Serializer {
             }
         }
         return sourceObject;
+    }
+    
+    private static untouchSourceObject(sourceObject: any) {
+        var sThis = Serializer;
+        if (Touch.hasBeenTouched(sourceObject)) {
+            Touch.untouch(sourceObject);
+        }
+        for( var idx in sourceObject) {
+            var current = sourceObject[idx];
+            if (typeof current === 'object' || Array.isArray(current)) {
+                sThis.untouchSourceObject(current);
+                sourceObject[idx] = Serializer.preprocessForSerializablesSubstitution(current);
+                continue;
+            }
+        }
     }
 
     /**

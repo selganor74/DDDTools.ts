@@ -14,8 +14,8 @@ export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey
 
     private storage: { [id: string]: IPersistable };
 
-    constructor(private _managedTypeName: string) {
-        super();
+    constructor( managedTypeName: string) {
+        super(managedTypeName);
         this.storage = {};
     }
 

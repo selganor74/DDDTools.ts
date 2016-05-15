@@ -4,7 +4,7 @@
 		"sourceMap": true,
 		"rootDir": "src",
 		"declaration": true,
-		"outDir": "../../test",
+		"outDir": "../../build-test/",
 		"diagnostics": true,
 		"module": "amd",
 		"inlineSourceMap": true,

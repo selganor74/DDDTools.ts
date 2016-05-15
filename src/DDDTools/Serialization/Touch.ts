@@ -5,12 +5,31 @@ import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
 
 export class Touch {
+    
+    private static touchIndex = 1;
+    
+    /**
+     * Prepares the id generator for a new run
+     */
+    public static resetTouchIndex() {
+        var sThis = Touch;
+        sThis.touchIndex = 1;
+    }
+    
+    private static getNewIndex(): string {
+        // return SimpleGuid.generate()
+        var sThis = Touch;
+        sThis.touchIndex++;
+        return (sThis.touchIndex++ - 1).toString();
+    }
+    
     /**
      * adds an __objectInstanceId property to an object
      */
     public static touch(object: any): void {
+        var sThis = Touch
         if (typeof object === "object") {
-            var newId = SimpleGuid.generate();
+            var newId = sThis.getNewIndex();
             object.__objectInstanceId = newId;
         }
     }

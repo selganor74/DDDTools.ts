@@ -5,12 +5,14 @@ define(["require", "exports", "./SerializableDate", "./SerializableRegExp", "./T
         }
         Serializer.serialize = function (toSerialize) {
             var toReturn;
+            Touch_1.Touch.resetTouchIndex();
             toSerialize = Serializer.preprocessForSerializablesSubstitution(toSerialize);
             try {
                 toReturn = JSON.stringify(toSerialize, Serializer.customSerializer);
             }
             finally {
                 Serializer.postprocessForSerializableSubstitution(toSerialize);
+                Serializer.untouchSourceObject(toSerialize);
             }
             return toReturn;
         };
@@ -33,6 +35,20 @@ define(["require", "exports", "./SerializableDate", "./SerializableRegExp", "./T
                 }
             }
             return sourceObject;
+        };
+        Serializer.untouchSourceObject = function (sourceObject) {
+            var sThis = Serializer;
+            if (Touch_1.Touch.hasBeenTouched(sourceObject)) {
+                Touch_1.Touch.untouch(sourceObject);
+            }
+            for (var idx in sourceObject) {
+                var current = sourceObject[idx];
+                if (typeof current === 'object' || Array.isArray(current)) {
+                    sThis.untouchSourceObject(current);
+                    sourceObject[idx] = Serializer.preprocessForSerializablesSubstitution(current);
+                    continue;
+                }
+            }
         };
         Serializer.postprocessForSerializableSubstitution = function (sourceObject) {
             for (var idx in sourceObject) {

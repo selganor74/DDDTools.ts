@@ -10,7 +10,9 @@
 
   
   
-  <script src="test/lib/nedb.js"></script>
+  <script src="build-test/lib/nedb.js"></script>
+  
+  <script src="build-test/lib/q.js"></script>
   
   
 
@@ -56,14 +58,14 @@
     require([
       
         
-        'test/DDDTools/ValueObjects' ,
+        'build-test/NeDBRepository/BaseNeDBRepository' ,
       
         
-        'test/NeDBRepository/BaseNeDBRepository' 
+        'build-test/NeDBRepository/BaseNeDBRepositoryAsync' 
       
     ],
     function(){
-      require(['test/test/DDDTools/BaseInMemoryRepository-spec.js','test/test/DDDTools/BasePersistableObject-spec.js','test/test/DDDTools/BaseValueObject-spec.js','test/test/DDDTools/FakeTest-spec.js','test/test/DDDTools/InProcessDispatcher-spec.js','test/test/DDDTools/UnitOfWork-spec.js','.grunt/grunt-contrib-jasmine/reporter.js'], function(){
+      require(['build-test/test/DDDTools/BaseInMemoryRepository-spec.js','build-test/test/DDDTools/BasePersistableObject-spec.js','build-test/test/DDDTools/BaseValueObject-spec.js','build-test/test/DDDTools/FakeTest-spec.js','build-test/test/DDDTools/InProcessDispatcher-spec.js','build-test/test/DDDTools/Serialization-spec.js','build-test/test/DDDTools/UnitOfWork-spec.js','build-test/test/NeDBRepository/BaseNeDBRepository-spec.js','.grunt/grunt-contrib-jasmine/reporter.js'], function(){
         startTests();
       });
     }

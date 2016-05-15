@@ -1,6 +1,7 @@
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {BaseEntity} from "../Entity/BaseEntity";
 import {IAggregateRoot} from "./IAggregateRoot";
+import {IEntity} from "./Entity/IEntity";
 
 /**
  * Implements the Aggregate Pattern by defining interfaces and base behavior for an AggregateRoot.
@@ -15,7 +16,7 @@ export abstract class BaseAggregateRoot<
     TKey extends IKeyValueObject<TKey>
     >
     extends BaseEntity<T, TKey>
-    implements IAggregateRoot<T, TKey>
+    implements IAggregateRoot<T, TKey>, IEntity<T, TKey>
 {
     private __revisionId: number = 0;
 
