@@ -10,8 +10,8 @@ declare module "PersistableObject/IPersistable" {
     import { ITypeTracking } from "CommonInterfaces/ITypeTracking";
     export interface IPersistable extends ITypeTracking {
         getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
-        getState(): any;
-        setState(state: any): any;
+        getState(): ITypeTracking;
+        setState(state: ITypeTracking): any;
     }
 }
 declare module "CommonInterfaces/IEquatable" {
@@ -283,6 +283,11 @@ declare module "Entity/BaseKeyValueObject" {
         abstract toString(): string;
     }
 }
+declare module "Query/IQuery" {
+    export interface IQuery<T> {
+        execute(): T[];
+    }
+}
 declare module "Repository/Errors" {
     import { BaseErrors } from "ErrorManagement/BaseErrors";
     export class Errors extends BaseErrors {
@@ -302,6 +307,71 @@ declare module "Repository/IRepository" {
         getById(id: TKey): T;
         save(item: T): void;
         delete(id: TKey): void;
+    }
+}
+declare module "Repository/Events" {
+    export class Events {
+        private static __nameSpace;
+        static ItemAddedEvent: string;
+        static ItemUpdatedEvent: string;
+        static ItemDeletedEvent: string;
+        static ItemRetrievedEvent: string;
+    }
+}
+declare module "Repository/ItemRetrievedEvent" {
+    import { IDomainEvent } from "DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "ValueObject/BaseValueObject";
+    import { ITypeTracking } from "CommonInterfaces/ITypeTracking";
+    export class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare module "Repository/ItemAddedEvent" {
+    import { IDomainEvent } from "DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "ValueObject/BaseValueObject";
+    import { ITypeTracking } from "CommonInterfaces/ITypeTracking";
+    export class ItemAddedEvent extends BaseValueObject<ItemAddedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare module "Repository/ItemUpdatedEvent" {
+    import { IDomainEvent } from "DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "ValueObject/BaseValueObject";
+    import { ITypeTracking } from "CommonInterfaces/ITypeTracking";
+    export class ItemUpdatedEvent extends BaseValueObject<ItemUpdatedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare module "Repository/ItemDeletedEvent" {
+    import { IDomainEvent } from "DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "ValueObject/BaseValueObject";
+    import { ITypeTracking } from "CommonInterfaces/ITypeTracking";
+    export class ItemDeletedEvent extends BaseValueObject<ItemDeletedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
     }
 }
 declare module "Repository/BaseRepository" {

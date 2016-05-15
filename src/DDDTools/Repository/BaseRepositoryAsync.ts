@@ -5,6 +5,11 @@ import {Factory as Factory} from "../PersistableObject/Factory";
 import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
+import {ItemRetrievedEvent} from "./ItemRetrievedEvent";
+import {ItemAddedEvent} from "./ItemAddedEvent";
+import {ItemUpdatedEvent} from "./ItemUpdatedEvent";
+import {ItemDeletedEvent} from "./ItemDeletedEvent";
+import {DomainDispatcher} from "../DomainEvents/DomainDispatcher";
 
 import IPromise = Q.IPromise;
 
@@ -40,6 +45,10 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
                     return;
                 }
                 var toReturn: T = <T>(Factory.createObjectsFromState(value));
+
+                var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), value);
+                DomainDispatcher.dispatch(event);
+
                 deferred.resolve(toReturn);
             },
             (error: any) => {
@@ -69,12 +78,16 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
 
     save(item: T): IPromise<{}> {
         var deferred = Q.defer<{}>();
+        var event: ItemUpdatedEvent | ItemAddedEvent;
+
         this.getById(item.getKey()).then(
             (readValue: T) => {
                 // the item already exist so we have to compare it with what we are saving.
                 if (!item.perfectlyMatch(readValue)) {
                     item.incrementRevisionId();
                     this.doSave(item, deferred);
+                    event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                    DomainDispatcher.dispatch(event);
                     return;
                 } else {
                     // What is in the database perfectly match what we are saving, so nothing to do!
@@ -86,7 +99,12 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
                 if (error instanceof Error && error.name == Errors.ItemNotFound) {
                     // This is expected, the item is not in the repo, so we have to add it!
                     item.incrementRevisionId();
+
                     this.doSave(item, deferred);
+
+                    event = event || new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                    DomainDispatcher.dispatch(event);
+
                     return;
                 }
                 // Other errors must be treated as ... "Errors"
@@ -104,11 +122,26 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
 
     delete(id: TKey): IPromise<{}> {
         var deferred = Q.defer<{}>();
-        this.deleteImplementation(id).then(
-            () => { deferred.resolve(); },
-            (error: any) => {
-                var reason = this.buildError(error, Errors.ErrorDeletingItem) 
-                deferred.reject(reason);
+        var event: ItemDeletedEvent;
+        this.getById(id).then(
+            (item) => {
+                var event = new ItemDeletedEvent(item.__typeName, item.__typeVersion, id.toString(), item.getState());
+                this.deleteImplementation(id).then(
+                    () => {
+                        deferred.resolve();
+                        DomainDispatcher.dispatch(event);
+                    },
+                    (error: any) => {
+                        var reason = this.buildError(error, Errors.ErrorDeletingItem)
+                        deferred.reject(reason);
+                    }
+                );
+            },
+            (error) => {
+                if (error instanceof Error && error.name === Errors.ItemNotFound) {
+                    deferred.resolve();
+                    return;
+                }
             }
         );
         return deferred.promise;

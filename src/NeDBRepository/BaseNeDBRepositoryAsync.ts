@@ -16,6 +16,9 @@ import IPromise = Q.IPromise;
 // namespace Repository.NeDBImplementation {
     declare var Nedb : typeof NeDBDataStore;
     
+    /**
+     * This is the object that is effectively written to disk
+     */
     class DbItem<
         T extends BaseAggregateRoot<T, TKey>, 
         TKey extends IKeyValueObject<TKey>
@@ -46,11 +49,6 @@ import IPromise = Q.IPromise;
                 super(managedType);
                 this.datastore = nedbDatastore;
             }
-            
-            /**
-             * Override this method to create the indexes needed by the repository
-             */
-            protected abstract setupIndexes();
             
             protected getByIdImplementation(id:TKey): IPromise<T> {
                 var deferred = Q.defer<T>();

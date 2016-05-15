@@ -8,7 +8,6 @@ import IPromise = Q.IPromise;
 export declare abstract class BaseNeDBRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
     private datastore;
     constructor(managedType: string, nedbDatastore: NeDBDataStore);
-    protected abstract setupIndexes(): any;
     protected getByIdImplementation(id: TKey): IPromise<T>;
     private doAnInsert(toSave, deferred);
     private doAnUpdate(toSave, deferred);

@@ -9,7 +9,7 @@ import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
 export interface IPersistable extends ITypeTracking {
 	getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
-	getState(): any;
-	setState(state: any);
+	getState(): ITypeTracking;
+	setState(state: ITypeTracking);
 }
 // }

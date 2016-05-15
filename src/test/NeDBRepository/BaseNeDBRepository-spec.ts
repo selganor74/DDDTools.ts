@@ -29,9 +29,7 @@ export class TestAggregate extends BaseAggregateRoot<TestAggregate, TestKey> {
 }
 
 class TestRepo extends BaseNeDBRepositoryAsync<TestAggregate, TestKey> {
-    public setupIndexes() {
 
-    }
 }
 
 describe("BaseNeDBRepository", () => {

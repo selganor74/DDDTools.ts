@@ -10,8 +10,8 @@ declare module "DDDTools/PersistableObject/IPersistable" {
     import { ITypeTracking } from "DDDTools/CommonInterfaces/ITypeTracking";
     export interface IPersistable extends ITypeTracking {
         getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
-        getState(): any;
-        setState(state: any): any;
+        getState(): ITypeTracking;
+        setState(state: ITypeTracking): any;
     }
 }
 declare module "DDDTools/CommonInterfaces/IEquatable" {
@@ -284,6 +284,71 @@ declare module "DDDTools/Repository/Errors" {
         static ManagedTypeNotSupplied: string;
     }
 }
+declare module "DDDTools/Repository/Events" {
+    export class Events {
+        private static __nameSpace;
+        static ItemAddedEvent: string;
+        static ItemUpdatedEvent: string;
+        static ItemDeletedEvent: string;
+        static ItemRetrievedEvent: string;
+    }
+}
+declare module "DDDTools/Repository/ItemRetrievedEvent" {
+    import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
+    import { ITypeTracking } from "DDDTools/CommonInterfaces/ITypeTracking";
+    export class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare module "DDDTools/Repository/ItemAddedEvent" {
+    import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
+    import { ITypeTracking } from "DDDTools/CommonInterfaces/ITypeTracking";
+    export class ItemAddedEvent extends BaseValueObject<ItemAddedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare module "DDDTools/Repository/ItemUpdatedEvent" {
+    import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
+    import { ITypeTracking } from "DDDTools/CommonInterfaces/ITypeTracking";
+    export class ItemUpdatedEvent extends BaseValueObject<ItemUpdatedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare module "DDDTools/Repository/ItemDeletedEvent" {
+    import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
+    import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
+    import { ITypeTracking } from "DDDTools/CommonInterfaces/ITypeTracking";
+    export class ItemDeletedEvent extends BaseValueObject<ItemDeletedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
 declare module "DDDTools/Repository/BaseRepositoryAsync" {
     import { IRepositoryAsync } from "DDDTools/Repository/IRepositoryAsync";
     import { BaseAggregateRoot } from "DDDTools/Aggregate/BaseAggregateRoot";
@@ -313,7 +378,6 @@ declare module "NeDBRepository/BaseNeDBRepositoryAsync" {
     export abstract class BaseNeDBRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
         private datastore;
         constructor(managedType: string, nedbDatastore: NeDBDataStore);
-        protected abstract setupIndexes(): any;
         protected getByIdImplementation(id: TKey): IPromise<T>;
         private doAnInsert(toSave, deferred);
         private doAnUpdate(toSave, deferred);

@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"target": "es5",
-		"sourceMap": true,
+		"sourceMap": false,
 		"inlineSourceMap": true,
 		"rootDir": "src/",
 		"declaration": true,
