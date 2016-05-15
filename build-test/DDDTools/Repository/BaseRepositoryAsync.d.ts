@@ -13,4 +13,5 @@ export declare abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T,
     save(item: T): IPromise<{}>;
     protected abstract deleteImplementation(id: TKey): IPromise<{}>;
     delete(id: TKey): IPromise<{}>;
+    private buildError(errorFromCall, errorIfErrorFromCallIsNotError);
 }

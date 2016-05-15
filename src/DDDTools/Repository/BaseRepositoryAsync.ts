@@ -13,18 +13,18 @@ import IPromise = Q.IPromise;
  */
 export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
     implements IRepositoryAsync<T, TKey> {
-        
+
     constructor(
         /**
          * The string representing the type managed by this repository. Will be compared with the __typeName property of the objects retrieved.
          */
         private managedType: string
-        ) {
+    ) {
         if (managedType === "") {
             Errors.throw(Errors.ManagedTypeNotSupplied);
         }
     }
-    
+
     /**
      * You MUST override this method to provide functionality to access to the repository and get a "stateObject" to use for object "reconstruction".
      */
@@ -33,22 +33,17 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
     getById(id: TKey): IPromise<T> {
         var deferred = Q.defer<T>();
         this.getByIdImplementation(id).then(
-            (value: T) => { 
+            (value: T) => {
                 if (value.__typeName != this.managedType) {
-                    var reason = Errors.getErrorInstance(Errors.WrongTypeFromImplementation, "Expecting " + this.managedType + " but obtaine " + value.__typeName + " from database.");
+                    var reason = Errors.getErrorInstance(Errors.WrongTypeFromImplementation, "Expecting " + this.managedType + " but obtained " + value.__typeName + " from database.");
                     deferred.reject(reason);
                     return;
                 }
                 var toReturn: T = <T>(Factory.createObjectsFromState(value));
-                deferred.resolve(toReturn); 
+                deferred.resolve(toReturn);
             },
             (error: any) => {
-                var reason: Error;
-                if (error instanceof Error) {
-                    reason = error;
-                } else {
-                    reason = Errors.getErrorInstance(Errors.ItemNotFound, JSON.stringify(error));
-                }
+                var reason = this.buildError(error, Errors.ItemNotFound);
                 deferred.reject(reason);
             });
         return deferred.promise;
@@ -65,12 +60,7 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
                 deferred.resolve()
             },
             (error: any) => {
-                var reason: Error;
-                if (error instanceof Error) {
-                    reason = error;
-                } else {
-                    reason = Errors.getErrorInstance(Errors.ErrorSavingItem, JSON.stringify(error));
-                }
+                var reason = this.buildError(error, Errors.ErrorSavingItem);
                 deferred.reject(reason);
             }
         );
@@ -89,23 +79,18 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
                 } else {
                     // What is in the database perfectly match what we are saving, so nothing to do!
                     deferred.resolve();
+                    return;
                 }
             },
             (error: any) => {
-                var reason: Error;
-
                 if (error instanceof Error && error.name == Errors.ItemNotFound) {
                     // This is expected, the item is not in the repo, so we have to add it!
                     item.incrementRevisionId();
                     this.doSave(item, deferred);
                     return;
                 }
-                // Other errors must be treated as "Errors"
-                if (error instanceof Error) {
-                    reason = error;
-                } else {
-                    reason = Errors.getErrorInstance(Errors.ErrorReadingItem, JSON.stringify(error));
-                }
+                // Other errors must be treated as ... "Errors"
+                var reason = this.buildError(error, Errors.ErrorReadingItem);
                 deferred.reject(reason);
             }
         );
@@ -122,15 +107,23 @@ export abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, 
         this.deleteImplementation(id).then(
             () => { deferred.resolve(); },
             (error: any) => {
-                var reason: Error;
-                if (error instanceof Error) {
-                    reason = error;
-                } else {
-                    reason = Errors.getErrorInstance(Errors.ErrorDeletingItem, JSON.stringify(error));
-                }
+                var reason = this.buildError(error, Errors.ErrorDeletingItem) 
                 deferred.reject(reason);
             }
         );
         return deferred.promise;
+    }
+
+    /**
+     * Helper method to build an error from a return value of the Async Implementations.
+     */
+    private buildError(errorFromCall: any, errorIfErrorFromCallIsNotError: string): Error {
+        var reason: Error;
+        if (errorFromCall instanceof Error) {
+            reason = errorFromCall;
+        } else {
+            reason = Errors.getErrorInstance(errorIfErrorFromCallIsNotError, JSON.stringify(errorFromCall));
+        }
+        return reason;
     }
 }

@@ -12,35 +12,24 @@ define(["require", "exports", "./Errors", "../PersistableObject/Factory"], funct
             var deferred = Q.defer();
             this.getByIdImplementation(id).then(function (value) {
                 if (value.__typeName != _this.managedType) {
-                    var reason = Errors_1.Errors.getErrorInstance(Errors_1.Errors.WrongTypeFromImplementation, "Expecting " + _this.managedType + " but obtaine " + value.__typeName + " from database.");
+                    var reason = Errors_1.Errors.getErrorInstance(Errors_1.Errors.WrongTypeFromImplementation, "Expecting " + _this.managedType + " but obtained " + value.__typeName + " from database.");
                     deferred.reject(reason);
                     return;
                 }
                 var toReturn = (Factory_1.Factory.createObjectsFromState(value));
                 deferred.resolve(toReturn);
             }, function (error) {
-                var reason;
-                if (error instanceof Error) {
-                    reason = error;
-                }
-                else {
-                    reason = Errors_1.Errors.getErrorInstance(Errors_1.Errors.ItemNotFound, JSON.stringify(error));
-                }
+                var reason = _this.buildError(error, Errors_1.Errors.ItemNotFound);
                 deferred.reject(reason);
             });
             return deferred.promise;
         };
         BaseRepositoryAsync.prototype.doSave = function (item, deferred) {
+            var _this = this;
             this.saveImplementation(item).then(function () {
                 deferred.resolve();
             }, function (error) {
-                var reason;
-                if (error instanceof Error) {
-                    reason = error;
-                }
-                else {
-                    reason = Errors_1.Errors.getErrorInstance(Errors_1.Errors.ErrorSavingItem, JSON.stringify(error));
-                }
+                var reason = _this.buildError(error, Errors_1.Errors.ErrorSavingItem);
                 deferred.reject(reason);
             });
             return deferred.promise;
@@ -56,37 +45,37 @@ define(["require", "exports", "./Errors", "../PersistableObject/Factory"], funct
                 }
                 else {
                     deferred.resolve();
+                    return;
                 }
             }, function (error) {
-                var reason;
                 if (error instanceof Error && error.name == Errors_1.Errors.ItemNotFound) {
                     item.incrementRevisionId();
                     _this.doSave(item, deferred);
                     return;
                 }
-                if (error instanceof Error) {
-                    reason = error;
-                }
-                else {
-                    reason = Errors_1.Errors.getErrorInstance(Errors_1.Errors.ErrorReadingItem, JSON.stringify(error));
-                }
+                var reason = _this.buildError(error, Errors_1.Errors.ErrorReadingItem);
                 deferred.reject(reason);
             });
             return deferred.promise;
         };
         BaseRepositoryAsync.prototype.delete = function (id) {
+            var _this = this;
             var deferred = Q.defer();
             this.deleteImplementation(id).then(function () { deferred.resolve(); }, function (error) {
-                var reason;
-                if (error instanceof Error) {
-                    reason = error;
-                }
-                else {
-                    reason = Errors_1.Errors.getErrorInstance(Errors_1.Errors.ErrorDeletingItem, JSON.stringify(error));
-                }
+                var reason = _this.buildError(error, Errors_1.Errors.ErrorDeletingItem);
                 deferred.reject(reason);
             });
             return deferred.promise;
+        };
+        BaseRepositoryAsync.prototype.buildError = function (errorFromCall, errorIfErrorFromCallIsNotError) {
+            var reason;
+            if (errorFromCall instanceof Error) {
+                reason = errorFromCall;
+            }
+            else {
+                reason = Errors_1.Errors.getErrorInstance(errorIfErrorFromCallIsNotError, JSON.stringify(errorFromCall));
+            }
+            return reason;
         };
         return BaseRepositoryAsync;
     }());
