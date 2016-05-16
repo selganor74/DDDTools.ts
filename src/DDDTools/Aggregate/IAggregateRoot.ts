@@ -7,7 +7,7 @@ export interface IAggregateRoot<T extends IAggregateRoot<T, TKey>, TKey extends 
         extends IEntity<T, TKey> {
 
         getRevisionId(): number
-        incrementRevisionId();
+        incrementRevisionId(): void;
 
         perfectlyMatch(another: IAggregateRoot<T, TKey>): boolean;
 }

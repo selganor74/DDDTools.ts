@@ -231,4 +231,4 @@ namespace CdC.Tests {
             expect(e.getRevisionId()).toEqual(2);
         });
     });
-} 
+}

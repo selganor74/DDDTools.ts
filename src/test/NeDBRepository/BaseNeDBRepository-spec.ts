@@ -19,8 +19,8 @@ export class TestKey extends Guid {
 
 export class TestAggregate extends BaseAggregateRoot<TestAggregate, TestKey> {
 
-    public aTestProperty: string;
-
+    private aTestProperty: string;
+        
     constructor() {
         super();
         this.__typeName = "TestAggregate";

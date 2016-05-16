@@ -15,7 +15,7 @@ export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyVa
 	implements IEntity<T, TKey> {
 
 	private key: TKey;
-
+	
 	private raiseEvent(event: IDomainEvent) {
 		DomainDispatcher.dispatch(event);
 	};

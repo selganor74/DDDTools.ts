@@ -13,7 +13,6 @@ import {ObjectRetrievedEvent} from "./ObjectRetrievedEvent";
 import {ObjectSavedEvent} from "./ObjectSavedEvent";
 import {UnitOfWorkErrors} from "./UnitOfWorkErrors";
 
-
 /**
  * Simple UnitOfWork for a single Repository.
  */
