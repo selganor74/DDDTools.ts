@@ -6,8 +6,9 @@
   "scripts": {
     "test": "grunt test"
   },
-  "author": "Gabriele Rossetti",
-  "license": "MIT",
+  "author": "Gruppo Loccioni",
+  "license": "SEE LICENSE IN 'LICENSE' FILE",
+  "repository": "https://git.loccioni.com/IT/ddd-tools.git",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-cli": "^1.1.0",
