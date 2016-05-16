@@ -44,18 +44,6 @@ module.exports = function (grunt) {
             },
             "build-tests": {
                 files: [
-                    { // pulls in nedb
-                        expand: true,
-                        cwd: 'node_modules/nedb/browser-version/out',
-                        src: ['nedb.js'],
-                        dest: 'build-test/lib'
-                    },
-                    { // pulls in q
-                        expand: true,
-                        cwd: 'node_modules/q',
-                        src: ['q.js'],
-                        dest: 'build-test/lib'
-                    }
                     
                 ]
 
@@ -64,9 +52,6 @@ module.exports = function (grunt) {
         ts: {
             "build": {
                 tsconfig: 'src/DDDTools/tsconfig.json'
-            },
-            "build-nedbrepo": {
-                tsconfig: "src/NeDBRepository/tsconfig.json"
             },
             "build-tests": {
                 tsconfig: 'src/test/tsconfig.json'
@@ -84,8 +69,7 @@ module.exports = function (grunt) {
         "jasmine": {
             "run-tests": {
                 src: [
-                        "build-test/DDDTools/*.js",
-                        "build-test/NeDBRepository/*.js"
+                        "build-test/DDDTools/*.js"
                 ],
                 options: {
                     vendor:
@@ -94,21 +78,11 @@ module.exports = function (grunt) {
                     ],
                     specs: [
                         "build-test/test/**/*-spec.js"
-                        //"test/test/DDDTools/*-spec.js"
-                        //"test/test/DDDTools/BaseInMemoryRepository-spec.js"
-                        //"test/test/DDDTools/FakeTest-spec.ts"
                     ],
                     template: require('grunt-template-jasmine-requirejs'),
                     keepRunner: true,
                     outFile: "SpecRunner.html"
                 }
-            }
-        },
-        "concat": {
-            options: {},
-            "build": {
-                src: ["build/**/*.d.ts", "!build/srcreferences.d.ts"],
-                dest: "build/srcreferences.d.ts"
             }
         }
     });
@@ -123,7 +97,7 @@ module.exports = function (grunt) {
 
     // TASKS
     grunt.registerTask('run', ['http-server']);
-    grunt.registerTask('build', ['clean', 'ts:build','ts:build-nedbrepo','clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build', "ts:build-nedbrepo", 'ts:build-tests', 'copy' ]);
+    grunt.registerTask('build', ['clean', 'ts:build','clean:after-build']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build', 'ts:build-tests', 'copy' ]);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };

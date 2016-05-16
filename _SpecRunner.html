@@ -57,18 +57,6 @@
     function launchTest() {
     require([
       
-        
-        'build-test/NeDBRepository/BaseNeDBRepository' ,
-      
-        
-        'build-test/NeDBRepository/BaseNeDBRepositoryAsync' ,
-      
-        
-        'build-test/NeDBRepository/Errors' ,
-      
-        
-        'build-test/NeDBRepository/NeDBDatabaseFactory' 
-      
     ],
     function(){
       require(['build-test/test/DDDTools/BaseInMemoryRepository-spec.js','build-test/test/DDDTools/BasePersistableObject-spec.js','build-test/test/DDDTools/BaseValueObject-spec.js','build-test/test/DDDTools/FakeTest-spec.js','build-test/test/DDDTools/InProcessDispatcher-spec.js','build-test/test/DDDTools/Serialization-spec.js','build-test/test/DDDTools/UnitOfWork-spec.js','build-test/test/NeDBRepository/BaseNeDBRepository-spec.js','.grunt/grunt-contrib-jasmine/reporter.js'], function(){
