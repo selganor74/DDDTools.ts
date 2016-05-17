@@ -4,25 +4,13 @@
 
 // import {IPersistable} from "./IPersistable";
 // import {Errors} from "./Errors";
-// import {Guid} from "../ValueObjects/Guid";
 
 namespace DDDTools.PersistableObject {
-
-    import Guid = ValueObjects.Guid;
 
     export class TypeRegistry {
 
         private static registry: { [typeName: string]: { [typeVersion: string]: new () => IPersistable } } = {};
         private static latestVersions: { [typeName: string]: string } = {}
-        private static libraryRegistered: boolean = false;
-
-        /**
-         * Always Register Library Value Objects.
-         */
-        private static registerValueObjectsLibrary() {
-            var sThis = TypeRegistry;
-            sThis.registerType("DDDTools.ValueObjects.Guid", "v1", Guid);
-        }
 
 
         public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void {
@@ -38,11 +26,6 @@ namespace DDDTools.PersistableObject {
             sThis.registry[typeName][typeVersion] = typePrototype;
 
             sThis.updateLatestVersions(typeName, typeVersion);
-
-            if (!sThis.libraryRegistered) {
-                sThis.libraryRegistered = true;
-                sThis.registerValueObjectsLibrary();
-            }
         }
 
         private static updateLatestVersions(typeName: string, typeVersion: string): void {

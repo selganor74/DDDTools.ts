@@ -64,8 +64,6 @@ declare namespace DDDTools.PersistableObject {
     class TypeRegistry {
         private static registry;
         private static latestVersions;
-        private static libraryRegistered;
-        private static registerValueObjectsLibrary();
         static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
         private static updateLatestVersions(typeName, typeVersion);
         private static isVersionGreater(vSubject, vReference);
@@ -183,6 +181,8 @@ declare namespace DDDTools.ValueObjects {
         toString(): string;
     }
 }
+import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
+import Guid = DDDTools.ValueObjects.Guid;
 declare namespace DDDTools.DomainEvents {
     import IPersistable = PersistableObject.IPersistable;
     import ITypeTracking = CommonInterfaces.ITypeTracking;

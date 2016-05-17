@@ -1,6 +1,7 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../ValueObject/BaseValueObject.ts" />
+/// <reference path="../PersistableObject/TypeRegistry.ts" />
 
 // import {SimpleGuid} from "../Utils/SimpleGuid";
 // import {IKeyValueObject} from "../Entity/IKeyValueObject";
@@ -42,3 +43,9 @@ namespace DDDTools.ValueObjects {
         }
     }
 }
+
+import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
+import Guid = DDDTools.ValueObjects.Guid;
+
+// Registers the Guid in the TypeRegistry.
+TypeRegistry.registerType( "DDDTools.ValueObjects.Guid", "v1", Guid);

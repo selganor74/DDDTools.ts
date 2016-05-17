@@ -84,9 +84,9 @@ namespace CdC.Tests {
 
     beforeEach(() => {
         
-        Factory.registerType("CdC.Tests.Key","v1",<any>Key);
-        Factory.registerType("CdC.Tests.ChildEntity","v1",<any>ChildEntity);
-        Factory.registerType("CdC.Tests.TestAggregate","v1",<any>TestAggregate);
+        Factory.registerType("CdC.Tests.Key", "v1", Key);
+        Factory.registerType("CdC.Tests.ChildEntity", "v1", ChildEntity);
+        Factory.registerType("CdC.Tests.TestAggregate", "v1", TestAggregate);
         
     });
 
@@ -179,8 +179,10 @@ namespace CdC.Tests {
 
             var anotherEntity = new TestAggregate();
             anotherEntity.setKey(new Key());
+            
             item.anonymousObject.anotherEntity = anotherEntity;
             item.anonymousObject.aNumberType = 42;
+            
             try {
                 repo.save(item);
                 var reloaded = repo.getById(key);
