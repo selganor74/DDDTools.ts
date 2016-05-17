@@ -1,23 +1,30 @@
-import {IValueObject} from "./IValueObject";
-import {BasePersistableObject} from "../PersistableObject/BasePersistableObject";
-import {Serializer} from "../Serialization/Serializer";
+/// <reference path="./IValueObject.ts" />
+/// <reference path="../PersistableObject/BasePersistableObject.ts" />
+/// <reference path="../Serialization/Serializer.ts" />
 
-// namespace DDDTools.ValueObject {
+// import {IValueObject} from "./IValueObject";
+// import {BasePersistableObject} from "../PersistableObject/BasePersistableObject";
+// import {Serializer} from "../Serialization/Serializer";
 
-export abstract class BaseValueObject<T>
-	extends BasePersistableObject
-	implements IValueObject<T> {
+namespace DDDTools.ValueObject {
 
-	constructor() {
-		super();
-	}
+	import BasePersistableObject = PersistableObject.BasePersistableObject;
+	import Serializer = Serialization.Serializer;
 
-	public equals(item: T): boolean {
-		// Per ogni proprietà dell'ITEM :verifico l'uguaglianza con l'istanza attuale
-		var foreign = Serializer.serialize(item);
-		var local = Serializer.serialize(this);
+	export abstract class BaseValueObject<T>
+		extends BasePersistableObject
+		implements IValueObject<T> {
 
-		return foreign === local;
+		constructor() {
+			super();
+		}
+
+		public equals(item: T): boolean {
+			// Per ogni proprietà dell'ITEM :verifico l'uguaglianza con l'istanza attuale
+			var foreign = Serializer.serialize(item);
+			var local = Serializer.serialize(this);
+
+			return foreign === local;
+		}
 	}
 }
-// }

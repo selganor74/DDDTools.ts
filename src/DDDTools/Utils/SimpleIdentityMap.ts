@@ -1,44 +1,44 @@
-// namespace DDDTools.Utils {
+namespace DDDTools.Utils {
 
-export class SimpleIdentityMap {
+    export class SimpleIdentityMap {
 
-    private idToObjectMap: { [id: string]: any }
+        private idToObjectMap: { [id: string]: any }
 
-    constructor() {
-        this.idToObjectMap = {};
-    }
-
-    public isTracked(id: string): boolean {
-        if (this.idToObjectMap[id]) {
-            return true;
+        constructor() {
+            this.idToObjectMap = {};
         }
-        return false;
-    }
 
-    public getById(id: string): any {
-        if (this.isTracked(id)) {
-            return this.idToObjectMap[id];
+        public isTracked(id: string): boolean {
+            if (this.idToObjectMap[id]) {
+                return true;
+            }
+            return false;
         }
-        return null;
-    }
 
-    public add(id: string, object: any): any {
-        this.idToObjectMap[id] = object;
-    }
-
-    /**
-     * Returns all the ids in the map
-     */
-    public getIds(): string[] {
-        var toReturn: string[] = [];
-        for (var element in this.idToObjectMap) {
-            toReturn.push(element);
+        public getById(id: string): any {
+            if (this.isTracked(id)) {
+                return this.idToObjectMap[id];
+            }
+            return null;
         }
-        return toReturn;
-    }
 
-    public deleteById(id: string) {
-        delete this.idToObjectMap[id];
+        public add(id: string, object: any): any {
+            this.idToObjectMap[id] = object;
+        }
+
+        /**
+         * Returns all the ids in the map
+         */
+        public getIds(): string[] {
+            var toReturn: string[] = [];
+            for (var element in this.idToObjectMap) {
+                toReturn.push(element);
+            }
+            return toReturn;
+        }
+
+        public deleteById(id: string) {
+            delete this.idToObjectMap[id];
+        }
     }
 }
-// }

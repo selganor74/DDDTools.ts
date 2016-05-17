@@ -1,12 +1,18 @@
-import { IDomainEvent } from "../DomainEvents/IDomainEvent";
-import { BaseValueObject } from "../ValueObject/BaseValueObject";
-import { ITypeTracking } from "../CommonInterfaces/ITypeTracking";
-export declare class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
-    typeName: string;
-    typeVersion: string;
-    id: string;
-    objectState: ITypeTracking;
-    __typeName: string;
-    __typeVersion: string;
-    constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+/// <reference path="../DomainEvents/IDomainEvent.d.ts" />
+/// <reference path="../ValueObject/BaseValueObject.d.ts" />
+/// <reference path="Events.d.ts" />
+/// <reference path="../CommonInterfaces/ITypeTracking.d.ts" />
+declare namespace DDDTools.Repository {
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
 }

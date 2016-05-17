@@ -1,19 +1,22 @@
-import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
+/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 
-// namespace DDDTools.Serialization {
+// import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
+namespace DDDTools.Serialization {
 
-export class SerializableRegExp implements ITypeTracking {
-    __typeName: string = "RegExp";
-    __typeVersion: string = "v1";
-    __regularExpression: string;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
 
-    constructor(regExp: RegExp) {
-        this.__regularExpression = regExp.toString();
-    }
+    export class SerializableRegExp implements ITypeTracking {
+        __typeName: string = "RegExp";
+        __typeVersion: string = "v1";
+        __regularExpression: string;
 
-    getRegExp(): RegExp {
-        return new RegExp(this.__regularExpression);
+        constructor(regExp: RegExp) {
+            this.__regularExpression = regExp.toString();
+        }
+
+        getRegExp(): RegExp {
+            return new RegExp(this.__regularExpression);
+        }
     }
 }
-// }

@@ -1,35 +1,40 @@
-import {IDomainEvent} from "./IDomainEvent";
-import {IDispatcher} from "./IDispatcher";
-import {IEventHandler} from "./IEventHandler";
+/// <reference path="./IDomainEvent.ts" />
+/// <reference path="./IDispatcher.ts" />
+/// <reference path="./IEventHandler.ts" />
 
-// namespace DDDTools.DomainEvents {
-export class DomainDispatcher {
-    private static dispatcherImplementation: IDispatcher;
+// import {IDomainEvent} from "./IDomainEvent";
+// import {IDispatcher} from "./IDispatcher";
+// import {IEventHandler} from "./IEventHandler";
 
-    public static setDispatcherImplementation(dispatcher: IDispatcher) {
-        var sThis = DomainDispatcher;
-        sThis.dispatcherImplementation = dispatcher;
-    }
+namespace DDDTools.DomainEvents {
 
-    public static registerHandler(eventTypeName: string, handler: IEventHandler) {
-        var sThis = DomainDispatcher;
-        if (sThis.dispatcherImplementation) {
-            sThis.dispatcherImplementation.registerHandler(eventTypeName, handler);
+    export class DomainDispatcher {
+        private static dispatcherImplementation: IDispatcher;
+
+        public static setDispatcherImplementation(dispatcher: IDispatcher) {
+            var sThis = DomainDispatcher;
+            sThis.dispatcherImplementation = dispatcher;
         }
-    }
 
-    public static unregisterHandler(eventTypeName: string, handler: IEventHandler) {
-        var sThis = DomainDispatcher;
-        if (sThis.dispatcherImplementation) {
-            sThis.dispatcherImplementation.unregisterHandler(eventTypeName, handler);
+        public static registerHandler(eventTypeName: string, handler: IEventHandler) {
+            var sThis = DomainDispatcher;
+            if (sThis.dispatcherImplementation) {
+                sThis.dispatcherImplementation.registerHandler(eventTypeName, handler);
+            }
         }
-    }
 
-    public static dispatch(event: IDomainEvent) {
-        var sThis = DomainDispatcher;
-        if (sThis.dispatcherImplementation) {
-            sThis.dispatcherImplementation.dispatch(event);
+        public static unregisterHandler(eventTypeName: string, handler: IEventHandler) {
+            var sThis = DomainDispatcher;
+            if (sThis.dispatcherImplementation) {
+                sThis.dispatcherImplementation.unregisterHandler(eventTypeName, handler);
+            }
+        }
+
+        public static dispatch(event: IDomainEvent) {
+            var sThis = DomainDispatcher;
+            if (sThis.dispatcherImplementation) {
+                sThis.dispatcherImplementation.dispatch(event);
+            }
         }
     }
 }
-// }

@@ -1,20 +1,27 @@
-import {IDomainEvent} from "../DomainEvents/IDomainEvent";
-import {BaseValueObject} from "../ValueObject/BaseValueObject";
-import {Events} from "./Events";
+/// <reference path="../DomainEvents/IDomainEvent.ts" />
+/// <reference path="../ValueObject/BaseValueObject.ts" />
+/// <reference path="./Events.ts" />
 
-// namespace DDDTools.UnitOfWork {
+// import {IDomainEvent} from "../DomainEvents/IDomainEvent";
+// import {BaseValueObject} from "../ValueObject/BaseValueObject";
+// import {Events} from "./Events";
 
-export class ObjectSavedEvent extends BaseValueObject<ObjectSavedEvent> implements IDomainEvent {
-    __typeName = Events.ObjectSavedEvent;
-    __typeVersion = "v1";
+namespace DDDTools.UnitOfWork {
 
-    constructor(
-        public typeName: string,
-        public typeVersion: string,
-        public id: string
-    ) { 
-        super();
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    import BaseValueObject = ValueObject.BaseValueObject;
+
+    export class ObjectSavedEvent extends BaseValueObject<ObjectSavedEvent> implements IDomainEvent {
+        __typeName = Events.ObjectSavedEvent;
+        __typeVersion = "v1";
+
+        constructor(
+            public typeName: string,
+            public typeVersion: string,
+            public id: string
+        ) {
+            super();
+        }
     }
-}
 
-// }
+}

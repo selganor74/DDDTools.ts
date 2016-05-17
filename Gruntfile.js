@@ -82,7 +82,7 @@ module.exports = function (grunt) {
         "jasmine": {
             "run-tests": {
                 src: [
-                    "build-test/DDDTools/*.js"
+                    "build-test/ddd-tools.js"
                 ],
                 options: {
                     vendor:
@@ -92,7 +92,7 @@ module.exports = function (grunt) {
                     specs: [
                         "build-test/test/**/*-spec.js"
                     ],
-                    template: require('grunt-template-jasmine-requirejs'),
+                    // template: require('grunt-template-jasmine-requirejs'),
                     keepRunner: true,
                     outFile: "SpecRunner.html"
                 }

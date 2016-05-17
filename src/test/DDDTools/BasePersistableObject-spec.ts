@@ -1,16 +1,23 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
-import {Guid} from "../../DDDTools/ValueObjects/Guid";
-import {Factory as PersistableObjectFactory, Upgrader} from "../../DDDTools/PersistableObject/Factory";
-import {Errors} from "../../DDDTools/PersistableObject/Errors";
-import {Factory} from "../../DDDTools/PersistableObject/Factory";
+/// <reference path="../../DDDTools/Entity/BaseEntity.ts" />
+/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+/// <reference path="../../DDDTools/PersistableObject/Errors.ts" />
+
+// import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
+// import {Guid} from "../../DDDTools/ValueObjects/Guid";
+// import {Factory as PersistableObjectFactory, Upgrader} from "../../DDDTools/PersistableObject/Factory";
+// import {Errors} from "../../DDDTools/PersistableObject/Errors";
+// import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 
 namespace CdC.Tests.BasePersistableObject.v2 {
 
     import TestEntity = CdC.Tests.BasePersistableObject.TestEntity;
-    
+
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import Guid = DDDTools.ValueObjects.Guid;
 
     export class A3StepUpgradableItem extends BaseEntity<A3StepUpgradableItem, Guid> {
         __typeName = "CdC.Tests.BasePersistableObject.A3StepUpgradableItem";
@@ -30,6 +37,9 @@ namespace CdC.Tests.BasePersistableObject.v2 {
 
 namespace CdC.Tests.BasePersistableObject.v1 {
 
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import Guid = DDDTools.ValueObjects.Guid;
+
     export class TestEntity extends BaseEntity<TestEntity, Guid> {
         __typeName = "CdC.Tests.BasePersistableObject.TestEntity";
         __typeVersion = "v1";
@@ -42,6 +52,12 @@ namespace CdC.Tests.BasePersistableObject.v1 {
 }
 
 namespace CdC.Tests.BasePersistableObject {
+
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import Guid = DDDTools.ValueObjects.Guid;
+    import Factory = DDDTools.PersistableObject.Factory;
+    import Upgrader = DDDTools.PersistableObject.Upgrader;
+    import Errors = DDDTools.PersistableObject.Errors;
 
     export class A3StepUpgradableItem extends BaseEntity<TestEntity, Guid> {
         __typeName = "CdC.Tests.BasePersistableObject.A3StepUpgradableItem";

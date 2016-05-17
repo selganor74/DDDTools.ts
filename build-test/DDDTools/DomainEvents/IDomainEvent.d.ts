@@ -1,4 +1,8 @@
-import { IPersistable } from "../PersistableObject/IPersistable";
-import { ITypeTracking } from "../CommonInterfaces/ITypeTracking";
-export interface IDomainEvent extends IPersistable, ITypeTracking {
+/// <reference path="../PersistableObject/IPersistable.d.ts" />
+/// <reference path="../CommonInterfaces/ITypeTracking.d.ts" />
+declare namespace DDDTools.DomainEvents {
+    import IPersistable = PersistableObject.IPersistable;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    interface IDomainEvent extends IPersistable, ITypeTracking {
+    }
 }

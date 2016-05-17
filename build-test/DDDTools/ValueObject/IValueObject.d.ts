@@ -1,4 +1,7 @@
-import { IPersistable } from "../PersistableObject/IPersistable";
-import { IEquatable } from "../CommonInterfaces/IEquatable";
-export interface IValueObject<T> extends IEquatable<T>, IPersistable {
+/// <reference path="../PersistableObject/IPersistable.d.ts" />
+declare namespace DDDTools.ValueObject {
+    import IPersistable = PersistableObject.IPersistable;
+    import IEquatable = CommonInterfaces.IEquatable;
+    interface IValueObject<T> extends IEquatable<T>, IPersistable {
+    }
 }

@@ -1,20 +1,27 @@
-import {BaseValueObject} from "../ValueObject/BaseValueObject";
-import {IKeyValueObject} from "./IKeyValueObject";
-import {IPersistable} from "../PersistableObject/IPersistable";
+/// <reference path="../ValueObject/BaseValueObject.ts" />
+/// <reference path="./IKeyValueObject.ts" />
+/// <reference path="../PersistableObject/IPersistable.ts" />
 
-// namespace DDDTools.Entity {
+// import {BaseValueObject} from "../ValueObject/BaseValueObject";
+// import {IKeyValueObject} from "./IKeyValueObject";
+// import {IPersistable} from "../PersistableObject/IPersistable";
 
-export abstract class BaseKeyValueObject<T>
-    extends BaseValueObject<T>
-    implements IKeyValueObject<T>, IPersistable {
+namespace DDDTools.Entity {
 
-    constructor() {
-        super();
+    import BaseValueObject = ValueObject.BaseValueObject;
+    import IPersistable = PersistableObject.IPersistable;
+
+    export abstract class BaseKeyValueObject<T>
+        extends BaseValueObject<T>
+        implements IKeyValueObject<T>, IPersistable {
+
+        constructor() {
+            super();
+        }
+
+        /**
+         * Derived classes must reimplement this method. 
+         */
+        public abstract toString(): string;
     }
-
-    /**
-     * Derived classes must reimplement this method. 
-     */
-    public abstract toString(): string;
 }
-// }

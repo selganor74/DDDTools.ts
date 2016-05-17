@@ -1,38 +1,48 @@
-import {BasePersistableObject} from "../PersistableObject/BasePersistableObject";
-import {IDomainEvent} from "../DomainEvents/IDomainEvent";
-import {DomainDispatcher} from "../DomainEvents/DomainDispatcher";
-import {IEntity} from "./IEntity";
-import {IKeyValueObject} from "./IKeyValueObject";
+/// <reference path="../PersistableObject/BasePersistableObject.ts" />
+/// <reference path="../DomainEvents/IDomainEvent.ts" />
+/// <reference path="../DomainEvents/DomainDispatcher.ts" />
+/// <reference path="./IEntity.ts" />
+/// <reference path="./IKeyValueObject.ts" />
+
+// import {BasePersistableObject} from "../PersistableObject/BasePersistableObject";
+// import {IDomainEvent} from "../DomainEvents/IDomainEvent";
+// import {DomainDispatcher} from "../DomainEvents/DomainDispatcher";
+// import {IEntity} from "./IEntity";
+// import {IKeyValueObject} from "./IKeyValueObject";
 
 
 /**
  * Classes and interfaces to implement an Entity, a persistable object. 
  */
-// namespace DDDTools.Entity {
+namespace DDDTools.Entity {
 
-export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>>
-	extends BasePersistableObject
-	implements IEntity<T, TKey> {
+	import BasePersistableObject = PersistableObject.BasePersistableObject;
+	import IDomainEvent = DomainEvents.IDomainEvent;
+	import DomainDispatcher = DomainEvents.DomainDispatcher;
 
-	private key: TKey;
-	
-	private raiseEvent(event: IDomainEvent) {
-		DomainDispatcher.dispatch(event);
-	};
+	export abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>>
+		extends BasePersistableObject
+		implements IEntity<T, TKey> {
 
-	public getKey(): TKey {
-		return this.key;
-	};
+		private key: TKey;
 
-	public setKey(key: TKey): void {
-		this.key = key;
-	};
+		private raiseEvent(event: IDomainEvent) {
+			DomainDispatcher.dispatch(event);
+		};
 
-	public equals(item: T): boolean {
-		if (!item) {
-			return false;
+		public getKey(): TKey {
+			return this.key;
+		};
+
+		public setKey(key: TKey): void {
+			this.key = key;
+		};
+
+		public equals(item: T): boolean {
+			if (!item) {
+				return false;
+			}
+			return item.getKey().equals(this.getKey());
 		}
-		return item.getKey().equals(this.getKey());
 	}
 }
-// }

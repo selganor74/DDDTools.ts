@@ -1,18 +1,22 @@
-import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
+/// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 
-// namespace DDDTools.Serialization {
+// import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
-export class SerializableDate implements ITypeTracking {
-    __typeName: string = "Date";
-    __typeVersion: string = "v1";
-    __dateAsString: string;
+namespace DDDTools.Serialization {
 
-    constructor(date: Date) {
-        this.__dateAsString = date.toISOString();
-    }
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
 
-    getDate(): Date {
-        return new Date(this.__dateAsString);
+    export class SerializableDate implements ITypeTracking {
+        __typeName: string = "Date";
+        __typeVersion: string = "v1";
+        __dateAsString: string;
+
+        constructor(date: Date) {
+            this.__dateAsString = date.toISOString();
+        }
+
+        getDate(): Date {
+            return new Date(this.__dateAsString);
+        }
     }
 }
-// }

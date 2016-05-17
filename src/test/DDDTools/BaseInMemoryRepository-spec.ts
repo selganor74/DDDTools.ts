@@ -1,17 +1,35 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
+/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+/// <reference path="../../DDDTools/Entity/BaseEntity.ts" />
+/// <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
+/// <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
+/// <reference path="../../DDDTools/Repository/Errors.ts" />
+/// <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
+/// <reference path="../../DDDTools/PersistableObject/TypeRegistry.ts" />
+/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+
 // import DDDTools = require("./DDDTools")
 
-import {Guid} from "../../DDDTools/ValueObjects/Guid";
-import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
-import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
-import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
-import {Errors as RepoErrors} from "../../DDDTools/Repository/Errors";
-import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
-import {TypeRegistry} from "../../DDDTools/PersistableObject/TypeRegistry";
-import {Factory} from "../../DDDTools/PersistableObject/Factory";
+// import {Guid} from "../../DDDTools/ValueObjects/Guid";
+// import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
+// import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
+// import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
+// import {Errors as RepoErrors} from "../../DDDTools/Repository/Errors";
+// import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+// import {TypeRegistry} from "../../DDDTools/PersistableObject/TypeRegistry";
+// import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 namespace CdC.Tests {
+
+    import Guid = DDDTools.ValueObjects.Guid;
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+    import Errors = DDDTools.Repository.Errors;
+    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
+    import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
+    import Factory = DDDTools.PersistableObject.Factory;
 
 
     export class Key extends BaseValueObject<Key> {
@@ -87,7 +105,7 @@ namespace CdC.Tests {
                 repo.save(item);
                 expect(false).toBeTruthy();
             } catch (e) {
-                expect(e.name).toEqual(RepoErrors.KeyNotSet)
+                expect(e.name).toEqual(Errors.KeyNotSet)
             }
         });
 
@@ -99,7 +117,7 @@ namespace CdC.Tests {
                 repo.save(item);
                 expect(false).toBeTruthy();
             } catch (e) {
-                expect(e.name).toEqual(RepoErrors.KeyNotSet)
+                expect(e.name).toEqual(Errors.KeyNotSet)
             }
         });
 
@@ -114,7 +132,7 @@ namespace CdC.Tests {
             repo.save(item);
 
 
-            expect(() => { repo.getById(key2) }).toThrow(new Error(RepoErrors.ItemNotFound));
+            expect(() => { repo.getById(key2) }).toThrow(new Error(Errors.ItemNotFound));
 
         });
 

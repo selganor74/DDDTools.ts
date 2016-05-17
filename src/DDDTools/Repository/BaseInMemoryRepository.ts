@@ -1,44 +1,57 @@
-import {Errors} from "./Errors";
-import {Factory as Factory} from "../PersistableObject/Factory";
-import {IPersistable} from "../PersistableObject/IPersistable";
-import {BaseRepository} from "./BaseRepository";
-import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
-import {IKeyValueObject} from "../Entity/IKeyValueObject";
-import {IRepository} from "../Repository/IRepository";
+/// <reference path="./Errors.ts" />
+/// <reference path="../PersistableObject/Factory.ts" />
+/// <reference path="../PersistableObject/IPersistable.ts" />
+/// <reference path="./BaseRepository.ts" />
+/// <reference path="../Aggregate/BaseAggregateRoot.ts" />
+/// <reference path="../Entity/IKeyValueObject.ts" />
+/// <reference path="../Repository/IRepository.ts" />
 
-// namespace DDDTools.Repository {
+// import {Errors} from "./Errors";
+// import {Factory as Factory} from "../PersistableObject/Factory";
+// import {IPersistable} from "../PersistableObject/IPersistable";
+// import {BaseRepository} from "./BaseRepository";
+// import {BaseAggregateRoot} from "../Aggregate/BaseAggregateRoot";
+// import {IKeyValueObject} from "../Entity/IKeyValueObject";
+// import {IRepository} from "../Repository/IRepository";
 
-export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
-    extends BaseRepository<T, TKey>
-    implements IRepository<T, TKey> {
+namespace DDDTools.Repository {
 
-    private storage: { [id: string]: IPersistable };
+    import Factory = PersistableObject.Factory;
+    import IPersistable = PersistableObject.IPersistable;
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
 
-    constructor( managedTypeName: string) {
-        super(managedTypeName);
-        this.storage = {};
-    }
+    export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
+        extends BaseRepository<T, TKey>
+        implements IRepository<T, TKey> {
 
-    protected getByIdImplementation(id: TKey) {
+        private storage: { [id: string]: IPersistable };
 
-        var key = id.toString();
-
-        if (this.storage[key]) {
-            var toReturn = Factory.createObjectsFromState(this.storage[key]);
-            return <T>toReturn;
+        constructor(managedTypeName: string) {
+            super(managedTypeName);
+            this.storage = {};
         }
 
-        Errors.throw(Errors.ItemNotFound);
-    }
+        protected getByIdImplementation(id: TKey) {
 
-    protected saveImplementation(item: T): void {
-        var key = item.getKey().toString();
-        this.storage[key] = item.getState();
-    }
+            var key = id.toString();
 
-    protected deleteImplementation(id: TKey): void {
-        var key = id.toString();
-        this.storage[key] = undefined;
+            if (this.storage[key]) {
+                var toReturn = Factory.createObjectsFromState(this.storage[key]);
+                return <T>toReturn;
+            }
+
+            Errors.throw(Errors.ItemNotFound);
+        }
+
+        protected saveImplementation(item: T): void {
+            var key = item.getKey().toString();
+            this.storage[key] = item.getState();
+        }
+
+        protected deleteImplementation(id: TKey): void {
+            var key = id.toString();
+            this.storage[key] = undefined;
+        }
     }
 }
-// }

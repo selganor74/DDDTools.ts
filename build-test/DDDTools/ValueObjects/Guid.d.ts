@@ -1,10 +1,15 @@
-import { IKeyValueObject } from "../Entity/IKeyValueObject";
-import { BaseValueObject } from "../ValueObject/BaseValueObject";
-export declare class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
-    __typeName: string;
-    __typeVersion: string;
-    private guid;
-    constructor(guid?: string);
-    static generate(): Guid;
-    toString(): string;
+/// <reference path="../Utils/SimpleGuid.d.ts" />
+/// <reference path="../Entity/IKeyValueObject.d.ts" />
+/// <reference path="../ValueObject/BaseValueObject.d.ts" />
+declare namespace DDDTools.ValueObjects {
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    class Guid extends BaseValueObject<Guid> implements IKeyValueObject<Guid> {
+        __typeName: string;
+        __typeVersion: string;
+        private guid;
+        constructor(guid?: string);
+        static generate(): Guid;
+        toString(): string;
+    }
 }

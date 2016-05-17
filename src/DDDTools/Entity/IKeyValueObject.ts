@@ -1,10 +1,12 @@
-import {IValueObject} from "../ValueObject/IValueObject";
+/// <reference path="../ValueObject/IValueObject.ts" />
 
-// namespace DDDTools.Entity {
+// import {IValueObject} from "../ValueObject/IValueObject";
 
-//    import IValueObject = ValueObject.IValueObject;
+namespace DDDTools.Entity {
 
-export interface IKeyValueObject<T> extends IValueObject<T> {
-    toString(): string;
+    import IValueObject = ValueObject.IValueObject;
+
+    export interface IKeyValueObject<T> extends IValueObject<T> {
+        toString(): string;
+    }
 }
-// }

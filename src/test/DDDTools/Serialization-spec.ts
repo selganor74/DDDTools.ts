@@ -1,5 +1,11 @@
-import {Serializer} from "../../DDDTools/Serialization/Serializer";
-import {Deserializer} from "../../DDDTools/Serialization/Deserializer";
+/// <reference path="../../DDDTools/Serialization/Serializer.ts" />
+/// <reference path="../../DDDTools/Serialization/Deserializer.ts" />
+
+// import {Serializer} from "../../DDDTools/Serialization/Serializer";
+// import {Deserializer} from "../../DDDTools/Serialization/Deserializer";
+
+import Serializer = DDDTools.Serialization.Serializer;
+import Deserializer = DDDTools.Serialization.Deserializer;
 
 describe("Serialization",() => {
     

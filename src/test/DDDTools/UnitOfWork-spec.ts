@@ -1,22 +1,56 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
-import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
-import {IAggregateRoot} from "../../DDDTools/Aggregate/IAggregateRoot";
-import {Guid} from "../../DDDTools/ValueObjects/Guid";
-import {UnitOfWork} from "../../DDDTools/UnitOfWork/UnitOfWork";
-import {IRepository} from "../../DDDTools/Repository/IRepository";
-import {IDomainEvent} from "../../DDDTools/DomainEvents/IDomainEvent";
-import {IEventHandler} from "../../DDDTools/DomainEvents/IEventHandler";
-import {ObjectSavedEvent} from "../../DDDTools/UnitOfWork/ObjectSavedEvent";
-import {ObjectDeletedEvent} from "../../DDDTools/UnitOfWork/ObjectDeletedEvent";
-import {ObjectRetrievedEvent} from "../../DDDTools/UnitOfWork/ObjectRetrievedEvent";
-import {Events} from "../../DDDTools/UnitOfWork/Events";
-import {UnitOfWorkErrors} from "../../DDDTools/UnitOfWork/UnitOfWorkErrors";
-import {Errors} from "../../DDDTools/Repository/Errors";
-import {Factory} from "../../DDDTools/PersistableObject/Factory";
+/// <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
+/// <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
+/// <reference path="../../DDDTools/Aggregate/IAggregateRoot.ts" />
+/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+/// <reference path="../../DDDTools/UnitOfWork/UnitOfWork.ts" />
+/// <reference path="../../DDDTools/Repository/IRepository.ts" />
+/// <reference path="../../DDDTools/DomainEvents/IDomainEvent.ts" />
+/// <reference path="../../DDDTools/DomainEvents/IEventHandler.ts" />
+/// <reference path="../../DDDTools/UnitOfWork/ObjectSavedEvent.ts" />
+/// <reference path="../../DDDTools/UnitOfWork/ObjectDeletedEvent.ts" />
+/// <reference path="../../DDDTools/UnitOfWork/ObjectRetrievedEvent.ts" />
+/// <reference path="../../DDDTools/UnitOfWork/Events.ts" />
+/// <reference path="../../DDDTools/UnitOfWork/UnitOfWorkErrors.ts" />
+/// <reference path="../../DDDTools/Repository/Errors.ts" />
+/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+
+// import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+// import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
+// import {IAggregateRoot} from "../../DDDTools/Aggregate/IAggregateRoot";
+// import {Guid} from "../../DDDTools/ValueObjects/Guid";
+// import {UnitOfWork} from "../../DDDTools/UnitOfWork/UnitOfWork";
+// import {IRepository} from "../../DDDTools/Repository/IRepository";
+// import {IDomainEvent} from "../../DDDTools/DomainEvents/IDomainEvent";
+// import {IEventHandler} from "../../DDDTools/DomainEvents/IEventHandler";
+// import {ObjectSavedEvent} from "../../DDDTools/UnitOfWork/ObjectSavedEvent";
+// import {ObjectDeletedEvent} from "../../DDDTools/UnitOfWork/ObjectDeletedEvent";
+// import {ObjectRetrievedEvent} from "../../DDDTools/UnitOfWork/ObjectRetrievedEvent";
+// import {Events} from "../../DDDTools/UnitOfWork/Events";
+// import {UnitOfWorkErrors} from "../../DDDTools/UnitOfWork/UnitOfWorkErrors";
+// import {Errors} from "../../DDDTools/Repository/Errors";
+// import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 namespace CdC.Tests.ForUnitOfWork {
+
+
+    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+    import IAggregateRoot = DDDTools.Aggregate.IAggregateRoot;
+    import Guid = DDDTools.ValueObjects.Guid;
+    import UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
+    import IRepository = DDDTools.Repository.IRepository;
+    import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
+    import IEventHandler = DDDTools.DomainEvents.IEventHandler;
+    import ObjectSavedEvent = DDDTools.UnitOfWork.ObjectSavedEvent;
+    import ObjectDeletedEvent = DDDTools.UnitOfWork.ObjectDeletedEvent;
+    import ObjectRetrievedEvent = DDDTools.UnitOfWork.ObjectRetrievedEvent;
+    import Events = DDDTools.UnitOfWork.Events;
+    import UnitOfWorkErrors = DDDTools.UnitOfWork.UnitOfWorkErrors;
+    import Errors = DDDTools.Repository.Errors;
+    import Factory = DDDTools.PersistableObject.Factory;
+
 
     export class TestKey extends Guid {
         constructor() {

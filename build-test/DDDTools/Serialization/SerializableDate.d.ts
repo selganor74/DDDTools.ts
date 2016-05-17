@@ -1,8 +1,11 @@
-import { ITypeTracking } from "../CommonInterfaces/ITypeTracking";
-export declare class SerializableDate implements ITypeTracking {
-    __typeName: string;
-    __typeVersion: string;
-    __dateAsString: string;
-    constructor(date: Date);
-    getDate(): Date;
+/// <reference path="../CommonInterfaces/ITypeTracking.d.ts" />
+declare namespace DDDTools.Serialization {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class SerializableDate implements ITypeTracking {
+        __typeName: string;
+        __typeVersion: string;
+        __dateAsString: string;
+        constructor(date: Date);
+        getDate(): Date;
+    }
 }

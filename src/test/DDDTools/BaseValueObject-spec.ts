@@ -1,10 +1,20 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-import {Guid} from "../../DDDTools/ValueObjects/Guid";
-import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
-import {Factory} from "../../DDDTools/PersistableObject/Factory";
+/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+/// <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
+/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+
+// import {Guid} from "../../DDDTools/ValueObjects/Guid";
+// import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
+// import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
 namespace CdC.Tests.ForBaseValueObject {
+
+
+    import Guid = DDDTools.ValueObjects.Guid;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import Factory = DDDTools.PersistableObject.Factory;
+
 
     export class TestValueObject extends BaseValueObject<TestValueObject> {
         __typeName = "CdC.Tests.BaseValueObject.TestValueObject";
@@ -49,7 +59,7 @@ namespace CdC.Tests.ForBaseValueObject {
             Factory.registerType("CdC.Tests.BaseValueObject.TestValueObject", "v1", <any>CdC.Tests.ForBaseValueObject.TestValueObject);
             Factory.registerType("CdC.Tests.BaseValueObject.TestValueObject_Array", "v1", <any>CdC.Tests.ForBaseValueObject.TestValueObject_Array);
             Factory.registerType("CdC.Tests.BaseValueObject.TestValueObject_Object", "v1", <any>CdC.Tests.ForBaseValueObject.TestValueObject_Object);
-            
+
         });
 
         it("ValueObjects must be compared against their content. - Base types", () => {
