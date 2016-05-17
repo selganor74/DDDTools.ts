@@ -1,4 +1,3 @@
-/// <reference path="../../../../typings/browser.d.ts" />
 import { IRepositoryAsync } from "./IRepositoryAsync";
 import { BaseAggregateRoot } from "../Aggregate/BaseAggregateRoot";
 import { IKeyValueObject } from "../Entity/IKeyValueObject";
