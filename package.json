@@ -1,6 +1,6 @@
 {
   "name": "typescript-ddd-tools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A typescript library that implements the basic DDD patterns.",
   "main": "./build/node/DDDTools/DDDTools.js",
   "typings": "./build/browser/ddd-tools.d.ts",
@@ -27,8 +27,10 @@
     "jasmine-core": "^2.4.1",
     "jquery": "^2.2.3",
     "q": "^1.4.1",
+    "ts-loader": "^0.8.2",
     "typescript": "^1.8.9",
-    "typings": "^0.8.1"
+    "typings": "^0.8.1",
+    "webpack": "^1.13.0"
   },
   "dependencies": {
     "q": "^1.4.1"
