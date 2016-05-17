@@ -3,6 +3,26 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        dtsGenerator: {
+            options: {
+                name: 'ddd-tools',
+                project: 'build/node',
+                out: 'ddd-tools.d.ts'
+            },
+            default: {
+                src: 'build/node/**/*.ts'
+            }
+        },
+        lineremover: {
+            "build": {
+                "files": {
+                    "build/browser/ddd-tools.d.ts": "build/browser/ddd-tools.d.ts"
+                },
+                "options": {
+                    "exclusionPattern": /^\/\/\/\ <reference/
+                }
+            }
+        },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -44,14 +64,17 @@ module.exports = function (grunt) {
             },
             "build-tests": {
                 files: [
-                    
+
                 ]
 
             }
         },
         ts: {
-            "build": {
-                tsconfig: 'src/DDDTools/tsconfig.json'
+            "build-node": {
+                tsconfig: 'src/DDDTools/tsconfig-node.json'
+            },
+            "build-browser": {
+                tsconfig: 'src/DDDTools/tsconfig-browser.json'
             },
             "build-tests": {
                 tsconfig: 'src/test/tsconfig.json'
@@ -69,7 +92,7 @@ module.exports = function (grunt) {
         "jasmine": {
             "run-tests": {
                 src: [
-                        "build-test/DDDTools/*.js"
+                    "build-test/DDDTools/*.js"
                 ],
                 options: {
                     vendor:
@@ -94,10 +117,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-line-remover');
+    grunt.loadNpmTasks('dts-generator');
 
     // TASKS
     grunt.registerTask('run', ['http-server']);
-    grunt.registerTask('build', ['clean', 'ts:build','clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build', 'ts:build-tests', 'copy' ]);
+    grunt.registerTask('build', ['clean', 'ts:build-node', 'ts:build-browser', 'dtsGenerator', 'lineremover:build', 'clean:after-build']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build-tests', 'copy']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };

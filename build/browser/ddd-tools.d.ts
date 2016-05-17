@@ -1,4 +1,3 @@
-/// <reference path="../typings/browser.d.ts" />
 declare module "DDDTools/CommonInterfaces/ITypeTracking" {
     export interface ITypeTracking {
         __typeName: string;
@@ -262,6 +261,16 @@ declare module "DDDTools/Aggregate/BaseAggregateRoot" {
         perfectlyMatch(other: BaseAggregateRoot<T, TKey>): boolean;
     }
 }
+declare module "DDDTools/Aggregate" {
+    import { IAggregateRoot } from "DDDTools/Aggregate/IAggregateRoot";
+    import { BaseAggregateRoot } from "DDDTools/Aggregate/BaseAggregateRoot";
+    export { IAggregateRoot, BaseAggregateRoot };
+}
+declare module "DDDTools/CommonInterfaces" {
+    import { IEquatable } from "DDDTools/CommonInterfaces/IEquatable";
+    import { ITypeTracking } from "DDDTools/CommonInterfaces/ITypeTracking";
+    export { IEquatable, ITypeTracking };
+}
 declare module "DDDTools/DomainEvents/InProcessDispatcher" {
     import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
     import { IEventHandler } from "DDDTools/DomainEvents/IEventHandler";
@@ -274,6 +283,14 @@ declare module "DDDTools/DomainEvents/InProcessDispatcher" {
         private buildErrorMessage(Errors);
     }
 }
+declare module "DDDTools/DomainEvents" {
+    import { DomainDispatcher } from "DDDTools/DomainEvents/DomainDispatcher";
+    import { IDispatcher } from "DDDTools/DomainEvents/IDispatcher";
+    import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
+    import { IEventHandler } from "DDDTools/DomainEvents/IEventHandler";
+    import { InProcessDispatcher } from "DDDTools/DomainEvents/InProcessDispatcher";
+    export { DomainDispatcher, IDispatcher, IDomainEvent, IEventHandler, InProcessDispatcher };
+}
 declare module "DDDTools/Entity/BaseKeyValueObject" {
     import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
     import { IKeyValueObject } from "DDDTools/Entity/IKeyValueObject";
@@ -283,10 +300,24 @@ declare module "DDDTools/Entity/BaseKeyValueObject" {
         abstract toString(): string;
     }
 }
-declare module "DDDTools/Query/IQuery" {
-    export interface IQuery<T> {
-        execute(): T[];
-    }
+declare module "DDDTools/Entity" {
+    import { BaseEntity } from "DDDTools/Entity/BaseEntity";
+    import { BaseKeyValueObject } from "DDDTools/Entity/BaseKeyValueObject";
+    import { IEntity } from "DDDTools/Entity/IEntity";
+    import { IKeyValueObject } from "DDDTools/Entity/IKeyValueObject";
+    export { BaseEntity, BaseKeyValueObject, IEntity, IKeyValueObject };
+}
+declare module "DDDTools/ErrorManagement" {
+    import { BaseErrors } from "DDDTools/ErrorManagement/BaseErrors";
+    export { BaseErrors };
+}
+declare module "DDDTools/PersistableObject" {
+    import { BasePersistableObject } from "DDDTools/PersistableObject/BasePersistableObject";
+    import { Errors } from "DDDTools/PersistableObject/Errors";
+    import { Factory } from "DDDTools/PersistableObject/Factory";
+    import { IPersistable } from "DDDTools/PersistableObject/IPersistable";
+    import { TypeRegistry } from "DDDTools/PersistableObject/TypeRegistry";
+    export { BasePersistableObject, Errors, Factory, IPersistable, TypeRegistry };
 }
 declare module "DDDTools/Repository/Errors" {
     import { BaseErrors } from "DDDTools/ErrorManagement/BaseErrors";
@@ -432,6 +463,28 @@ declare module "DDDTools/Repository/BaseRepositoryAsync" {
         private buildError(errorFromCall, errorIfErrorFromCallIsNotError);
     }
 }
+declare module "DDDTools/Repository" {
+    import { BaseInMemoryRepository } from "DDDTools/Repository/BaseInMemoryRepository";
+    import { BaseRepository } from "DDDTools/Repository/BaseRepository";
+    import { BaseRepositoryAsync } from "DDDTools/Repository/BaseRepositoryAsync";
+    import { Errors } from "DDDTools/Repository/Errors";
+    import { Events } from "DDDTools/Repository/Events";
+    import { IRepository } from "DDDTools/Repository/IRepository";
+    import { IRepositoryAsync } from "DDDTools/Repository/IRepositoryAsync";
+    import { ItemAddedEvent } from "DDDTools/Repository/ItemAddedEvent";
+    import { ItemDeletedEvent } from "DDDTools/Repository/ItemDeletedEvent";
+    import { ItemRetrievedEvent } from "DDDTools/Repository/ItemRetrievedEvent";
+    import { ItemUpdatedEvent } from "DDDTools/Repository/ItemUpdatedEvent";
+    export { BaseInMemoryRepository, BaseRepository, BaseRepositoryAsync, Errors, Events, IRepository, IRepositoryAsync, ItemAddedEvent, ItemDeletedEvent, ItemRetrievedEvent, ItemUpdatedEvent };
+}
+declare module "DDDTools/Serialization" {
+    import { Deserializer } from "DDDTools/Serialization/Deserializer";
+    import { SerializableDate } from "DDDTools/Serialization/SerializableDate";
+    import { SerializableRegExp } from "DDDTools/Serialization/SerializableRegExp";
+    import { Serializer } from "DDDTools/Serialization/Serializer";
+    import { Touch } from "DDDTools/Serialization/Touch";
+    export { Deserializer, SerializableDate, SerializableRegExp, Serializer, Touch };
+}
 declare module "DDDTools/UnitOfWork/Events" {
     export class Events {
         private static __nameSpace;
@@ -489,10 +542,10 @@ declare module "DDDTools/UnitOfWork/ObjectDeletedEvent" {
         constructor(typeName: string, typeVersion: string, id: string);
     }
 }
-declare module "DDDTools/UnitOfWork/ObjectRetrievedEvent" {
+declare module "DDDTools/UnitOfWork/ObjectSavedEvent" {
     import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
     import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
-    export class ObjectRetrievedEvent extends BaseValueObject<ObjectRetrievedEvent> implements IDomainEvent {
+    export class ObjectSavedEvent extends BaseValueObject<ObjectSavedEvent> implements IDomainEvent {
         typeName: string;
         typeVersion: string;
         id: string;
@@ -501,10 +554,10 @@ declare module "DDDTools/UnitOfWork/ObjectRetrievedEvent" {
         constructor(typeName: string, typeVersion: string, id: string);
     }
 }
-declare module "DDDTools/UnitOfWork/ObjectSavedEvent" {
+declare module "DDDTools/UnitOfWork/ObjectRetrievedEvent" {
     import { IDomainEvent } from "DDDTools/DomainEvents/IDomainEvent";
     import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
-    export class ObjectSavedEvent extends BaseValueObject<ObjectSavedEvent> implements IDomainEvent {
+    export class ObjectRetrievedEvent extends BaseValueObject<ObjectRetrievedEvent> implements IDomainEvent {
         typeName: string;
         typeVersion: string;
         id: string;
@@ -540,7 +593,53 @@ declare module "DDDTools/UnitOfWork/UnitOfWork" {
         private removeById(key);
     }
 }
+declare module "DDDTools/UnitOfWork" {
+    import { Events } from "DDDTools/UnitOfWork/Events";
+    import { IdentityMap } from "DDDTools/UnitOfWork/IdentityMap";
+    import { IUnitOfWork } from "DDDTools/UnitOfWork/IUnitOfWork";
+    import { ObjectDeletedEvent } from "DDDTools/UnitOfWork/ObjectDeletedEvent";
+    import { ObjectSavedEvent } from "DDDTools/UnitOfWork/ObjectSavedEvent";
+    import { ObjectRetrievedEvent } from "DDDTools/UnitOfWork/ObjectRetrievedEvent";
+    import { UnitOfWork } from "DDDTools/UnitOfWork/UnitOfWork";
+    import { UnitOfWorkErrors } from "DDDTools/UnitOfWork/UnitOfWorkErrors";
+    export { Events, IdentityMap, IUnitOfWork, ObjectDeletedEvent, ObjectRetrievedEvent, ObjectSavedEvent, UnitOfWork, UnitOfWorkErrors };
+}
+declare module "DDDTools/Utils" {
+    import { SimpleGuid } from "DDDTools/Utils/SimpleGuid";
+    import { SimpleIdentityMap } from "DDDTools/Utils/SimpleIdentityMap";
+    export { SimpleGuid, SimpleIdentityMap };
+}
+declare module "DDDTools/ValueObject" {
+    import { BaseValueObject } from "DDDTools/ValueObject/BaseValueObject";
+    import { IValueObject } from "DDDTools/ValueObject/IValueObject";
+    export { BaseValueObject, IValueObject };
+}
 declare module "DDDTools/ValueObjects/CommonVOLibrary" {
     export class CommonVOLibrary {
+    }
+}
+declare module "DDDTools/ValueObjects" {
+    import { CommonVOLibrary } from "DDDTools/ValueObjects/CommonVOLibrary";
+    import { Guid } from "DDDTools/ValueObjects/Guid";
+    export { CommonVOLibrary, Guid };
+}
+declare module "DDDTools/DDDTools" {
+    import * as Aggregate from "DDDTools/Aggregate";
+    import * as CommonInterfaces from "DDDTools/CommonInterfaces";
+    import * as DomainEvents from "DDDTools/DomainEvents";
+    import * as Entity from "DDDTools/Entity";
+    import * as ErrorManagement from "DDDTools/ErrorManagement";
+    import * as PersistableObject from "DDDTools/PersistableObject";
+    import * as Repository from "DDDTools/Repository";
+    import * as Serialization from "DDDTools/Serialization";
+    import * as UnitOfWork from "DDDTools/UnitOfWork";
+    import * as Utils from "DDDTools/Utils";
+    import * as ValueObject from "DDDTools/ValueObject";
+    import * as ValueObjects from "DDDTools/ValueObjects";
+    export { Aggregate, CommonInterfaces, DomainEvents, Entity, ErrorManagement, PersistableObject, Repository, Serialization, UnitOfWork, Utils, ValueObject, ValueObjects };
+}
+declare module "DDDTools/Query/IQuery" {
+    export interface IQuery<T> {
+        execute(): T[];
     }
 }

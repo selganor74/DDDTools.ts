@@ -1,7 +1,7 @@
 import {IKeyValueObject} from "../Entity/IKeyValueObject";
 import {BaseEntity} from "../Entity/BaseEntity";
 import {IAggregateRoot} from "./IAggregateRoot";
-import {IEntity} from "./Entity/IEntity";
+import {IEntity} from "../Entity/IEntity";
 
 /**
  * Implements the Aggregate Pattern by defining interfaces and base behavior for an AggregateRoot.

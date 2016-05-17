@@ -1,3 +1,5 @@
+/// <reference path="../../../typings/browser.d.ts" />
+
 import {IRepositoryAsync} from "./IRepositoryAsync";
 import {Errors} from "./Errors";
 import {IPersistable} from "../PersistableObject/IPersistable";

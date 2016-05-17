@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/browser.d.ts" />
-
 import {IPersistable} from "../PersistableObject/IPersistable";
 import {Errors} from "./Errors";
 import {Guid} from "../ValueObjects/Guid";

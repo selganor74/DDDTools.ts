@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"rootDir": "src/",
+		"diagnostics": false,
+		"outFile": "../../build/browser/ddd-tools.js",
+		"declaration": true,
+		"inlineSourceMap": true,
+		"inlineSources": true
+	},
+	"exclude": [
+		"**/.baseDir.*"
+	]
+}

@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/browser.d.ts" />
-
 import {IPersistable} from "./IPersistable";
 import {Errors} from "./Errors";
 import {TypeRegistry} from "./TypeRegistry";

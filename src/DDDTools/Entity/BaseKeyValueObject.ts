@@ -1,6 +1,6 @@
 import {BaseValueObject} from "../ValueObject/BaseValueObject";
 import {IKeyValueObject} from "./IKeyValueObject";
-import {IPersistable} from "./PersistableObject/IPersistable";
+import {IPersistable} from "../PersistableObject/IPersistable";
 
 // namespace DDDTools.Entity {
 

@@ -1,12 +1,11 @@
 {
 	"compilerOptions": {
 		"target": "es5",
-		"sourceMap": true,
 		"rootDir": "src/",
 		"diagnostics": true,
-		"outFile": "../../build/ddd-tools.js",
+		"outDir": "../../build/node/",
 		"declaration": true,
-		"module": "amd",
+		"module": "commonjs",
 		"inlineSourceMap": true,
 		"inlineSources": true
 	},
