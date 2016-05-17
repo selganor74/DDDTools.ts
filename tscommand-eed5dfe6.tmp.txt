@@ -1,1 +1,0 @@
-"d:\DDDTools\src\NeDBRepository\BaseNeDBRepositoryAsync.ts" "d:\DDDTools\src\NeDBRepository\Errors.ts" "d:\DDDTools\src\NeDBRepository\NeDBDatabaseFactory.ts" --declaration --removeComments --inlineSourceMap --rootDir src/ --target ES5 --module amd --out build/ddd-tools-nedbrepository.js

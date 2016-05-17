@@ -1,11 +1,9 @@
 {
-  "name": "CdCOfflinePOC",
+  "name": "typescript-ddd-tools",
   "version": false,
   "dependencies": {},
   "ambientDependencies": {
     "jasmine": "registry:dt/jasmine#2.2.0+20160317120654",
-    "jquery": "registry:dt/jquery#1.10.0+20160316155526",
-    "q": "registry:dt/q#0.0.0+20160417152954",
-    "require": "registry:dt/require#2.1.20+20160316155526"
+    "q": "registry:dt/q#0.0.0+20160417152954"
   }
 }
