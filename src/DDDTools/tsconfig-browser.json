@@ -6,7 +6,8 @@
 		"outFile": "../../build/browser/ddd-tools.js",
 		"declaration": true,
 		"inlineSourceMap": true,
-		"inlineSources": true
+		"inlineSources": true,
+		"module": "system"
 	},
 	"exclude": [
 		"**/.baseDir.*"

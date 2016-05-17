@@ -3,16 +3,6 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        dtsGenerator: {
-            options: {
-                name: 'ddd-tools',
-                project: 'build/node',
-                out: 'ddd-tools.d.ts'
-            },
-            default: {
-                src: 'build/node/**/*.ts'
-            }
-        },
         lineremover: {
             "build": {
                 "files": {
@@ -122,7 +112,7 @@ module.exports = function (grunt) {
 
     // TASKS
     grunt.registerTask('run', ['http-server']);
-    grunt.registerTask('build', ['clean', 'ts:build-node', 'ts:build-browser', 'dtsGenerator', 'lineremover:build', 'clean:after-build']);
+    grunt.registerTask('build', ['clean', 'ts:build-node', 'ts:build-browser', 'lineremover:build', 'clean:after-build']);
     grunt.registerTask('build-tests', ['clean', 'ts:build-tests', 'copy']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };
