@@ -1,4 +1,3 @@
-/// <reference path="../../typings/browser.d.ts" />
 declare namespace DDDTools.CommonInterfaces {
     interface ITypeTracking {
         __typeName: string;

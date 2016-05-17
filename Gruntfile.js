@@ -6,10 +6,11 @@ module.exports = function (grunt) {
         lineremover: {
             "build": {
                 "files": {
-                    "build/node/DDDTools/Repository/BaseRepositoryAsync.d.ts": "build/node/DDDTools/Repository/BaseRepositoryAsync.d.ts"
+                    "build/node/DDDTools/Repository/BaseRepositoryAsync.d.ts": "build/node/DDDTools/Repository/BaseRepositoryAsync.d.ts",
+                    "build/browser/ddd-tools.d.ts": "build/browser/ddd-tools.d.ts"
                 },
                 "options": {
-                    "exclusionPattern": /^\/\/\/\ <reference/
+                    "exclusionPattern": /^\/\/\/\ <reference\ path/
                 }
             }
         },
