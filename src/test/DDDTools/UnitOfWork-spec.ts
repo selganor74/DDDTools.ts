@@ -1,20 +1,22 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-/// <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
-/// <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
-/// <reference path="../../DDDTools/Aggregate/IAggregateRoot.ts" />
-/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
-/// <reference path="../../DDDTools/UnitOfWork/UnitOfWork.ts" />
-/// <reference path="../../DDDTools/Repository/IRepository.ts" />
-/// <reference path="../../DDDTools/DomainEvents/IDomainEvent.ts" />
-/// <reference path="../../DDDTools/DomainEvents/IEventHandler.ts" />
-/// <reference path="../../DDDTools/UnitOfWork/ObjectSavedEvent.ts" />
-/// <reference path="../../DDDTools/UnitOfWork/ObjectDeletedEvent.ts" />
-/// <reference path="../../DDDTools/UnitOfWork/ObjectRetrievedEvent.ts" />
-/// <reference path="../../DDDTools/UnitOfWork/Events.ts" />
-/// <reference path="../../DDDTools/UnitOfWork/UnitOfWorkErrors.ts" />
-/// <reference path="../../DDDTools/Repository/Errors.ts" />
-/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+
+// / <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
+// / <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
+// / <reference path="../../DDDTools/Aggregate/IAggregateRoot.ts" />
+// / <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+// / <reference path="../../DDDTools/UnitOfWork/UnitOfWork.ts" />
+// / <reference path="../../DDDTools/Repository/IRepository.ts" />
+// / <reference path="../../DDDTools/DomainEvents/IDomainEvent.ts" />
+// / <reference path="../../DDDTools/DomainEvents/IEventHandler.ts" />
+// / <reference path="../../DDDTools/UnitOfWork/ObjectSavedEvent.ts" />
+// / <reference path="../../DDDTools/UnitOfWork/ObjectDeletedEvent.ts" />
+// / <reference path="../../DDDTools/UnitOfWork/ObjectRetrievedEvent.ts" />
+// / <reference path="../../DDDTools/UnitOfWork/Events.ts" />
+// / <reference path="../../DDDTools/UnitOfWork/UnitOfWorkErrors.ts" />
+// / <reference path="../../DDDTools/Repository/Errors.ts" />
+// / <reference path="../../DDDTools/PersistableObject/Factory.ts" />
 
 // import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
 // import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";

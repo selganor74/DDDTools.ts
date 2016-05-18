@@ -1,13 +1,14 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
-/// <reference path="../../DDDTools/Entity/BaseEntity.ts" />
-/// <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
-/// <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
-/// <reference path="../../DDDTools/Repository/Errors.ts" />
-/// <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
-/// <reference path="../../DDDTools/PersistableObject/TypeRegistry.ts" />
-/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+// / <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+// / <reference path="../../DDDTools/Entity/BaseEntity.ts" />
+// / <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
+// / <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
+// / <reference path="../../DDDTools/Repository/Errors.ts" />
+// / <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
+// / <reference path="../../DDDTools/PersistableObject/TypeRegistry.ts" />
+// / <reference path="../../DDDTools/PersistableObject/Factory.ts" />
 
 // import DDDTools = require("./DDDTools")
 

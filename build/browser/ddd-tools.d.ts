@@ -1,55 +1,13 @@
-declare namespace DDDTools.CommonInterfaces {
-    interface ITypeTracking {
-        __typeName: string;
-        __typeVersion: string;
-        __objectInstanceId?: string;
-    }
-}
-declare namespace DDDTools.PersistableObject {
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    interface IPersistable extends ITypeTracking {
-        getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
-        getState(): ITypeTracking;
-        setState(state: ITypeTracking): any;
-    }
-}
-declare namespace DDDTools.CommonInterfaces {
-    interface IEquatable<T> {
-        equals(item: T): boolean;
-    }
-}
-declare namespace DDDTools.ValueObject {
-    import IPersistable = PersistableObject.IPersistable;
-    import IEquatable = CommonInterfaces.IEquatable;
-    interface IValueObject<T> extends IEquatable<T>, IPersistable {
-    }
-}
-declare namespace DDDTools.Entity {
-    import IValueObject = ValueObject.IValueObject;
-    interface IKeyValueObject<T> extends IValueObject<T> {
-        toString(): string;
-    }
-}
+/// <reference path="../../typings/browser.d.ts" />
 declare namespace DDDTools.ErrorManagement {
     abstract class BaseErrors {
         static throw(name: string, message?: string): void;
         static getErrorInstance(name: string, message?: string): Error;
     }
 }
-declare namespace DDDTools.PersistableObject {
-    import BaseErrors = ErrorManagement.BaseErrors;
-    class Errors extends BaseErrors {
-        static StateIsNotAnObject: string;
-        static TypeNameNotSet: string;
-        static TypeVersionNotSet: string;
-        static UnableToInstantiateType: string;
-        static TypeRegistryNotSet: string;
-        static TypeNotRegistered: string;
-        static CannotRegisterUndefined: string;
-        static TypeNotInstatiable: string;
-        static UpgradePathNotFound: string;
-        static IncorrectVersionFormat: string;
-        static WrongVersionInUpgradedInstance: string;
+declare namespace DDDTools.Query {
+    interface IQuery<T> {
+        execute(): T[];
     }
 }
 declare namespace DDDTools.Utils {
@@ -57,6 +15,29 @@ declare namespace DDDTools.Utils {
         private static isValid(guid);
         private static s4();
         static generate(): string;
+    }
+}
+declare namespace DDDTools.Utils {
+    class SimpleIdentityMap {
+        private idToObjectMap;
+        constructor();
+        isTracked(id: string): boolean;
+        getById(id: string): any;
+        add(id: string, object: any): any;
+        getIds(): string[];
+        deleteById(id: string): void;
+    }
+}
+declare namespace DDDTools.CommonInterfaces {
+    interface IEquatable<T> {
+        equals(item: T): boolean;
+    }
+}
+declare namespace DDDTools.CommonInterfaces {
+    interface ITypeTracking {
+        __typeName: string;
+        __typeVersion: string;
+        __objectInstanceId?: string;
     }
 }
 declare namespace DDDTools.Serialization {
@@ -89,6 +70,25 @@ declare namespace DDDTools.Serialization {
         static hasBeenTouched(object: any): boolean;
     }
 }
+declare namespace DDDTools.PersistableObject {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    interface IPersistable extends ITypeTracking {
+        getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
+        getState(): ITypeTracking;
+        setState(state: ITypeTracking): any;
+    }
+}
+declare namespace DDDTools.Serialization {
+    class Deserializer {
+        private static identityMap;
+        static deserialize(toDeserialize: string): any;
+        private static cleanup();
+        private static customReviver(key, value);
+        private static hasBeenTouched(object);
+        private static FakeRegExpDeserializer(value);
+        private static FakeDateDeserializer(value);
+    }
+}
 declare namespace DDDTools.Serialization {
     class Serializer {
         static serialize(toSerialize: any): string;
@@ -96,6 +96,60 @@ declare namespace DDDTools.Serialization {
         private static untouchSourceObject(sourceObject);
         private static postprocessForSerializableSubstitution(sourceObject);
         private static customSerializer(key, value);
+    }
+}
+declare namespace DDDTools.PersistableObject {
+    import BaseErrors = ErrorManagement.BaseErrors;
+    class Errors extends BaseErrors {
+        static StateIsNotAnObject: string;
+        static TypeNameNotSet: string;
+        static TypeVersionNotSet: string;
+        static UnableToInstantiateType: string;
+        static TypeRegistryNotSet: string;
+        static TypeNotRegistered: string;
+        static CannotRegisterUndefined: string;
+        static TypeNotInstatiable: string;
+        static UpgradePathNotFound: string;
+        static IncorrectVersionFormat: string;
+        static WrongVersionInUpgradedInstance: string;
+    }
+}
+declare namespace DDDTools.ValueObject {
+    import IPersistable = PersistableObject.IPersistable;
+    import IEquatable = CommonInterfaces.IEquatable;
+    interface IValueObject<T> extends IEquatable<T>, IPersistable {
+    }
+}
+declare namespace DDDTools.Entity {
+    import IValueObject = ValueObject.IValueObject;
+    interface IKeyValueObject<T> extends IValueObject<T> {
+        toString(): string;
+    }
+}
+declare namespace DDDTools.PersistableObject {
+    class Factory {
+        private static typeRegistry;
+        static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
+        static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T;
+        static createObjectsFromState(state: any): any;
+        private static isPersistableObject(objectToTest);
+        private static isTypeInstantiable(typeName);
+    }
+    class Upgrader {
+        private static latestTypeVersionMap;
+        private static isVersionMapBuilt;
+        private static buildVersionMapForType(typeName);
+        static isLatestVersionForType(typeName: string, typeVersion: string): boolean;
+        static upgrade(instanceFrom: IPersistable): IPersistable;
+        static computeNextVersion(typeVersion: string): string;
+    }
+}
+declare namespace DDDTools.PersistableObject {
+    abstract class BasePersistableObject implements IPersistable {
+        __typeName: string;
+        __typeVersion: string;
+        getState(): any;
+        setState<TState>(state: TState): void;
     }
 }
 declare namespace DDDTools.ValueObject {
@@ -117,12 +171,11 @@ declare namespace DDDTools.ValueObjects {
         toString(): string;
     }
 }
-import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
-import Guid = DDDTools.ValueObjects.Guid;
 declare namespace DDDTools.PersistableObject {
     class TypeRegistry {
         private static registry;
         private static latestVersions;
+        private static commonTypesRegistered;
         static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
         private static updateLatestVersions(typeName, typeVersion);
         private static isVersionGreater(vSubject, vReference);
@@ -132,54 +185,6 @@ declare namespace DDDTools.PersistableObject {
         static getLatestVersionForType(typeName: string): string;
         private static versionIsInCorrectFormat(typeVersion);
         static computeNextVersion(typeVersion: string): string;
-    }
-}
-declare namespace DDDTools.PersistableObject {
-    class Factory {
-        private static typeRegistry;
-        static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
-        static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T;
-        static createObjectsFromState(state: any): any;
-        private static isPersistableObject(objectToTest);
-        private static isTypeInstantiable(typeName);
-    }
-    class Upgrader {
-        private static latestTypeVersionMap;
-        private static isVersionMapBuilt;
-        private static buildVersionMapForType(typeName);
-        static isLatestVersionForType(typeName: string, typeVersion: string): boolean;
-        static upgrade(instanceFrom: IPersistable): IPersistable;
-        static computeNextVersion(typeVersion: string): string;
-    }
-}
-declare namespace DDDTools.Utils {
-    class SimpleIdentityMap {
-        private idToObjectMap;
-        constructor();
-        isTracked(id: string): boolean;
-        getById(id: string): any;
-        add(id: string, object: any): any;
-        getIds(): string[];
-        deleteById(id: string): void;
-    }
-}
-declare namespace DDDTools.Serialization {
-    class Deserializer {
-        private static identityMap;
-        static deserialize(toDeserialize: string): any;
-        private static cleanup();
-        private static customReviver(key, value);
-        private static hasBeenTouched(object);
-        private static FakeRegExpDeserializer(value);
-        private static FakeDateDeserializer(value);
-    }
-}
-declare namespace DDDTools.PersistableObject {
-    abstract class BasePersistableObject implements IPersistable {
-        __typeName: string;
-        __typeVersion: string;
-        getState(): any;
-        setState<TState>(state: TState): void;
     }
 }
 declare namespace DDDTools.DomainEvents {
@@ -209,12 +214,30 @@ declare namespace DDDTools.DomainEvents {
         static dispatch(event: IDomainEvent): void;
     }
 }
+declare namespace DDDTools.DomainEvents {
+    class InProcessDispatcher {
+        private delegatesRegistry;
+        clear(): void;
+        registerHandler(eventTypeName: string, handler: IEventHandler): void;
+        unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
+        dispatch(event: IDomainEvent): void;
+        private buildErrorMessage(Errors);
+    }
+}
 declare namespace DDDTools.Entity {
     import IEquatable = CommonInterfaces.IEquatable;
     import IPersistable = PersistableObject.IPersistable;
     interface IEntity<T, TKey extends IKeyValueObject<TKey>> extends IEquatable<T>, IPersistable {
         getKey(): TKey;
         setKey(key: TKey): void;
+    }
+}
+declare namespace DDDTools.Entity {
+    import BaseValueObject = ValueObject.BaseValueObject;
+    import IPersistable = PersistableObject.IPersistable;
+    abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T>, IPersistable {
+        constructor();
+        abstract toString(): string;
     }
 }
 declare namespace DDDTools.Entity {
@@ -247,27 +270,23 @@ declare namespace DDDTools.Aggregate {
         perfectlyMatch(other: BaseAggregateRoot<T, TKey>): boolean;
     }
 }
-declare namespace DDDTools.DomainEvents {
-    class InProcessDispatcher {
-        private delegatesRegistry;
-        clear(): void;
-        registerHandler(eventTypeName: string, handler: IEventHandler): void;
-        unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
-        dispatch(event: IDomainEvent): void;
-        private buildErrorMessage(Errors);
+declare namespace DDDTools.Repository {
+    import IAggregateRoot = Aggregate.IAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    interface IRepository<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+        getById(id: TKey): T;
+        save(item: T): void;
+        delete(id: TKey): void;
     }
 }
-declare namespace DDDTools.Entity {
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import IPersistable = PersistableObject.IPersistable;
-    abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T>, IPersistable {
-        constructor();
-        abstract toString(): string;
-    }
-}
-declare namespace DDDTools.Query {
-    interface IQuery<T> {
-        execute(): T[];
+declare namespace DDDTools.Repository {
+    import IPromise = Q.IPromise;
+    import IAggregateRoot = Aggregate.IAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    interface IRepositoryAsync<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+        getById(id: TKey): IPromise<T>;
+        save(item: T): IPromise<{}>;
+        delete(id: TKey): IPromise<{}>;
     }
 }
 declare namespace DDDTools.Repository {
@@ -283,35 +302,12 @@ declare namespace DDDTools.Repository {
     }
 }
 declare namespace DDDTools.Repository {
-    import IAggregateRoot = Aggregate.IAggregateRoot;
-    import IKeyValueObject = Entity.IKeyValueObject;
-    interface IRepository<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
-        getById(id: TKey): T;
-        save(item: T): void;
-        delete(id: TKey): void;
-    }
-}
-declare namespace DDDTools.Repository {
     class Events {
         private static __nameSpace;
         static ItemAddedEvent: string;
         static ItemUpdatedEvent: string;
         static ItemDeletedEvent: string;
         static ItemRetrievedEvent: string;
-    }
-}
-declare namespace DDDTools.Repository {
-    import IDomainEvent = DomainEvents.IDomainEvent;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
-        typeName: string;
-        typeVersion: string;
-        id: string;
-        objectState: ITypeTracking;
-        __typeName: string;
-        __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
     }
 }
 declare namespace DDDTools.Repository {
@@ -332,7 +328,7 @@ declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
     import BaseValueObject = ValueObject.BaseValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemUpdatedEvent extends BaseValueObject<ItemUpdatedEvent> implements IDomainEvent {
+    class ItemDeletedEvent extends BaseValueObject<ItemDeletedEvent> implements IDomainEvent {
         typeName: string;
         typeVersion: string;
         id: string;
@@ -346,7 +342,21 @@ declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
     import BaseValueObject = ValueObject.BaseValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemDeletedEvent extends BaseValueObject<ItemDeletedEvent> implements IDomainEvent {
+    class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare namespace DDDTools.Repository {
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class ItemUpdatedEvent extends BaseValueObject<ItemUpdatedEvent> implements IDomainEvent {
         typeName: string;
         typeVersion: string;
         id: string;
@@ -372,27 +382,6 @@ declare namespace DDDTools.Repository {
     }
 }
 declare namespace DDDTools.Repository {
-    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
-    import IKeyValueObject = Entity.IKeyValueObject;
-    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
-        private storage;
-        constructor(managedTypeName: string);
-        protected getByIdImplementation(id: TKey): T;
-        protected saveImplementation(item: T): void;
-        protected deleteImplementation(id: TKey): void;
-    }
-}
-declare namespace DDDTools.Repository {
-    import IPromise = Q.IPromise;
-    import IAggregateRoot = Aggregate.IAggregateRoot;
-    import IKeyValueObject = Entity.IKeyValueObject;
-    interface IRepositoryAsync<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
-        getById(id: TKey): IPromise<T>;
-        save(item: T): IPromise<{}>;
-        delete(id: TKey): IPromise<{}>;
-    }
-}
-declare namespace DDDTools.Repository {
     import IPromise = Q.IPromise;
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
@@ -410,37 +399,15 @@ declare namespace DDDTools.Repository {
         private buildError(errorFromCall, errorIfErrorFromCallIsNotError);
     }
 }
-declare namespace DDDTools.UnitOfWork {
-    class Events {
-        private static __nameSpace;
-        static ObjectSavedEvent: string;
-        static ObjectDeletedEvent: string;
-        static ObjectRetrievedEvent: string;
-    }
-}
-declare namespace DDDTools.UnitOfWork {
-    import IKeyValueObject = Entity.IKeyValueObject;
+declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
-    enum ItemStatus {
-        New = 0,
-        Modified = 1,
-        Saved = 2,
-        Deleted = 3,
-    }
-    class IdentityMap<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
-        private idToObjectMap;
-        constructor();
-        isTracked(key: TKey): boolean;
-        getById(key: TKey): T;
-        add(key: TKey, item: T): void;
-        remove(key: TKey): void;
-        getIds(): TKey[];
-        markAsDeletedById(key: TKey): void;
-        markAsSavedById(key: TKey): void;
-        markAsModifiedById(key: TKey): void;
-        getItemStatus(key: TKey): ItemStatus;
-        updateSavedItemStatus(key: TKey): void;
-        private getTrackedItem(key);
+    import IKeyValueObject = Entity.IKeyValueObject;
+    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
+        private storage;
+        constructor(managedTypeName: string);
+        protected getByIdImplementation(id: TKey): T;
+        protected saveImplementation(item: T): void;
+        protected deleteImplementation(id: TKey): void;
     }
 }
 declare namespace DDDTools.UnitOfWork {
@@ -453,6 +420,20 @@ declare namespace DDDTools.UnitOfWork {
         saveAll(): void;
         registerHandler(eventTypeName: string, eventHandler: IEventHandler): void;
         unregisterHandler(eventTypeName: string, eventHandler: IEventHandler): void;
+    }
+}
+declare namespace DDDTools.UnitOfWork {
+    import BaseErrors = ErrorManagement.BaseErrors;
+    class UnitOfWorkErrors extends BaseErrors {
+        static ItemMarkedAsDeleted: string;
+    }
+}
+declare namespace DDDTools.UnitOfWork {
+    class Events {
+        private static __nameSpace;
+        static ObjectSavedEvent: string;
+        static ObjectDeletedEvent: string;
+        static ObjectRetrievedEvent: string;
     }
 }
 declare namespace DDDTools.UnitOfWork {
@@ -492,9 +473,28 @@ declare namespace DDDTools.UnitOfWork {
     }
 }
 declare namespace DDDTools.UnitOfWork {
-    import BaseErrors = ErrorManagement.BaseErrors;
-    class UnitOfWorkErrors extends BaseErrors {
-        static ItemMarkedAsDeleted: string;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
+    enum ItemStatus {
+        New = 0,
+        Modified = 1,
+        Saved = 2,
+        Deleted = 3,
+    }
+    class IdentityMap<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+        private idToObjectMap;
+        constructor();
+        isTracked(key: TKey): boolean;
+        getById(key: TKey): T;
+        add(key: TKey, item: T): void;
+        remove(key: TKey): void;
+        getIds(): TKey[];
+        markAsDeletedById(key: TKey): void;
+        markAsSavedById(key: TKey): void;
+        markAsModifiedById(key: TKey): void;
+        getItemStatus(key: TKey): ItemStatus;
+        updateSavedItemStatus(key: TKey): void;
+        private getTrackedItem(key);
     }
 }
 declare namespace DDDTools.UnitOfWork {

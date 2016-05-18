@@ -1,5 +1,5 @@
 /// <reference path="../PersistableObject/IPersistable.ts" />
-/// <reference path="../CommonInterfaces/IEquatable" />
+/// <reference path="../CommonInterfaces/IEquatable.ts" />
 /**
  * Implementation of the ValueObject pattern.
  */

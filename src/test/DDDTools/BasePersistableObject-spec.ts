@@ -1,9 +1,10 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-/// <reference path="../../DDDTools/Entity/BaseEntity.ts" />
-/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
-/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
-/// <reference path="../../DDDTools/PersistableObject/Errors.ts" />
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+// / <reference path="../../DDDTools/Entity/BaseEntity.ts" />
+// / <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+// / <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+// / <reference path="../../DDDTools/PersistableObject/Errors.ts" />
 
 // import {BaseEntity} from "../../DDDTools/Entity/BaseEntity";
 // import {Guid} from "../../DDDTools/ValueObjects/Guid";

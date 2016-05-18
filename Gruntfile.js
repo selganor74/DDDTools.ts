@@ -83,7 +83,7 @@ module.exports = function (grunt) {
         "jasmine": {
             "run-tests": {
                 src: [
-                    "build-test/ddd-tools.js"
+                    "build/browser/ddd-tools.js"
                 ],
                 options: {
                     vendor:
@@ -114,6 +114,6 @@ module.exports = function (grunt) {
     // TASKS
     grunt.registerTask('run', ['http-server']);
     grunt.registerTask('build', ['clean', 'ts:build-node', 'ts:build-browser', 'lineremover:build', 'clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build-tests', 'copy']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build-node', 'ts:build-browser', 'ts:build-tests', 'copy']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };

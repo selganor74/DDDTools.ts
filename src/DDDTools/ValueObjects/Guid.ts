@@ -43,9 +43,3 @@ namespace DDDTools.ValueObjects {
         }
     }
 }
-
-import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
-import Guid = DDDTools.ValueObjects.Guid;
-
-// Registers the Guid in the TypeRegistry.
-TypeRegistry.registerType( "DDDTools.ValueObjects.Guid", "v1", Guid);

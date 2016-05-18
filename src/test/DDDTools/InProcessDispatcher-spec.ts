@@ -1,10 +1,11 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-/// <reference path="../../DDDTools/DomainEvents/DomainDispatcher.ts" />
-/// <reference path="../../DDDTools/DomainEvents/IEventHandler.ts" />
-/// <reference path="../../DDDTools/DomainEvents/IDomainEvent.ts" />
-/// <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
-/// <reference path="../../DDDTools/DomainEvents/InProcessDispatcher.ts" />
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+// / <reference path="../../DDDTools/DomainEvents/DomainDispatcher.ts" />
+// / <reference path="../../DDDTools/DomainEvents/IEventHandler.ts" />
+// / <reference path="../../DDDTools/DomainEvents/IDomainEvent.ts" />
+// / <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
+// / <reference path="../../DDDTools/DomainEvents/InProcessDispatcher.ts" />
 
 // import {DomainDispatcher} from "../../DDDTools/DomainEvents/DomainDispatcher";
 // import {IEventHandler} from "../../DDDTools/DomainEvents/IEventHandler";

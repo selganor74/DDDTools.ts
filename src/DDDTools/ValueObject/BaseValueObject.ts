@@ -1,6 +1,6 @@
-/// <reference path="./IValueObject.ts" />
 /// <reference path="../PersistableObject/BasePersistableObject.ts" />
 /// <reference path="../Serialization/Serializer.ts" />
+/// <reference path="./IValueObject.ts" />
 
 // import {IValueObject} from "./IValueObject";
 // import {BasePersistableObject} from "../PersistableObject/BasePersistableObject";

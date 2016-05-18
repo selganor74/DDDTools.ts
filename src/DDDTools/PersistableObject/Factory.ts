@@ -14,12 +14,16 @@ namespace DDDTools.PersistableObject {
      */
     export class Factory {
 
-        private static typeRegistry: TypeRegistry = new TypeRegistry();
+        private static typeRegistry: TypeRegistry;
 
         /**
          * Registers a new IPersistable type with the Factory
          */
         public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable) {
+            var sThis = Factory;
+            if (!sThis.typeRegistry) {
+                sThis.typeRegistry = new TypeRegistry()
+            }
             TypeRegistry.registerType(typeName, typeVersion, typePrototype);
         }
 
@@ -29,7 +33,7 @@ namespace DDDTools.PersistableObject {
         public static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T {
 
             if (!Factory.typeRegistry) {
-                Errors.throw(Errors.TypeRegistryNotSet, "Please define a type registry and set it on the Factory calling 'setTypeRegistry' method.");
+                Errors.throw(Errors.TypeRegistryNotSet, "Please register at least a type with the Factory.");
             }
 
             return TypeRegistry.getTypeInstance<T>(typeName, typeVersion);

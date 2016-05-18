@@ -1,5 +1,6 @@
-/// <reference path="../../DDDTools/Serialization/Serializer.ts" />
-/// <reference path="../../DDDTools/Serialization/Deserializer.ts" />
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+// / <reference path="../../DDDTools/Serialization/Serializer.ts" />
+// / <reference path="../../DDDTools/Serialization/Deserializer.ts" />
 
 // import {Serializer} from "../../DDDTools/Serialization/Serializer";
 // import {Deserializer} from "../../DDDTools/Serialization/Deserializer";

@@ -1,8 +1,9 @@
 /// <reference path="../../../typings/browser.d.ts"/>
 
-/// <reference path="../../DDDTools/ValueObjects/Guid.ts" />
-/// <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
-/// <reference path="../../DDDTools/PersistableObject/Factory.ts" />
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+// / <reference path="../../DDDTools/ValueObjects/Guid.ts" />
+// / <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
+// / <reference path="../../DDDTools/PersistableObject/Factory.ts" />
 
 // import {Guid} from "../../DDDTools/ValueObjects/Guid";
 // import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";

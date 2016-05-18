@@ -1,4 +1,5 @@
 /// <reference path="../PersistableObject/IPersistable.d.ts" />
+/// <reference path="../CommonInterfaces/IEquatable.d.ts" />
 declare namespace DDDTools.ValueObject {
     import IPersistable = PersistableObject.IPersistable;
     import IEquatable = CommonInterfaces.IEquatable;

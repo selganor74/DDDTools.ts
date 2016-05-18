@@ -14,5 +14,3 @@ declare namespace DDDTools.ValueObjects {
         toString(): string;
     }
 }
-import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
-import Guid = DDDTools.ValueObjects.Guid;

@@ -5,6 +5,7 @@ declare namespace DDDTools.PersistableObject {
     class TypeRegistry {
         private static registry;
         private static latestVersions;
+        private static commonTypesRegistered;
         static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
         private static updateLatestVersions(typeName, typeVersion);
         private static isVersionGreater(vSubject, vReference);

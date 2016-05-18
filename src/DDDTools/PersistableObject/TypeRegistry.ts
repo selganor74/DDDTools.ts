@@ -5,13 +5,17 @@
 // import {IPersistable} from "./IPersistable";
 // import {Errors} from "./Errors";
 
+// Registers the Guid in the TypeRegistry.
+
 namespace DDDTools.PersistableObject {
+
+    import Guid = DDDTools.ValueObjects.Guid;
 
     export class TypeRegistry {
 
         private static registry: { [typeName: string]: { [typeVersion: string]: new () => IPersistable } } = {};
         private static latestVersions: { [typeName: string]: string } = {}
-
+        private static commonTypesRegistered = false;
 
         public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void {
             var sThis = TypeRegistry;
@@ -26,6 +30,12 @@ namespace DDDTools.PersistableObject {
             sThis.registry[typeName][typeVersion] = typePrototype;
 
             sThis.updateLatestVersions(typeName, typeVersion);
+            // Registers the types in ValueObjects on first use... 
+            // TODO find a way to delegate type registration to the Objects in the collection, [via pseudo reflection ?]"
+            if (!sThis.commonTypesRegistered) {
+                sThis.commonTypesRegistered = true;
+                TypeRegistry.registerType( "DDDTools.ValueObjects.Guid", "v1", Guid);
+            }
         }
 
         private static updateLatestVersions(typeName: string, typeVersion: string): void {

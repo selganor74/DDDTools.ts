@@ -1,3 +1,4 @@
+
 /// <reference path="./IPersistable.ts" />
 /// <reference path="./Errors.ts" />
 /// <reference path="./Factory.ts" />
