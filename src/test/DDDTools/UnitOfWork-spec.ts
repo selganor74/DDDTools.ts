@@ -2,7 +2,7 @@
 
 /// <reference path="../../../build/browser/ddd-tools.d.ts" />
 
-// / <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
+// / <reference path="../../DDDTools/Repository/InMemoryRepository.ts" />
 // / <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
 // / <reference path="../../DDDTools/Aggregate/IAggregateRoot.ts" />
 // / <reference path="../../DDDTools/ValueObjects/Guid.ts" />
@@ -18,7 +18,7 @@
 // / <reference path="../../DDDTools/Repository/Errors.ts" />
 // / <reference path="../../DDDTools/PersistableObject/Factory.ts" />
 
-// import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+// import {InMemoryRepository} from "../../DDDTools/Repository/InMemoryRepository";
 // import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
 // import {IAggregateRoot} from "../../DDDTools/Aggregate/IAggregateRoot";
 // import {Guid} from "../../DDDTools/ValueObjects/Guid";
@@ -37,7 +37,7 @@
 namespace CdC.Tests.ForUnitOfWork {
 
 
-    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
+    import InMemoryRepository = DDDTools.Repository.InMemoryRepository;
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
     import IAggregateRoot = DDDTools.Aggregate.IAggregateRoot;
     import Guid = DDDTools.ValueObjects.Guid;
@@ -80,7 +80,7 @@ namespace CdC.Tests.ForUnitOfWork {
         }
     }
 
-    export class TestRepository extends BaseInMemoryRepository<TestAggregate, TestKey> {
+    export class TestRepository extends InMemoryRepository<TestAggregate, TestKey> {
 
     }
 

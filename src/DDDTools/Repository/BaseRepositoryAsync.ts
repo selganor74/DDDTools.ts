@@ -49,7 +49,7 @@ namespace DDDTools.Repository {
              */
             private managedType: string
         ) {
-            if (managedType === "") {
+            if (managedType === "" || managedType == undefined) {
                 Errors.throw(Errors.ManagedTypeNotSupplied);
             }
         }
@@ -63,7 +63,7 @@ namespace DDDTools.Repository {
             var deferred = Q.defer<T>();
             this.getByIdImplementation(id).then(
                 (value: T) => {
-                    if (value.__typeName != this.managedType) {
+                    if (value.__typeName != this.managedType && !(this.managedType == undefined) ) {
                         var reason = Errors.getErrorInstance(Errors.WrongTypeFromImplementation, "Expecting " + this.managedType + " but obtained " + value.__typeName + " from database.");
                         deferred.reject(reason);
                         return;

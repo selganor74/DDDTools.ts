@@ -1,4 +1,3 @@
-/// <reference path="../../typings/browser.d.ts" />
 declare namespace DDDTools.ErrorManagement {
     abstract class BaseErrors {
         static throw(name: string, message?: string): void;
@@ -402,12 +401,26 @@ declare namespace DDDTools.Repository {
 declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
-    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
+    class InMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
         private storage;
         constructor(managedTypeName: string);
         protected getByIdImplementation(id: TKey): T;
         protected saveImplementation(item: T): void;
         protected deleteImplementation(id: TKey): void;
+    }
+}
+declare namespace DDDTools.Repository {
+    import BaseRepositoryAsync = Repository.BaseRepositoryAsync;
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    import IPromise = Q.IPromise;
+    class InMemoryRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
+        private storage;
+        constructor(managedType: string);
+        protected getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
+        protected saveImplementation(item: T): IPromise<{}>;
+        protected deleteImplementation(id: TKey): IPromise<{}>;
     }
 }
 declare namespace DDDTools.UnitOfWork {

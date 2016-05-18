@@ -6,7 +6,7 @@
 // / <reference path="../../DDDTools/ValueObject/BaseValueObject.ts" />
 // / <reference path="../../DDDTools/Aggregate/BaseAggregateRoot.ts" />
 // / <reference path="../../DDDTools/Repository/Errors.ts" />
-// / <reference path="../../DDDTools/Repository/BaseInMemoryRepository.ts" />
+// / <reference path="../../DDDTools/Repository/InMemoryRepository.ts" />
 // / <reference path="../../DDDTools/PersistableObject/TypeRegistry.ts" />
 // / <reference path="../../DDDTools/PersistableObject/Factory.ts" />
 
@@ -17,7 +17,7 @@
 // import {BaseValueObject} from "../../DDDTools/ValueObject/BaseValueObject";
 // import {BaseAggregateRoot} from "../../DDDTools/Aggregate/BaseAggregateRoot";
 // import {Errors as RepoErrors} from "../../DDDTools/Repository/Errors";
-// import {BaseInMemoryRepository} from "../../DDDTools/Repository/BaseInMemoryRepository";
+// import {InMemoryRepository} from "../../DDDTools/Repository/InMemoryRepository";
 // import {TypeRegistry} from "../../DDDTools/PersistableObject/TypeRegistry";
 // import {Factory} from "../../DDDTools/PersistableObject/Factory";
 
@@ -28,7 +28,7 @@ namespace CdC.Tests {
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
     import Errors = DDDTools.Repository.Errors;
-    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
+    import InMemoryRepository = DDDTools.Repository.InMemoryRepository;
     import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
     import Factory = DDDTools.PersistableObject.Factory;
 
@@ -74,7 +74,7 @@ namespace CdC.Tests {
 
     }
 
-    class TestRepository extends BaseInMemoryRepository<TestAggregate, Key> {
+    class TestRepository extends InMemoryRepository<TestAggregate, Key> {
 
         private static managedTypeName = "CdC.Tests.TestAggregate";
 
@@ -91,7 +91,7 @@ namespace CdC.Tests {
         
     });
 
-    describe("BaseInMemoryRepository", () => {
+    describe("InMemoryRepository", () => {
 
         it("It must be possible to instantiate a Repository class", () => {
             var repo = new TestRepository();

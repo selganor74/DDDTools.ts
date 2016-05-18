@@ -1,0 +1,303 @@
+/// <reference path="../../../typings/browser.d.ts"/>
+
+/// <reference path="../../../build/browser/ddd-tools.d.ts" />
+
+namespace CdC.Tests.RepAsync {
+
+    import Guid = DDDTools.ValueObjects.Guid;
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+    import Errors = DDDTools.Repository.Errors;
+    import InMemoryRepositoryAsync = DDDTools.Repository.InMemoryRepositoryAsync;
+    import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
+    import Factory = DDDTools.PersistableObject.Factory;
+
+
+    export class Key extends BaseValueObject<Key> {
+        private id: Guid;
+        __typeName = "CdC.Tests.Key";
+        __typeVersion = "v1";
+
+        constructor() {
+            super();
+            this.id = Guid.generate();
+        }
+        toString() {
+            return this.id.toString();
+        }
+    }
+
+    export class ChildEntity extends BaseEntity<ChildEntity, Key> {
+        public arrayOfKeys: Key[] = [];
+        __typeName = "CdC.Tests.ChildEntity";
+        __typeVersion = "v1";
+
+        constructor() {
+            super();
+        }
+    }
+
+    export class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
+        public arrayOfEntities: ChildEntity[] = [];
+        public anonymousObject: any = {};
+        // Used to test objects references reconstitution.
+        public anObjectReference: any = {};
+        public anotherObjectReference: any = {};
+
+        __typeName = "CdC.Tests.TestAggregate";
+        __typeVersion = "v1";
+
+        aTestProperty: string = "a test value !";
+        constructor() {
+            super();
+        }
+
+    }
+
+    class TestRepository extends InMemoryRepositoryAsync<TestAggregate, Key> {
+
+        private static managedTypeName = "CdC.Tests.TestAggregate";
+
+        constructor() {
+            super(TestRepository.managedTypeName);
+        }
+    }
+
+    beforeEach(() => {
+
+        Factory.registerType("CdC.Tests.Key", "v1", Key);
+        Factory.registerType("CdC.Tests.ChildEntity", "v1", ChildEntity);
+        Factory.registerType("CdC.Tests.TestAggregate", "v1", TestAggregate);
+
+    });
+
+    describe("InMemoryRepository", () => {
+
+        it("It must be possible to instantiate a Repository class", () => {
+            var repo = new TestRepository();
+            expect(repo instanceof TestRepository).toEqual(true);
+        });
+
+        it("It must throw 'KeyNotSet' when saving an entity without key set", (done) => {
+            var repo = new TestRepository();
+
+            var item = new TestAggregate();
+            repo.save(item).then(
+                () => {
+                    expect(false).toBeTruthy();
+                    done();
+                },
+                (e) => {
+                    expect(e.name).toEqual(Errors.KeyNotSet)
+                    done();
+                }
+            );
+        });
+
+        it("It must be possible to save an entity with the key set", (done) => {
+            var repo = new TestRepository();
+
+            var item = new TestAggregate();
+            repo.save(item).then(
+                () => {
+                    expect(false).toBeTruthy();
+                    done();
+                },
+                (e) => {
+                    expect(e.name).toEqual(Errors.KeyNotSet)
+                    done();
+                }
+            );
+
+        });
+
+        it("it should throw ItemNotFound if a key is not present in the repository", (done) => {
+            var repo = new TestRepository();
+
+            var item = new TestAggregate();
+            var key = new Key();
+            var key2 = new Key();
+            item.setKey(key);
+
+            repo.save(item).then(
+                () => {
+                    repo.getById(key2).then(
+                        () => {
+                            expect(false).toBeTruthy("We should not be here");
+                            done();
+                        },
+                        (e) => {
+                            expect(e.name).toEqual(Errors.ItemNotFound);
+                            done();
+                        }
+                    );
+
+                },
+                (e) => {
+                    expect(false).toBeTruthy("We should not be here");
+                    done();
+                }
+            );
+        });
+
+        it("It must correctly reconstitute an array", (done) => {
+            var repo = new TestRepository();
+            var numberOfElementsToAdd = 10;
+
+            var item = new TestAggregate();
+            var key = new Key();
+            item.setKey(key);
+
+            for (var i = 0; i < numberOfElementsToAdd; i++) {
+                var child = new ChildEntity();
+                child.setKey(new Key());
+                item.arrayOfEntities.push(child);
+                for (var q = 0; q < numberOfElementsToAdd; q++) {
+                    child.arrayOfKeys.push(new Key());
+                }
+            }
+            repo.save(item).then(
+                () => {
+                    // console.log("Salvato");
+                    repo.getById(key).then(
+                        (reloaded) => {
+                            // TODO The following test started to fail after getting back to namespaces...
+                            // expect(reloaded instanceof TestAggregate).toBeTruthy("Reconstituted object is not an instance of the original type.");
+                            expect(Array.isArray(reloaded.arrayOfEntities)).toBeTruthy("Property arrayOfEntities is not an Array");
+                            expect(reloaded.arrayOfEntities.length).toEqual(numberOfElementsToAdd, "Property arrayOfEntities does not contain " + numberOfElementsToAdd + " elements");
+                            for (var t = 0; t < numberOfElementsToAdd; t++) {
+                                var ce = reloaded.arrayOfEntities[t];
+                                expect(Array.isArray(ce.arrayOfKeys)).toBeTruthy("Property arrayOfKeys is not an Array");
+                                expect(ce.arrayOfKeys.length).toEqual(numberOfElementsToAdd, "Property arrayOfKeys does not contain " + numberOfElementsToAdd + " elements");
+                            }
+                            done();
+                        },
+                        (e) => {
+                            expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message);
+                            done();
+                        }
+                    );
+                },
+                (e) => {
+                    expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message);
+                    done();
+                }
+            );
+        });
+
+        it("It must correctly reconstitute 'anonymous' objects.", (done) => {
+            var repo = new TestRepository();
+            var numberOfElementsToAdd = 10;
+            var item = new TestAggregate();
+            var key = new Key();
+            item.setKey(key);
+
+            var anotherEntity = new TestAggregate();
+            anotherEntity.setKey(new Key());
+
+            item.anonymousObject.anotherEntity = anotherEntity;
+            item.anonymousObject.aNumberType = 42;
+
+            repo.save(item).then(
+                () => {
+                    repo.getById(key).then(
+                        (reloaded) => {
+                            // TODO The following test started to fail after getting back to namespaces.    
+                            // expect(reloaded.anonymousObject.anotherEntity instanceof TestAggregate).toBeTruthy("Reconstituted object is not an instance of the original type.");
+                            expect(reloaded.anonymousObject.aNumberType).toEqual(42, "Property aNumberType was not correctly reconstituted.");
+                            done();
+                        },
+                        (e) => {
+                            expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
+                            done();
+                        }
+                    );
+                },
+                (e) => {
+                    expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
+                    done();
+                }
+            );
+        });
+
+        it("It must correctly reconstitute references to the same instance.", (done) => {
+
+            // pending("Feature non ancora sviluppata");
+
+            var repo = new TestRepository();
+            var numberOfElementsToAdd = 10;
+            var item = new TestAggregate();
+            var key = new Key();
+            item.setKey(key);
+
+            var anObjectReferencedInMoreThanOneProperty = {
+                aProperty: "A test value",
+                aCompositeProperty: {
+                    aProperty: "Another test value"
+                }
+            };
+
+            item.anObjectReference = anObjectReferencedInMoreThanOneProperty;
+            item.anotherObjectReference = anObjectReferencedInMoreThanOneProperty;
+
+            expect(item.anObjectReference).toEqual(item.anotherObjectReference);
+
+            repo.save(item).then(
+                () => {
+                    repo.getById(key).then(
+                        (reloaded) => {
+                            expect(reloaded.anObjectReference).toEqual(reloaded.anotherObjectReference);
+                            done();
+                        },
+                        (e) => {
+                            expect(false).toBeTruthy("Exception while saving or retrieving the item. " + e.message)
+                            done();
+                        }
+                    );
+                },
+                (e) => {
+                    expect(false).toBeTruthy("Exception while saving or retrieving the item. " + e.message)
+                    done();
+                }
+            );
+        });
+
+        it("RevisionId must be incremented only if object to be saved differs from object saved", (done) => {
+            // pending("Need to refactor IPErsistable to add functions for State Comparison.");
+
+            function manageError(err) {
+                    expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
+                    done();
+            }
+            
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            e.setKey(new Key());
+            e.aTestProperty = "Before saving...";
+
+            expect(e.getRevisionId()).toEqual(0);
+
+            repo.save(e).then(
+                () => {
+                    expect(e.getRevisionId()).toEqual(1);
+                    repo.save(e).then(
+                        () => {
+                            expect(e.getRevisionId()).toEqual(1);
+                            e.aTestProperty = "... after saving";
+                            repo.save(e).then(
+                                () => {
+                                    expect(e.getRevisionId()).toEqual(2);
+                                    done();
+                                },
+                                (err) => { manageError(err); }
+                            );
+                        },
+                        (err) => { manageError(err);}
+                    );
+                },
+                (err) => { manageError(err) }
+            );
+        });
+    });
+}

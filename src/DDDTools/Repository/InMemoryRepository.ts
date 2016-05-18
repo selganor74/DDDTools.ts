@@ -21,7 +21,7 @@ namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
 
-    export abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
+    export class InMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
         extends BaseRepository<T, TKey>
         implements IRepository<T, TKey> {
 

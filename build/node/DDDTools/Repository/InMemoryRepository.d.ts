@@ -8,7 +8,7 @@
 declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
-    abstract class BaseInMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
+    class InMemoryRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepository<T, TKey> implements IRepository<T, TKey> {
         private storage;
         constructor(managedTypeName: string);
         protected getByIdImplementation(id: TKey): T;

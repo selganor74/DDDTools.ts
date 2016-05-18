@@ -1,33 +1,5 @@
 /// <reference path="../typings/browser.d.ts" />
 /// <reference path="../build/browser/ddd-tools.d.ts" />
-declare namespace CdC.Tests {
-    import BaseEntity = DDDTools.Entity.BaseEntity;
-    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
-    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
-    class Key extends BaseValueObject<Key> {
-        private id;
-        __typeName: string;
-        __typeVersion: string;
-        constructor();
-        toString(): string;
-    }
-    class ChildEntity extends BaseEntity<ChildEntity, Key> {
-        arrayOfKeys: Key[];
-        __typeName: string;
-        __typeVersion: string;
-        constructor();
-    }
-    class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
-        arrayOfEntities: ChildEntity[];
-        anonymousObject: any;
-        anObjectReference: any;
-        anotherObjectReference: any;
-        __typeName: string;
-        __typeVersion: string;
-        aTestProperty: string;
-        constructor();
-    }
-}
 declare namespace CdC.Tests.BasePersistableObject.v2 {
     import BaseEntity = DDDTools.Entity.BaseEntity;
     import Guid = DDDTools.ValueObjects.Guid;
@@ -105,12 +77,68 @@ declare namespace CdC.Tests.ForBaseValueObject {
         constructor(someObject: any);
     }
 }
+declare namespace CdC.Tests {
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+    class Key extends BaseValueObject<Key> {
+        private id;
+        __typeName: string;
+        __typeVersion: string;
+        constructor();
+        toString(): string;
+    }
+    class ChildEntity extends BaseEntity<ChildEntity, Key> {
+        arrayOfKeys: Key[];
+        __typeName: string;
+        __typeVersion: string;
+        constructor();
+    }
+    class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
+        arrayOfEntities: ChildEntity[];
+        anonymousObject: any;
+        anObjectReference: any;
+        anotherObjectReference: any;
+        __typeName: string;
+        __typeVersion: string;
+        aTestProperty: string;
+        constructor();
+    }
+}
+declare namespace CdC.Tests.RepAsync {
+    import BaseEntity = DDDTools.Entity.BaseEntity;
+    import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+    class Key extends BaseValueObject<Key> {
+        private id;
+        __typeName: string;
+        __typeVersion: string;
+        constructor();
+        toString(): string;
+    }
+    class ChildEntity extends BaseEntity<ChildEntity, Key> {
+        arrayOfKeys: Key[];
+        __typeName: string;
+        __typeVersion: string;
+        constructor();
+    }
+    class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
+        arrayOfEntities: ChildEntity[];
+        anonymousObject: any;
+        anObjectReference: any;
+        anotherObjectReference: any;
+        __typeName: string;
+        __typeVersion: string;
+        aTestProperty: string;
+        constructor();
+    }
+}
 declare namespace CdC.Tests.ForDispatcher {
 }
 import Serializer = DDDTools.Serialization.Serializer;
 import Deserializer = DDDTools.Serialization.Deserializer;
 declare namespace CdC.Tests.ForUnitOfWork {
-    import BaseInMemoryRepository = DDDTools.Repository.BaseInMemoryRepository;
+    import InMemoryRepository = DDDTools.Repository.InMemoryRepository;
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
     import Guid = DDDTools.ValueObjects.Guid;
     import UnitOfWork = DDDTools.UnitOfWork.UnitOfWork;
@@ -124,7 +152,7 @@ declare namespace CdC.Tests.ForUnitOfWork {
         setATestProperty(value: string): void;
         getATestProperty(): string;
     }
-    class TestRepository extends BaseInMemoryRepository<TestAggregate, TestKey> {
+    class TestRepository extends InMemoryRepository<TestAggregate, TestKey> {
     }
     class TestUoW extends UnitOfWork<TestAggregate, TestKey> {
         constructor(repo: IRepository<TestAggregate, TestKey>);

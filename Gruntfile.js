@@ -114,6 +114,6 @@ module.exports = function (grunt) {
     // TASKS
     grunt.registerTask('run', ['http-server']);
     grunt.registerTask('build', ['clean', 'ts:build-node', 'ts:build-browser', 'lineremover:build', 'clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build-node', 'ts:build-browser', 'ts:build-tests', 'copy']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build-node', 'ts:build-browser', 'ts:build-tests', 'copy', 'lineremover:build', 'clean:after-build']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };
