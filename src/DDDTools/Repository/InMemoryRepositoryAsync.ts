@@ -6,6 +6,8 @@
 /// <reference path="../Aggregate/BaseAggregateRoot.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../Repository/IRepositoryAsync.ts" />
+/// <reference path="../Serialization/Serializer.ts" />
+/// <reference path="../Serialization/Deserializer.ts" />
 
 namespace DDDTools.Repository {
 
@@ -15,11 +17,14 @@ namespace DDDTools.Repository {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     import IPromise = Q.IPromise;
 
+    import Serializer = Serialization.Serializer;
+    import Deserializer = Serialization.Deserializer;
+
     export class InMemoryRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
         extends BaseRepositoryAsync<T, TKey>
         implements IRepositoryAsync<T, TKey>
     {
-        private storage: { [id: string]: ITypeTracking } = {};
+        private storage: { [id: string]: string } = {};
 
         constructor(managedType: string) {
             super(managedType);
@@ -35,7 +40,8 @@ namespace DDDTools.Repository {
                 var reason = Errors.getErrorInstance(Errors.ItemNotFound);
                 throw (reason);
             }
-            return this.storage[id.toString()];
+            var toReturn = Deserializer.deserialize(this.storage[id.toString()]);
+            return toReturn;
         }
 
         protected getByIdImplementation(id: TKey): IPromise<ITypeTracking> {
@@ -55,7 +61,7 @@ namespace DDDTools.Repository {
                 throw (reason);
             }
             try {
-                this.storage[item.getKey().toString()] = item;
+                this.storage[item.getKey().toString()] = Serializer.serialize(item);
             } catch (e) {
                 var reason = Errors.getErrorInstance(Errors.ErrorSavingItem, JSON.stringify(e));
                 throw (reason);

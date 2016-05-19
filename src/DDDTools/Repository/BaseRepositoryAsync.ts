@@ -96,8 +96,7 @@ namespace DDDTools.Repository {
 
         private doSave(item: T, deferred: Q.Deferred<{}>): IPromise<{}> {
             // Creates a new instance of the object that will be saved;
-            var toBeSaved = Factory.createObjectsFromState(item);
-            this.saveImplementation(toBeSaved).then(
+            this.saveImplementation(item).then(
                 () => {
                     deferred.resolve()
                 },
