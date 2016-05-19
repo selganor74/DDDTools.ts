@@ -15,8 +15,11 @@ declare namespace DDDTools.Repository {
     class InMemoryRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
         private storage;
         constructor(managedType: string);
+        private getByIdSync(id);
         protected getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
+        private saveSync(item);
         protected saveImplementation(item: T): IPromise<{}>;
+        private deleteSync(id);
         protected deleteImplementation(id: TKey): IPromise<{}>;
     }
 }

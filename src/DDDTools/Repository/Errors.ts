@@ -14,5 +14,6 @@ namespace DDDTools.Repository {
         public static ErrorDeletingItem = "Error Deleting Item";
         public static WrongTypeFromImplementation = "Wrong type from Implementation";
         public static ManagedTypeNotSupplied = "Repository needs to know what type it can manage";
+        public static InvalidKey = "Invalid Key";
     }
 }

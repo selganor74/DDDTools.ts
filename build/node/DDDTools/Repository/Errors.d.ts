@@ -9,5 +9,6 @@ declare namespace DDDTools.Repository {
         static ErrorDeletingItem: string;
         static WrongTypeFromImplementation: string;
         static ManagedTypeNotSupplied: string;
+        static InvalidKey: string;
     }
 }

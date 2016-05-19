@@ -3,7 +3,7 @@
 /// <reference path="./IRepositoryAsync.ts" />
 /// <reference path="./Errors.ts" />
 /// <reference path="../PersistableObject/IPersistable.ts" />
-/// <reference path="../PersistableObject/Factory.ts" />
+///  <reference path="../PersistableObject/Factory.ts" />
 /// <reference path="../Aggregate/BaseAggregateRoot.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
@@ -12,6 +12,7 @@
 /// <reference path="./ItemUpdatedEvent.ts" />
 /// <reference path="./ItemDeletedEvent.ts" />
 /// <reference path="../DomainEvents/DomainDispatcher.ts" />
+
 
 // import {IRepositoryAsync} from "./IRepositoryAsync";
 // import {Errors} from "./Errors";
@@ -61,6 +62,12 @@ namespace DDDTools.Repository {
 
         getById(id: TKey): IPromise<T> {
             var deferred = Q.defer<T>();
+            
+            if (!id) {
+                deferred.reject(Errors.getErrorInstance( Errors.KeyNotSet, "id cannot be null or undefined" ));
+                return deferred.promise;
+            }
+            
             this.getByIdImplementation(id).then(
                 (value: T) => {
                     if (value.__typeName != this.managedType && !(this.managedType == undefined) ) {
@@ -88,7 +95,9 @@ namespace DDDTools.Repository {
         protected abstract saveImplementation(item: T): IPromise<{}>;
 
         private doSave(item: T, deferred: Q.Deferred<{}>): IPromise<{}> {
-            this.saveImplementation(item).then(
+            // Creates a new instance of the object that will be saved;
+            var toBeSaved = Factory.createObjectsFromState(item);
+            this.saveImplementation(toBeSaved).then(
                 () => {
                     deferred.resolve()
                 },
@@ -103,6 +112,12 @@ namespace DDDTools.Repository {
         save(item: T): IPromise<{}> {
             var deferred = Q.defer<{}>();
             var event: ItemUpdatedEvent | ItemAddedEvent;
+            
+            if (!item.getKey()) {
+                var reason = Errors.getErrorInstance( Errors.KeyNotSet );
+                deferred.reject(reason);
+                return deferred.promise;
+            }
 
             this.getById(item.getKey()).then(
                 (readValue: T) => {
@@ -112,11 +127,9 @@ namespace DDDTools.Repository {
                         this.doSave(item, deferred);
                         event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
                         DomainDispatcher.dispatch(event);
-                        return;
                     } else {
                         // What is in the database perfectly match what we are saving, so nothing to do!
                         deferred.resolve();
-                        return;
                     }
                 },
                 (error: any) => {

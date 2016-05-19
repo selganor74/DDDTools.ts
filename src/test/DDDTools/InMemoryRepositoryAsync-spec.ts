@@ -72,7 +72,7 @@ namespace CdC.Tests.RepAsync {
 
     });
 
-    describe("InMemoryRepository", () => {
+    describe("InMemoryRepositoryAsync", () => {
 
         it("It must be possible to instantiate a Repository class", () => {
             var repo = new TestRepository();
@@ -122,23 +122,17 @@ namespace CdC.Tests.RepAsync {
 
             repo.save(item).then(
                 () => {
-                    repo.getById(key2).then(
-                        () => {
-                            expect(false).toBeTruthy("We should not be here");
-                            done();
-                        },
-                        (e) => {
-                            expect(e.name).toEqual(Errors.ItemNotFound);
-                            done();
-                        }
-                    );
-
-                },
-                (e) => {
+                    return repo.getById(key2)
+                }
+            ).then(
+                (returned) => {
                     expect(false).toBeTruthy("We should not be here");
                     done();
-                }
-            );
+                },
+                (err) => {
+                    expect(err.name).toEqual(Errors.ItemNotFound);
+                    done();
+                });
         });
 
         it("It must correctly reconstitute an array", (done) => {
@@ -266,11 +260,6 @@ namespace CdC.Tests.RepAsync {
         it("RevisionId must be incremented only if object to be saved differs from object saved", (done) => {
             // pending("Need to refactor IPErsistable to add functions for State Comparison.");
 
-            function manageError(err) {
-                    expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
-                    done();
-            }
-            
             var repo = new TestRepository();
             var e = new TestAggregate();
             e.setKey(new Key());
@@ -278,26 +267,20 @@ namespace CdC.Tests.RepAsync {
 
             expect(e.getRevisionId()).toEqual(0);
 
-            repo.save(e).then(
-                () => {
-                    expect(e.getRevisionId()).toEqual(1);
-                    repo.save(e).then(
-                        () => {
-                            expect(e.getRevisionId()).toEqual(1);
-                            e.aTestProperty = "... after saving";
-                            repo.save(e).then(
-                                () => {
-                                    expect(e.getRevisionId()).toEqual(2);
-                                    done();
-                                },
-                                (err) => { manageError(err); }
-                            );
-                        },
-                        (err) => { manageError(err);}
-                    );
-                },
-                (err) => { manageError(err) }
-            );
+            repo.save(e).then(() => {
+                expect(e.getRevisionId()).toEqual(1);
+                return repo.save(e);
+            }).then(() => {
+                expect(e.getRevisionId()).toEqual(1);
+                e.aTestProperty = "... after saving";
+                return repo.save(e);
+            }).then(() => {
+                expect(e.getRevisionId()).toEqual(2);
+                done();
+            }, (err) => {
+                expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
+                done();
+            });
         });
     });
 }

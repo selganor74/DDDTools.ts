@@ -25,6 +25,7 @@ module.exports = function (grunt) {
         },
         clean: {
             build: ['build/*'],
+            "build-tests": ['build-test/**/*'],
             "after-build": ['build/**/.baseDir.*']
         },
         "copy": {
@@ -55,6 +56,12 @@ module.exports = function (grunt) {
             },
             "build-tests": {
                 files: [
+                    { // pulls in q
+                        expand: true,
+                        cwd: 'node_modules/q/',
+                        src: ['q.js'],
+                        dest: 'build-test/lib'
+                    }
 
                 ]
 
@@ -91,7 +98,8 @@ module.exports = function (grunt) {
                         "build-test/lib/*.js"
                     ],
                     specs: [
-                        "build-test/test/**/*-spec.js"
+                        // "build-test/test/**/*-spec.js"
+                        "build-test/ddd-tools-tests.js"
                     ],
                     // template: require('grunt-template-jasmine-requirejs'),
                     keepRunner: true,

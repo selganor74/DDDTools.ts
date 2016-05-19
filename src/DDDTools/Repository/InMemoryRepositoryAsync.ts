@@ -25,44 +25,75 @@ namespace DDDTools.Repository {
             super(managedType);
         }
 
-        protected getByIdImplementation(id: TKey): IPromise<ITypeTracking> {
-            var deferred = Q.defer();
-            if (this.storage[id.toString()]) {
-                deferred.resolve(this.storage[id.toString()]);
-            } else {
-                var reason = Errors.getErrorInstance(Errors.ItemNotFound);
-                deferred.reject(reason);
+        private getByIdSync(id: TKey) {
+            if (!id) {
+                var reason = Errors.getErrorInstance(Errors.InvalidKey, "id cannot be null nor undefined");
+                throw (reason);
             }
-            return deferred.promise;
+
+            if (!this.storage[id.toString()]) {
+                var reason = Errors.getErrorInstance(Errors.ItemNotFound);
+                throw (reason);
+            }
+            return this.storage[id.toString()];
         }
 
-        protected saveImplementation(item: T): IPromise<{}> {
-            var deferred = Q.defer();
+        protected getByIdImplementation(id: TKey): IPromise<ITypeTracking> {
+            return Q.Promise((resolve, reject, notify) => {
+                try {
+                    var result = this.getByIdSync(id);
+                    resolve(result);
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
 
+        private saveSync(item: T): {} {
             if (!item.getKey()) {
                 var reason = Errors.getErrorInstance(Errors.KeyNotSet);
-                deferred.reject(reason);
-                return deferred.promise;
+                throw (reason);
             }
             try {
                 this.storage[item.getKey().toString()] = item;
             } catch (e) {
                 var reason = Errors.getErrorInstance(Errors.ErrorSavingItem, JSON.stringify(e));
+                throw (reason);
             }
-            return deferred.promise;
+            return {};
+        }
+
+        protected saveImplementation(item: T): IPromise<{}> {
+            return Q.Promise((resolve, reject, notify) => {
+                try {
+                    this.saveSync(item);
+                    resolve({});
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+
+        private deleteSync(id: TKey): {} {
+
+            if (this.storage[id.toString()]) {
+                delete this.storage[id.toString()];
+            } else {
+                var reason = Errors.getErrorInstance(Errors.ItemNotFound);
+                throw (reason);
+            }
+            return;
         }
 
         protected deleteImplementation(id: TKey): IPromise<{}> {
-            var deferred = Q.defer();
-            if (this.storage[id.toString()]) {
-                delete this.storage[id.toString()];
-                deferred.resolve();
-                return deferred.promise;
-            } else {
-                var reason = Errors.getErrorInstance(Errors.ItemNotFound);
-                deferred.reject(reason);
-                return deferred.promise;
-            }
+            return Q.Promise((resolve, reject, notify) => {
+                try {
+                    this.deleteSync(id)
+                    resolve({});
+                } catch (err) {
+                    reject(err);
+                }
+            });
         }
     }
 }
