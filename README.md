@@ -22,6 +22,10 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ## Change log
 
+### 0.0.8 2016 05 20
+
+* Added IQueryAsync in Query namespace
+
 ### 0.0.7 2016 05 18
 
 * Added this changelog!

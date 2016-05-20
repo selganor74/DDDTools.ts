@@ -9,6 +9,12 @@ declare namespace DDDTools.Query {
         execute(): T[];
     }
 }
+declare namespace DDDTools.Query {
+    import IPromise = Q.IPromise;
+    interface IQueryAsync<T> {
+        execute(): IPromise<T[]>;
+    }
+}
 declare namespace DDDTools.Utils {
     class SimpleGuid {
         private static isValid(guid);

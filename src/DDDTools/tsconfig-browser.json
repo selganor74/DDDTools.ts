@@ -11,6 +11,7 @@
 	"files": [
 		"ErrorManagement/BaseErrors.ts",
 		"Query/IQuery.ts",
+		"Query/IQueryAsync.ts",
 		"Utils/SimpleGuid.ts",
 		"Utils/SimpleIdentityMap.ts",
 		"CommonInterfaces/IEquatable.ts",

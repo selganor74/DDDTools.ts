@@ -1,0 +1,10 @@
+var DDDTools;
+(function (DDDTools) {
+    var Query;
+    (function (Query) {
+        class BaseRepositoryQuery {
+        }
+        Query.BaseRepositoryQuery = BaseRepositoryQuery;
+    })(Query = DDDTools.Query || (DDDTools.Query = {}));
+})(DDDTools || (DDDTools = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQmFzZVJlcG9zaXRvcnlRdWVyeS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NyYy9ERERUb29scy9RdWVyeS9CYXNlUmVwb3NpdG9yeVF1ZXJ5LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUdBLElBQVUsUUFBUSxDQU9qQjtBQVBELFdBQVUsUUFBUTtJQUFDLElBQUEsS0FBSyxDQU92QjtJQVBrQixXQUFBLEtBQUssRUFBQyxDQUFDO1FBRXRCO1FBSUEsQ0FBQztRQUpxQix5QkFBbUIsc0JBSXhDLENBQUE7SUFDTCxDQUFDLEVBUGtCLEtBQUssR0FBTCxjQUFLLEtBQUwsY0FBSyxRQU92QjtBQUFELENBQUMsRUFQUyxRQUFRLEtBQVIsUUFBUSxRQU9qQiIsInNvdXJjZXNDb250ZW50IjpbIi8vLyA8cmVmZXJlbmNlIHBhdGg9XCIuL0lRdWVyeS50c1wiIC8+XHJcblxyXG5cclxubmFtZXNwYWNlIERERFRvb2xzLlF1ZXJ5IHtcclxuICAgICAgICBcclxuICAgIGV4cG9ydCBhYnN0cmFjdCBjbGFzcyBCYXNlUmVwb3NpdG9yeVF1ZXJ5PFQ+IGltcGxlbWVudHMgSVF1ZXJ5PFQ+IHtcclxuICAgICAgICBcclxuICAgICAgICBwdWJsaWMgYWJzdHJhY3QgZXhlY3V0ZSgpOiBUW107XHJcblxyXG4gICAgfVxyXG59Il19
