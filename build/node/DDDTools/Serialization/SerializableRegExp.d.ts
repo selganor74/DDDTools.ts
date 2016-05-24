@@ -5,7 +5,10 @@ declare namespace DDDTools.Serialization {
         __typeName: string;
         __typeVersion: string;
         __regularExpression: string;
+        __flags: string;
         constructor(regExp: RegExp);
+        private splitRegExpAndFlags(regExp);
+        static getRegExpFromRegExpAndFlags(regularExpression: string, flags: string): RegExp;
         getRegExp(): RegExp;
     }
 }

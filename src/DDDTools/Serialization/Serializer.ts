@@ -65,7 +65,7 @@ namespace DDDTools.Serialization {
         }
 
         /**
-         * Postprocess the object tree to be serialized to find and replace FakeDate objects with Dates again...
+         * Postprocess the object tree to be serialized to find and replace SerializableDate/RegExp objects with Original types again...
          */
         private static postprocessForSerializableSubstitution(sourceObject: any) {
             for (var idx in sourceObject) {
@@ -100,6 +100,5 @@ namespace DDDTools.Serialization {
             }
             return value;
         }
-
     }
 }

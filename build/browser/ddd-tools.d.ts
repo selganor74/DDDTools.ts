@@ -52,6 +52,7 @@ declare namespace DDDTools.Serialization {
         __typeVersion: string;
         __dateAsString: string;
         constructor(date: Date);
+        static getDateFromString(dateAsString: string): Date;
         getDate(): Date;
     }
 }
@@ -61,7 +62,10 @@ declare namespace DDDTools.Serialization {
         __typeName: string;
         __typeVersion: string;
         __regularExpression: string;
+        __flags: string;
         constructor(regExp: RegExp);
+        private splitRegExpAndFlags(regExp);
+        static getRegExpFromRegExpAndFlags(regularExpression: string, flags: string): RegExp;
         getRegExp(): RegExp;
     }
 }
@@ -73,14 +77,6 @@ declare namespace DDDTools.Serialization {
         static touch(object: any): void;
         static untouch(object: any): void;
         static hasBeenTouched(object: any): boolean;
-    }
-}
-declare namespace DDDTools.PersistableObject {
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    interface IPersistable extends ITypeTracking {
-        getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
-        getState(): ITypeTracking;
-        setState(state: ITypeTracking): any;
     }
 }
 declare namespace DDDTools.Serialization {
@@ -101,6 +97,14 @@ declare namespace DDDTools.Serialization {
         private static untouchSourceObject(sourceObject);
         private static postprocessForSerializableSubstitution(sourceObject);
         private static customSerializer(key, value);
+    }
+}
+declare namespace DDDTools.PersistableObject {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    interface IPersistable extends ITypeTracking {
+        getUpgradedInstance?(fromInstance: IPersistable): IPersistable;
+        getState(): ITypeTracking;
+        setState(state: ITypeTracking): any;
     }
 }
 declare namespace DDDTools.PersistableObject {

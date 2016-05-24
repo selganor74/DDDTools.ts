@@ -22,9 +22,13 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ## Change log
 
+### 0.0.9 2016 05 24
+
+* Fixed BUG in Serialization of RegExp
+
 ### 0.0.8 2016 05 20
 
-* Added IQueryAsync in Query namespace
+* Added IQueryAsync in Query namespace Query
 
 ### 0.0.7 2016 05 18
 

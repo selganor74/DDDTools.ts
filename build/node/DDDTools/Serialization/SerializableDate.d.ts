@@ -6,6 +6,7 @@ declare namespace DDDTools.Serialization {
         __typeVersion: string;
         __dateAsString: string;
         constructor(date: Date);
+        static getDateFromString(dateAsString: string): Date;
         getDate(): Date;
     }
 }

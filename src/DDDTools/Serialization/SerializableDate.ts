@@ -7,7 +7,7 @@ namespace DDDTools.Serialization {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
 
     export class SerializableDate implements ITypeTracking {
-        __typeName: string = "Date";
+        __typeName: string = "SerializableDate";
         __typeVersion: string = "v1";
         __dateAsString: string;
 
@@ -15,8 +15,12 @@ namespace DDDTools.Serialization {
             this.__dateAsString = date.toISOString();
         }
 
+        public static getDateFromString(dateAsString: string) {
+            return new Date(dateAsString);            
+        }
+
         getDate(): Date {
-            return new Date(this.__dateAsString);
+            return SerializableDate.getDateFromString(this.__dateAsString);
         }
     }
 }

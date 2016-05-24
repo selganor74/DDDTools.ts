@@ -1,6 +1,5 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../Utils/SimpleIdentityMap.ts" />
-/// <reference path="../PersistableObject/IPersistable.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 /// <reference path="./SerializableDate.ts" />
 /// <reference path="./SerializableRegExp.ts" />
@@ -93,11 +92,12 @@ namespace DDDTools.Serialization {
 
         /**
          * Manages RegExp Deserialization
+         * TODO: Find a way to move this responsibility to the SerializableRegExp
          */
         private static FakeRegExpDeserializer(value: any): any {
             if (value.__typeName) {
-                if (value.__typeName === "RegExp") {
-                    value = new RegExp(value.__regularExpression || "");
+                if (value.__typeName === "SerializableRegExp") {
+                    value = SerializableRegExp.getRegExpFromRegExpAndFlags(value.__regularExpression, value.__flags);
                 }
             }
             return value;
@@ -105,11 +105,12 @@ namespace DDDTools.Serialization {
 
         /**
          * Manages Date Deserialization
+         * TODO: Find a way to move this responsibility to the SerializableRegExp
          */
         private static FakeDateDeserializer(value: any): any {
             if (value.__typeName) {
-                if (value.__typeName === "Date") {
-                    value = new Date((<SerializableDate>value).__dateAsString);
+                if (value.__typeName === "SerializableDate") {
+                    value = SerializableDate.getDateFromString(value.__dateAsString);
                 }
             }
             return value;

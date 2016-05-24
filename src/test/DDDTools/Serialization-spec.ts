@@ -35,7 +35,9 @@ describe("Serialization",() => {
         var anObject = {
             property1: "A Property",
             property2: "Another Property",
-            anArray: ["1","3",{property1: "Echo"}]
+            anArray: ["1","3",{property1: "Echo"}],
+            aDate: new Date(),
+            aRegexp: /abc/i
         }
 
         var serialized1 = Serializer.serialize(anObject);
@@ -43,4 +45,24 @@ describe("Serialization",() => {
 
         expect(serialized1).toEqual(serialized2);
     });
+
+    it("Serialitation + Deserialization must recreate the very same starting object", () => {
+        var anObject = {
+            property1: "A Property",
+            property2: "Another Property",
+            anArray: ["1","3",{property1: "Echo"}],
+            aDate: new Date(),
+            aRegexp: /abc/i
+        }
+
+        var serialized1 = Serializer.serialize(anObject);
+        var step1 = Serializer.serialize(anObject);
+        console.log("step1: " + step1);
+        var step2 = Deserializer.deserialize( step1 );
+        console.log("step2: " + step2.aRegexp.toString() );
+        var serialized2 = Serializer.serialize( step2 );
+
+        expect(serialized1).toEqual(serialized2);
+    });
+
 });

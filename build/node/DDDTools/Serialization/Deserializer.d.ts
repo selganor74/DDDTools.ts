@@ -1,6 +1,5 @@
 /// <reference path="../Utils/SimpleGuid.d.ts" />
 /// <reference path="../Utils/SimpleIdentityMap.d.ts" />
-/// <reference path="../PersistableObject/IPersistable.d.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.d.ts" />
 /// <reference path="SerializableDate.d.ts" />
 /// <reference path="SerializableRegExp.d.ts" />
