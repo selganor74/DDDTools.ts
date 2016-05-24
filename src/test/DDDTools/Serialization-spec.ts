@@ -57,9 +57,9 @@ describe("Serialization",() => {
 
         var serialized1 = Serializer.serialize(anObject);
         var step1 = Serializer.serialize(anObject);
-        console.log("step1: " + step1);
+        // console.log("step1: " + step1);
         var step2 = Deserializer.deserialize( step1 );
-        console.log("step2: " + step2.aRegexp.toString() );
+        // console.log("step2: " + step2.aRegexp.toString() );
         var serialized2 = Serializer.serialize( step2 );
 
         expect(serialized1).toEqual(serialized2);

@@ -1,5 +1,5 @@
 {
-  "name": "typescript-ddd-tools",
+  "name": "@IT/typescript-ddd-tools",
   "version": "0.0.9",
   "description": "A typescript library that implements the basic DDD patterns.",
   "main": "./build/node/DDDTools/DDDTools.js",

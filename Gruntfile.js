@@ -6,7 +6,6 @@ module.exports = function (grunt) {
         lineremover: {
             "build": {
                 "files": {
-                    "build/node/DDDTools/Repository/BaseRepositoryAsync.d.ts": "build/node/DDDTools/Repository/BaseRepositoryAsync.d.ts",
                     "build/browser/ddd-tools.d.ts": "build/browser/ddd-tools.d.ts"
                 },
                 "options": {
@@ -68,11 +67,8 @@ module.exports = function (grunt) {
             }
         },
         ts: {
-            "build-node": {
-                tsconfig: 'src/DDDTools/tsconfig-node.json'
-            },
             "build-browser": {
-                tsconfig: 'src/DDDTools/tsconfig-browser.json'
+                tsconfig: 'src/DDDTools/tsconfig.json'
             },
             "build-tests": {
                 tsconfig: 'src/test/tsconfig.json'
@@ -121,7 +117,7 @@ module.exports = function (grunt) {
 
     // TASKS
     grunt.registerTask('run', ['http-server']);
-    grunt.registerTask('build', ['clean', 'ts:build-node', 'ts:build-browser', 'lineremover:build', 'clean:after-build']);
-    grunt.registerTask('build-tests', ['clean', 'ts:build-node', 'ts:build-browser', 'ts:build-tests', 'copy', 'lineremover:build', 'clean:after-build']);
+    grunt.registerTask('build', ['clean', 'ts:build-browser', 'lineremover:build', 'clean:after-build']);
+    grunt.registerTask('build-tests', ['clean', 'ts:build-browser', 'ts:build-tests', 'copy', 'lineremover:build', 'clean:after-build']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };
