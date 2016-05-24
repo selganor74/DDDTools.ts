@@ -1,6 +1,6 @@
 {
   "name": "typescript-ddd-tools",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A typescript library that implements the basic DDD patterns.",
   "main": "./build/node/DDDTools/DDDTools.js",
   "typings": "./build/browser/ddd-tools.d.ts",
