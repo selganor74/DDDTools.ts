@@ -11,10 +11,39 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ### Main Patterns
 
-* ValueObject
-* Entity
-* Aggregate
+* **ValueObject**
+* **Entity**
+* **Aggregate** 
+* **Repository**
+* **UnitOfWork**
+* **DomainEvents**
 
+### Tools and utilities
+
+* **Serialization**: "Smart" Serialization/Deserialization which takes into account 
+  reconstitution of object trees and of "special types" like Date and RegExp.
+  It can be used "as a stand alone" tool.
+  
+* **PersistableObject**: Manages "evolution" of objects that can be persisted. 
+  Objects whose state can survive between program "executions" must provide a 
+  mean of "upgrading" their state, to follow changes due requirements and bugs. 
+  
+* **ValueObjects**: a growable collection of general purpose Value Objects.
+
+## Usage
+
+Package can be installed via npm from registry https://npm.loccioni.com.  
+Once installed you need to reference **node_modules/typescript-ddd-tools/build/browser/ddd-tools.js**
+in your **index.html**, and reference **ddd-tools.d.ts** in the same directory to 
+have typescript ambient definitions.
+The library is quite invasive, meaning that it is impossible to use different 
+versions of the same library as it "pollutes" the global namespace adding the 
+"DDDTools" namespace
+
+
+## Dependencies
+
+The package has a unique dependency: Q (https://github.com/kriskowal/q)
 
 ## Examples
 
