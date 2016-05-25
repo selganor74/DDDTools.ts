@@ -65,14 +65,17 @@ namespace DDDTools.Serialization {
             var sThis = Deserializer;
             var idMap = sThis.identityMap;
 
-            if (typeof value === "object") {
+            if (typeof value === "object" && value !== null) {
                 if (sThis.hasBeenTouched(value)) {
                     if (idMap.isTracked(value.__objectInstanceId)) {
                         return idMap.getById(value.__objectInstanceId)
                     } else {
                         value = sThis.FakeRegExpDeserializer(value);
                         value = sThis.FakeDateDeserializer(value);
-                        idMap.add(value.__objectInstanceId, value);
+                        value = sThis.FakeNullDeserializer(value);
+                        if (value !== null) {
+                            idMap.add(value.__objectInstanceId, value);
+                        }
                     }
                 }
             }
@@ -111,6 +114,19 @@ namespace DDDTools.Serialization {
             if (value.__typeName) {
                 if (value.__typeName === "SerializableDate") {
                     value = SerializableDate.getDateFromString(value.__dateAsString);
+                }
+            }
+            return value;
+        }
+
+        /**
+         * Manages Null Deserialization
+         * TODO: Find a way to move this responsibility to the SerializableNull
+         */
+        private static FakeNullDeserializer(value: any): any {
+            if (value.__typeName) {
+                if (value.__typeName === "SerializableNull") {
+                    value = null;
                 }
             }
             return value;

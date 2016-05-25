@@ -1,5 +1,6 @@
 /// <reference path="./SerializableDate.ts" />
 /// <reference path="./SerializableRegExp.ts" />
+/// <reference path="./SerializableNull.ts" />
 /// <reference path="./Touch.ts" />
 
 // import {SerializableDate} from "./SerializableDate";
@@ -36,6 +37,11 @@ namespace DDDTools.Serialization {
                     sourceObject[idx] = newFakeDate;
                     continue;
                 }
+                if (current === null) {
+                    var newFakeNull = new SerializableNull();
+                    sourceObject[idx] = newFakeNull;
+                    continue;
+                }
                 if (current instanceof RegExp) {
                     var newFakeRegExp = new SerializableRegExp(current);
                     sourceObject[idx] = newFakeRegExp;
@@ -51,6 +57,9 @@ namespace DDDTools.Serialization {
 
         private static untouchSourceObject(sourceObject: any) {
             var sThis = Serializer;
+            
+            if (sourceObject === null) return;
+            
             if (Touch.hasBeenTouched(sourceObject)) {
                 Touch.untouch(sourceObject);
             }
@@ -74,6 +83,10 @@ namespace DDDTools.Serialization {
                     sourceObject[idx] = (<SerializableDate>current).getDate();
                     continue;
                 }
+                if (current instanceof SerializableNull) {
+                    sourceObject[idx] = null;
+                    continue;
+                }
                 if (current instanceof SerializableRegExp) {
                     sourceObject[idx] = (<SerializableRegExp>current).getRegExp();
                     continue;
@@ -93,7 +106,7 @@ namespace DDDTools.Serialization {
         private static customSerializer(key: string, value: any) {
             var sThis = Serializer;
 
-            if (typeof value === "object") {
+            if (typeof value === "object" && value !== null) {
                 if (!Touch.hasBeenTouched(value)) {
                     Touch.touch(value);
                 }

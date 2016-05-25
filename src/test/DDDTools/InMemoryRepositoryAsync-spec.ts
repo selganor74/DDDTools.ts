@@ -10,9 +10,16 @@ namespace CdC.Tests.RepAsync {
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
     import Errors = DDDTools.Repository.Errors;
     import InMemoryRepositoryAsync = DDDTools.Repository.InMemoryRepositoryAsync;
-    import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
     import Factory = DDDTools.PersistableObject.Factory;
+    
+    import FactoryErrors = DDDTools.PersistableObject.Errors;
 
+
+    // Defines a class that will not be registered wit the types factory
+    export class NotRegistered extends BaseValueObject<NotRegistered> {
+        __typeName = "NotRegistered";
+        __typeVersion = "v1";
+    }
 
     export class Key extends BaseValueObject<Key> {
         private id: Guid;
@@ -44,6 +51,9 @@ namespace CdC.Tests.RepAsync {
         // Used to test objects references reconstitution.
         public anObjectReference: any = {};
         public anotherObjectReference: any = {};
+
+        // Used to test exceptions in object reconstitution.
+        public aNotRegisteredInstance: NotRegistered = undefined;
 
         __typeName = "CdC.Tests.TestAggregate";
         __typeVersion = "v1";
@@ -281,6 +291,39 @@ namespace CdC.Tests.RepAsync {
                 expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
                 done();
             });
+        });
+
+        it("Exception thrown by item reconstitution, must be catche in the error function of the returned promise", (done) => {
+
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            var key = new Key();
+            e.setKey(key);
+            e.aTestProperty = "Before saving...";
+            e.aNotRegisteredInstance = new NotRegistered();
+
+            repo.save(e).then(
+                () => {
+                    repo.getById(key).then(
+                        (value) => {
+                            expect(false).toBeTruthy("We should not have been here!");
+                            done();
+                        },
+                        (err) => {
+                            // console.log(JSON.stringify(err));
+                            expect(err.name).toEqual(FactoryErrors.TypeNotRegistered);
+                            expect(true).toBeTruthy();
+                            done();
+                        }
+                    );
+                },
+                (err) => {
+                    expect(false).toBeTruthy("We should not have been here!");
+                    done();
+                }
+            );
+
+
         });
     });
 }

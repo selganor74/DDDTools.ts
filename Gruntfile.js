@@ -60,8 +60,14 @@ module.exports = function (grunt) {
                         cwd: 'node_modules/q/',
                         src: ['q.js'],
                         dest: 'build-test/lib'
+                    },
+                    { // pulls in underscore
+                        expand: true,
+                        cwd: 'node_modules/underscore/',
+                        src: ['underscore.js'],
+                        dest: 'build-test/lib'
                     }
-
+                    
                 ]
 
             }

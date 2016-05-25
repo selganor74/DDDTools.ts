@@ -1,7 +1,6 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../ValueObject/BaseValueObject.ts" />
-/// <reference path="../PersistableObject/TypeRegistry.ts" />
 
 // import {SimpleGuid} from "../Utils/SimpleGuid";
 // import {IKeyValueObject} from "../Entity/IKeyValueObject";

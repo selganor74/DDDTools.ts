@@ -1,3 +1,4 @@
+/// <reference path="../../../typings/browser.d.ts" />
 /// <reference path="../PersistableObject/BasePersistableObject.ts" />
 /// <reference path="../Serialization/Serializer.ts" />
 /// <reference path="./IValueObject.ts" />
@@ -20,11 +21,8 @@ namespace DDDTools.ValueObject {
 		}
 
 		public equals(item: T): boolean {
-			// Per ogni proprietà dell'ITEM :verifico l'uguaglianza con l'istanza attuale
-			var foreign = Serializer.serialize(item);
-			var local = Serializer.serialize(this);
-
-			return foreign === local;
+			// Per ogni proprietà dell'ITEM :verifico l'uguaglianza con l'istanza attuale 			
+			return _.isEqual(item, this);
 		}
 	}
 }

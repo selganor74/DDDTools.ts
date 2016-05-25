@@ -62,20 +62,25 @@ namespace DDDTools.Repository {
 
         getById(id: TKey): IPromise<T> {
             var deferred = Q.defer<T>();
-            
+
             if (!id) {
-                deferred.reject(Errors.getErrorInstance( Errors.KeyNotSet, "id cannot be null or undefined" ));
+                deferred.reject(Errors.getErrorInstance(Errors.KeyNotSet, "id cannot be null or undefined"));
                 return deferred.promise;
             }
-            
+
             this.getByIdImplementation(id).then(
                 (value: T) => {
-                    if (value.__typeName != this.managedType && !(this.managedType == undefined) ) {
+                    if (value.__typeName != this.managedType && !(this.managedType == undefined)) {
                         var reason = Errors.getErrorInstance(Errors.WrongTypeFromImplementation, "Expecting " + this.managedType + " but obtained " + value.__typeName + " from database.");
                         deferred.reject(reason);
                         return;
                     }
-                    var toReturn: T = <T>(Factory.createObjectsFromState(value));
+                    try {
+                        var toReturn: T = <T>(Factory.createObjectsFromState(value));
+                    } catch (e) {
+                        deferred.reject(e);
+                        return;
+                    }
 
                     var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), value);
                     DomainDispatcher.dispatch(event);
@@ -111,9 +116,9 @@ namespace DDDTools.Repository {
         save(item: T): IPromise<{}> {
             var deferred = Q.defer<{}>();
             var event: ItemUpdatedEvent | ItemAddedEvent;
-            
+
             if (!item.getKey()) {
-                var reason = Errors.getErrorInstance( Errors.KeyNotSet );
+                var reason = Errors.getErrorInstance(Errors.KeyNotSet);
                 deferred.reject(reason);
                 return deferred.promise;
             }

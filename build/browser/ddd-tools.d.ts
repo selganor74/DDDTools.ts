@@ -70,6 +70,13 @@ declare namespace DDDTools.Serialization {
     }
 }
 declare namespace DDDTools.Serialization {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class SerializableNull implements ITypeTracking {
+        __typeName: string;
+        __typeVersion: string;
+    }
+}
+declare namespace DDDTools.Serialization {
     class Touch {
         private static touchIndex;
         static resetTouchIndex(): void;
@@ -88,6 +95,7 @@ declare namespace DDDTools.Serialization {
         private static hasBeenTouched(object);
         private static FakeRegExpDeserializer(value);
         private static FakeDateDeserializer(value);
+        private static FakeNullDeserializer(value);
     }
 }
 declare namespace DDDTools.Serialization {
@@ -136,24 +144,6 @@ declare namespace DDDTools.Entity {
     }
 }
 declare namespace DDDTools.PersistableObject {
-    class Factory {
-        private static typeRegistry;
-        static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
-        static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T;
-        static createObjectsFromState(state: any): any;
-        private static isPersistableObject(objectToTest);
-        private static isTypeInstantiable(typeName);
-    }
-    class Upgrader {
-        private static latestTypeVersionMap;
-        private static isVersionMapBuilt;
-        private static buildVersionMapForType(typeName);
-        static isLatestVersionForType(typeName: string, typeVersion: string): boolean;
-        static upgrade(instanceFrom: IPersistable): IPersistable;
-        static computeNextVersion(typeVersion: string): string;
-    }
-}
-declare namespace DDDTools.PersistableObject {
     abstract class BasePersistableObject implements IPersistable {
         __typeName: string;
         __typeVersion: string;
@@ -181,18 +171,20 @@ declare namespace DDDTools.ValueObjects {
     }
 }
 declare namespace DDDTools.PersistableObject {
-    class TypeRegistry {
-        private static registry;
-        private static latestVersions;
-        private static commonTypesRegistered;
+    class Factory {
+        private static typeRegistry;
         static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
-        private static updateLatestVersions(typeName, typeVersion);
-        private static isVersionGreater(vSubject, vReference);
-        private static extractVersionNumber(typeVersion);
-        static getTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): any;
+        static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T;
+        static createObjectsFromState(state: any): any;
+        private static isPersistableObject(objectToTest);
+        private static isTypeInstantiable(typeName);
+    }
+    class Upgrader {
+        private static latestTypeVersionMap;
+        private static isVersionMapBuilt;
+        private static buildVersionMapForType(typeName);
         static isLatestVersionForType(typeName: string, typeVersion: string): boolean;
-        static getLatestVersionForType(typeName: string): string;
-        private static versionIsInCorrectFormat(typeVersion);
+        static upgrade(instanceFrom: IPersistable): IPersistable;
         static computeNextVersion(typeVersion: string): string;
     }
 }

@@ -1,7 +1,9 @@
+/// <reference path="../../../typings/browser.d.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../Entity/BaseEntity.ts" />
 /// <reference path="./IAggregateRoot.ts" />
 /// <reference path="../Entity/IEntity.ts" />
+/// <reference path="../Serialization/Serializer.ts" />
 
 // import {IKeyValueObject} from "../Entity/IKeyValueObject";
 // import {BaseEntity} from "../Entity/BaseEntity";
@@ -16,6 +18,7 @@ namespace DDDTools.Aggregate {
     import IKeyValueObject = Entity.IKeyValueObject;
     import BaseEntity = Entity.BaseEntity;
     import IEntity = Entity.IEntity;
+    import Serializer = Serialization.Serializer;
 
     /**
      * Base behavior of an AggregateRoot, which is basically an entity...
@@ -50,10 +53,9 @@ namespace DDDTools.Aggregate {
             var theOther = other.getState();
 
             // do the comparison just like value objects... naive but functional at this time.
-            var thisOneAsString = JSON.stringify(thisOne);
-            var theOtherAsString = JSON.stringify(theOther);
-
-            return thisOneAsString === theOtherAsString;
+            var comparison = _.isEqual(thisOne, theOther);
+            
+            return comparison;
         }
     }
 }

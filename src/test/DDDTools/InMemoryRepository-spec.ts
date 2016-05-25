@@ -29,7 +29,6 @@ namespace CdC.Tests {
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
     import Errors = DDDTools.Repository.Errors;
     import InMemoryRepository = DDDTools.Repository.InMemoryRepository;
-    import TypeRegistry = DDDTools.PersistableObject.TypeRegistry;
     import Factory = DDDTools.PersistableObject.Factory;
 
 
@@ -64,6 +63,8 @@ namespace CdC.Tests {
         public anObjectReference: any = {};
         public anotherObjectReference: any = {};
 
+        public aNullReference = null;
+        
         __typeName = "CdC.Tests.TestAggregate";
         __typeVersion = "v1";
 
@@ -83,13 +84,9 @@ namespace CdC.Tests {
         }
     }
 
-    beforeEach(() => {
-        
-        Factory.registerType("CdC.Tests.Key", "v1", Key);
-        Factory.registerType("CdC.Tests.ChildEntity", "v1", ChildEntity);
-        Factory.registerType("CdC.Tests.TestAggregate", "v1", TestAggregate);
-        
-    });
+    Factory.registerType("CdC.Tests.Key", "v1", Key);
+    Factory.registerType("CdC.Tests.ChildEntity", "v1", ChildEntity);
+    Factory.registerType("CdC.Tests.TestAggregate", "v1", TestAggregate);
 
     describe("InMemoryRepository", () => {
 
@@ -181,10 +178,10 @@ namespace CdC.Tests {
 
             var anotherEntity = new TestAggregate();
             anotherEntity.setKey(new Key());
-            
+
             item.anonymousObject.anotherEntity = anotherEntity;
             item.anonymousObject.aNumberType = 42;
-            
+
             try {
                 repo.save(item);
                 var reloaded = repo.getById(key);
