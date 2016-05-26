@@ -17,7 +17,8 @@ describe("Serialization",() => {
             anArray: ["1","3",{property1: "Echo"}],
             aDate: new Date(),
             aRegExp: new RegExp("^123"),
-            aNullValue: null
+            aNullValue: null,
+            anUndefinedValue: undefined
         }
         
         var serialized = Serializer.serialize(anObject);
@@ -31,6 +32,7 @@ describe("Serialization",() => {
         expect(anObject.aDate).toEqual(deserialized.aDate, "aDate is not the same aDate it was before serialization");
         expect(anObject.aRegExp).toEqual(deserialized.aRegExp, "aRegExp is not the same aRegExp it was before serialization");
         expect(deserialized.aNullValue).toBeNull("aNullValue is not null");
+        expect(deserialized.anUndefinedValue).toBeUndefined("anUndefinedValue is not undefined");
     });
     
     it("Two serializations of the same object must be exactly match", () => {
@@ -38,8 +40,10 @@ describe("Serialization",() => {
             property1: "A Property",
             property2: "Another Property",
             anArray: ["1","3",{property1: "Echo"}],
+            aNullValue: null,
             aDate: new Date(),
-            aRegexp: /abc/i
+            aRegexp: /abc/i,
+            anUndefinedValue: undefined
         }
 
         var serialized1 = Serializer.serialize(anObject);
@@ -53,8 +57,10 @@ describe("Serialization",() => {
             property1: "A Property",
             property2: "Another Property",
             anArray: ["1","3",{property1: "Echo"}],
+            aNullValue: null,
             aDate: new Date(),
-            aRegexp: /abc/i
+            aRegexp: /abc/i,
+            anUndefinedValue: undefined
         }
 
         var serialized1 = Serializer.serialize(anObject);
