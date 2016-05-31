@@ -57,7 +57,8 @@ The package has the following dependencies:
 ### 0.0.12 2016 05 31
 
 * Fixed a bug in Factory.createObjectFromState. It was not reconstituting correctly Dates and Regular Expressions.
-* Fixed a type in package.json main field.
+* Fixed a typo in package.json main field.
+* Minor README.md updates
 
 ### 0.0.11 2016 05 25
 
