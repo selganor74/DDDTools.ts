@@ -51,6 +51,8 @@ namespace CdC.Tests {
         __typeName = "CdC.Tests.ChildEntity";
         __typeVersion = "v1";
 
+        anotherDate = new Date();
+        
         constructor() {
             super();
         }
@@ -64,6 +66,8 @@ namespace CdC.Tests {
         public anotherObjectReference: any = {};
 
         public aNullReference = null;
+        public anUndefinedItem = undefined; 
+        public aDate = new Date();
         
         __typeName = "CdC.Tests.TestAggregate";
         __typeVersion = "v1";
@@ -132,6 +136,48 @@ namespace CdC.Tests {
 
             expect(() => { repo.getById(key2) }).toThrow(new Error(Errors.ItemNotFound));
 
+        });
+        
+        it("It must correctly manage null and undefined data", () => {
+            var repo = new TestRepository();
+
+            var item = new TestAggregate();
+            var key = new Key();
+            item.setKey(key);
+            var aTestDate = new Date();
+            item.aDate = aTestDate;
+
+            try{
+                repo.save(item);
+
+                var reloaded = repo.getById(key);
+
+                expect(reloaded.aNullReference).toBeNull("aNullReference is not null, while it should");
+                expect(reloaded.anUndefinedItem).toBeUndefined("anUndefinedItem is not undefined, while it should");
+            } catch(e) {
+                expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
+            }
+            
+        });
+        
+        it("It must correctly reconstitute a date", () => {
+            var repo = new TestRepository();
+
+            var item = new TestAggregate();
+            var key = new Key();
+            item.setKey(key);
+            var aTestDate = new Date();
+            item.aDate = aTestDate;
+
+            try{
+                repo.save(item);
+
+                var reloaded = repo.getById(key);
+
+                expect(reloaded.aDate instanceof Date).toBeTruthy("aDate is not an instance of Date, while it should");
+            } catch(e) {
+                expect(false).toBeTruthy("Exception while saving or retrieving an item. " + e.message)
+            }
         });
 
         it("It must correctly reconstitute an array", () => {

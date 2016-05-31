@@ -92,6 +92,7 @@ declare namespace CdC.Tests {
         arrayOfKeys: Key[];
         __typeName: string;
         __typeVersion: string;
+        anotherDate: Date;
         constructor();
     }
     class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
@@ -100,6 +101,8 @@ declare namespace CdC.Tests {
         anObjectReference: any;
         anotherObjectReference: any;
         aNullReference: any;
+        anUndefinedItem: any;
+        aDate: Date;
         __typeName: string;
         __typeVersion: string;
         aTestProperty: string;
@@ -125,6 +128,7 @@ declare namespace CdC.Tests.RepAsync {
         arrayOfKeys: Key[];
         __typeName: string;
         __typeVersion: string;
+        anotherDate: Date;
         constructor();
     }
     class TestAggregate extends BaseAggregateRoot<TestAggregate, Key> {
@@ -133,6 +137,9 @@ declare namespace CdC.Tests.RepAsync {
         anObjectReference: any;
         anotherObjectReference: any;
         aNotRegisteredInstance: NotRegistered;
+        aNullReference: any;
+        anUndefinedReference: any;
+        aDate: Date;
         __typeName: string;
         __typeVersion: string;
         aTestProperty: string;

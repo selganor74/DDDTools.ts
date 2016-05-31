@@ -11,7 +11,7 @@ namespace CdC.Tests.RepAsync {
     import Errors = DDDTools.Repository.Errors;
     import InMemoryRepositoryAsync = DDDTools.Repository.InMemoryRepositoryAsync;
     import Factory = DDDTools.PersistableObject.Factory;
-    
+
     import FactoryErrors = DDDTools.PersistableObject.Errors;
 
 
@@ -40,6 +40,8 @@ namespace CdC.Tests.RepAsync {
         __typeName = "CdC.Tests.ChildEntity";
         __typeVersion = "v1";
 
+        public anotherDate = new Date();
+
         constructor() {
             super();
         }
@@ -55,6 +57,10 @@ namespace CdC.Tests.RepAsync {
         // Used to test exceptions in object reconstitution.
         public aNotRegisteredInstance: NotRegistered = undefined;
 
+        public aNullReference = null;
+        public anUndefinedReference = undefined;
+        public aDate = new Date();
+
         __typeName = "CdC.Tests.TestAggregate";
         __typeVersion = "v1";
 
@@ -62,7 +68,6 @@ namespace CdC.Tests.RepAsync {
         constructor() {
             super();
         }
-
     }
 
     class TestRepository extends InMemoryRepositoryAsync<TestAggregate, Key> {
@@ -119,7 +124,6 @@ namespace CdC.Tests.RepAsync {
                     done();
                 }
             );
-
         });
 
         it("it should throw ItemNotFound if a key is not present in the repository", (done) => {
@@ -143,6 +147,32 @@ namespace CdC.Tests.RepAsync {
                     expect(err.name).toEqual(Errors.ItemNotFound);
                     done();
                 });
+        });
+
+        it("It must correctly reconstitute a Date", (done) => {
+            var repo = new TestRepository();
+
+            var item = new TestAggregate();
+            var key = new Key();
+            item.setKey(key);
+
+            var testDate = new Date();
+            item.aDate = testDate;
+
+            repo.save(item).then(
+                () => {
+                    return repo.getById(key);
+                }
+            ).then(
+                (reloaded) => {
+                    expect(reloaded.aDate instanceof Date).toBeTruthy("aDate is not an instance of Date.");
+                    expect(reloaded.aDate).toEqual(testDate, "aDate is not evaluated as the pre save value.");
+                    done();
+                },
+                (err) => {
+                    expect(false).toBeTruthy("Exception while saving or retrieving an item. " + JSON.stringify(err));
+                    done();
+                })
         });
 
         it("It must correctly reconstitute an array", (done) => {

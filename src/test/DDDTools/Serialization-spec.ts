@@ -29,7 +29,9 @@ describe("Serialization",() => {
         for(var e in anObject.anArray) {
             expect(anObject.anArray[e]).toEqual(deserialized.anArray[e]);
         }
+        expect(deserialized.aDate instanceof Date).toBeTruthy("aDate is not a date");
         expect(anObject.aDate).toEqual(deserialized.aDate, "aDate is not the same aDate it was before serialization");
+        expect(deserialized.aRegExp instanceof RegExp).toBeTruthy("aRegExp is not an instance of RegExp");
         expect(anObject.aRegExp).toEqual(deserialized.aRegExp, "aRegExp is not the same aRegExp it was before serialization");
         expect(deserialized.aNullValue).toBeNull("aNullValue is not null");
         expect(deserialized.anUndefinedValue).toBeUndefined("anUndefinedValue is not undefined");

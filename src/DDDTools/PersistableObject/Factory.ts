@@ -76,6 +76,11 @@ namespace DDDTools.PersistableObject {
                 // Errors.throw(Errors.UnableToInstantiateType, "state cannot be 'null'");
                 return null;
             }
+            
+            // Manages the "special" types Date and RegExp.
+            if (state instanceof Date || state instanceof RegExp) {
+                return state;
+            }
 
             if (typeof state === 'object') {
                 if (Factory.isPersistableObject(state)) {

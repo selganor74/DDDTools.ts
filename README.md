@@ -43,7 +43,10 @@ versions of the same library as it "pollutes" the global namespace adding the
 
 ## Dependencies
 
-The package has a unique dependency: Q (https://github.com/kriskowal/q)
+The package has the following dependencies: 
+
+* [Q](https://github.com/kriskowal/q)
+* [underscore.js](http://underscorejs.org/) - Used only for the [isEqual](http://underscorejs.org/#isEqual) function
 
 ## Examples
 
@@ -51,10 +54,15 @@ The package has a unique dependency: Q (https://github.com/kriskowal/q)
 
 ## Change log
 
+### 0.0.12 2016 05 31
+
+* Fixed a bug in Factory.createObjectFromState. It was not reconstituting correctly Dates and Regular Expressions.
+* Fixed a type in package.json main field.
+
 ### 0.0.11 2016 05 25
 
-* PersistableObject.TypeRegistry is now "not" exposed as it is used only by PersistableObject.Factory. 
-*   **Breaking Change** Added dependency to "underscore" to gain deep compare functionality. Null values are no more a problem!
+* **Breaking Change** PersistableObject.TypeRegistry is now "not" exposed as it is used only by PersistableObject.Factory. 
+* **Breaking Change** Added dependency to "underscore" to gain deep compare functionality. Null values are no more a problem!
     Remeber to add underscore to the scripts.
 
 ### 0.0.10 2016 05 25
