@@ -139,7 +139,6 @@ namespace DDDTools.Repository {
                 (error: any) => {
                     if (error instanceof Error && error.name == Errors.ItemNotFound) {
                         // This is expected, the item is not in the repo, so we have to add it!
-                        item.incrementRevisionId();
 
                         this.doSave(item, deferred);
 

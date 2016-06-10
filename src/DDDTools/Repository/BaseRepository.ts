@@ -87,14 +87,16 @@ namespace DDDTools.Repository {
 
             var event: ItemUpdatedEvent | ItemAddedEvent;
             var asItWas: T = null;
+            var shouldIncrementRevision = true;
             try {
                 asItWas = this.getById(item.getKey());
             } catch (e) {
                 // This is expected if the do not exists in the Repo.
                 event = new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                shouldIncrementRevision = false; // because the item was not in the repo!
             }
 
-            if (!item.perfectlyMatch(asItWas)) {
+            if (!item.perfectlyMatch(asItWas) && shouldIncrementRevision ) {
                 item.incrementRevisionId();
                 event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
             }

@@ -308,14 +308,15 @@ namespace CdC.Tests.RepAsync {
             expect(e.getRevisionId()).toEqual(0);
 
             repo.save(e).then(() => {
-                expect(e.getRevisionId()).toEqual(1);
+                // RevisionId should not be incremented if item was new!
+                expect(e.getRevisionId()).toEqual(0);
                 return repo.save(e);
             }).then(() => {
-                expect(e.getRevisionId()).toEqual(1);
+                expect(e.getRevisionId()).toEqual(0);
                 e.aTestProperty = "... after saving";
                 return repo.save(e);
             }).then(() => {
-                expect(e.getRevisionId()).toEqual(2);
+                expect(e.getRevisionId()).toEqual(1);
                 done();
             }, (err) => {
                 expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)

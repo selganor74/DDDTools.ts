@@ -284,16 +284,16 @@ namespace CdC.Tests {
 
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(1);
+            expect(e.getRevisionId()).toEqual(0);
 
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(1);
+            expect(e.getRevisionId()).toEqual(0);
 
             e.aTestProperty = "... after saving";
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(2);
+            expect(e.getRevisionId()).toEqual(1);
         });
     });
 }

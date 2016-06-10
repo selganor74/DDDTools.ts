@@ -54,6 +54,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.13 2016 06 10
+
+* RevisionId is not incremented if elment is not already in the repo. So Saving a newly created item will leave RevisionId = 0.
+
 ### 0.0.12 2016 05 31
 
 * Fixed a bug in Factory.createObjectFromState. It was not reconstituting correctly Dates and Regular Expressions.
