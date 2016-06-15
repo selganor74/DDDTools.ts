@@ -28,37 +28,18 @@ module.exports = function (grunt) {
             "after-build": ['build/**/.baseDir.*']
         },
         "copy": {
-            "build": {
-                "files": [
-                    // {
-                    //     "expand": true,
-                    //     "cwd": 'src',
-                    //     "src": [
-                    //         '**/*.html', '**/*.json', '!tsconfig.json', '**/*.css',
-                    //         'assets/**/*', 'Scripts/**/*', 'images/**/*'
-                    //     ],
-                    //     dest: 'build/'
-                    // },
-                    // { // pulls in nedb
-                    //     expand: true,
-                    //     cwd: 'node_modules/nedb/browser-version/out',
-                    //     src: ['nedb.js'],
-                    //     dest: 'build/lib'
-                    // },
-                    // { // pulls in nedb
+            "build-tests": {
+                files: [
+                    // { // pulls in q
                     //     expand: true,
                     //     cwd: 'node_modules/q/',
                     //     src: ['q.js'],
-                    //     dest: 'build/lib'
-                    // }
-                ]
-            },
-            "build-tests": {
-                files: [
-                    { // pulls in q
+                    //     dest: 'build-test/lib'
+                    // },
+                    { // pulls in angular
                         expand: true,
-                        cwd: 'node_modules/q/',
-                        src: ['q.js'],
+                        cwd: 'node_modules/angular/',
+                        src: ['angular.js'],
                         dest: 'build-test/lib'
                     },
                     { // pulls in underscore

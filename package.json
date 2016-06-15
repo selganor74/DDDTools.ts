@@ -1,6 +1,6 @@
 {
   "name": "@IT/typescript-ddd-tools",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "A typescript library that implements the basic DDD patterns.",
   "main": "./build/browser/DDDTools/DDDTools.js",
   "typings": "./build/browser/ddd-tools.d.ts",
@@ -11,6 +11,7 @@
   "license": "SEE LICENSE IN 'LICENSE' FILE",
   "repository": "https://git.loccioni.com/IT/ddd-tools.git",
   "devDependencies": {
+    "angular": "^1.5.6",
     "dts-generator": "^1.7.0",
     "grunt": "^0.4.5",
     "grunt-cli": "^1.1.0",

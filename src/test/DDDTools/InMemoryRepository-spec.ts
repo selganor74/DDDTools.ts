@@ -295,5 +295,26 @@ namespace CdC.Tests {
 
             expect(e.getRevisionId()).toEqual(1);
         });
+
+
+        it("RevisionId must NOT be incremented when using 'replace' method", () => {
+            // pending("Need to refactor IPErsistable to add functions for State Comparison.");
+
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            e.setKey(new Key());
+            e.aTestProperty = "Before saving...";
+
+            expect(e.getRevisionId()).toEqual(0);
+
+            repo.save(e);
+
+            expect(e.getRevisionId()).toEqual(0);
+
+            e.aTestProperty = "... after saving";
+            repo.replace(e);
+
+            expect(e.getRevisionId()).toEqual(0);
+        });
     });
 }

@@ -114,9 +114,10 @@ namespace CdC.Tests.BasePersistableObject {
         // Extended types
         public aRegExp: RegExp;
         public aDate: Date;
+        public aNullValue = null;
     }
 
-    describe("BaseUpgrader", () => {
+    describe("BasePersistableObject", () => {
 
         beforeEach(() => {
 
@@ -212,6 +213,6 @@ namespace CdC.Tests.BasePersistableObject {
 
             expect(state.aDate instanceof Date).toBeTruthy("aDate is not a Date instance");
             expect(state.aDate.toString() ).toEqual(testDate.toString(), "aDate non è stata ripristinata come Date");
-        });
+        });        
     });
 }

@@ -13,8 +13,26 @@ namespace DDDTools.Repository {
     import IKeyValueObject = Entity.IKeyValueObject;
 
     export interface IRepository<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
+        
+        /**
+         * Retrieves an item from the repository given its id. It gives back a fully rconstituted Aggregate Root, so that  will be possible to call any public method.
+         * fires ItemRetrieved event
+         */
         getById(id: TKey): T;
+        
+        /**
+         * Saves an item.
+         */
         save(item: T): void;
+        
+        /**
+         * Replaces an item. Just like save, but it doesn't increment the revisionId and keep the one stored in the AggregateRoot
+         */
+        replace(item: T): void;
+        
+        /**
+         * Deletes an item.
+         */
         delete(id: TKey): void;
     }
 }

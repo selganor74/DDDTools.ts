@@ -324,7 +324,34 @@ namespace CdC.Tests.RepAsync {
             });
         });
 
-        it("Exception thrown by item reconstitution, must be catche in the error function of the returned promise", (done) => {
+        it("RevisionId must NOT be incremented if using 'replace' method.", (done) => {
+            // pending("Need to refactor IPErsistable to add functions for State Comparison.");
+
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            e.setKey(new Key());
+            e.aTestProperty = "Before saving...";
+
+            expect(e.getRevisionId()).toEqual(0);
+
+            repo.save(e).then(() => {
+                // RevisionId should not be incremented if item was new!
+                expect(e.getRevisionId()).toEqual(0);
+                return repo.save(e);
+            }).then(() => {
+                expect(e.getRevisionId()).toEqual(0);
+                e.aTestProperty = "... after saving";
+                return repo.replace(e);
+            }).then(() => {
+                expect(e.getRevisionId()).toEqual(0);
+                done();
+            }, (err) => {
+                expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
+                done();
+            });
+        });
+
+        it("Exception thrown by item reconstitution, must be catched in the error function of the returned promise", (done) => {
 
             var repo = new TestRepository();
             var e = new TestAggregate();
@@ -353,8 +380,6 @@ namespace CdC.Tests.RepAsync {
                     done();
                 }
             );
-
-
         });
     });
 }

@@ -10,6 +10,7 @@ namespace DDDTools.Repository {
         public static ItemAddedEvent = Events.__nameSpace + ".ItemAddedEvent";
         public static ItemUpdatedEvent = Events.__nameSpace + ".ItemUpdatedEvent";
         public static ItemDeletedEvent = Events.__nameSpace + ".ItemDeletedEvent";
+        public static ItemReplacedEvent = Events.__nameSpace + ".ItemReplacedEvent";
         public static ItemRetrievedEvent = Events.__nameSpace + ".ItemRetrievedEvent";
     }
 

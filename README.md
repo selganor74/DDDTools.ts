@@ -45,6 +45,7 @@ versions of the same library as it "pollutes" the global namespace adding the
 
 The package has the following dependencies: 
 
+* angular and jquery typings **just the typings!!!**, the libraries are not mandatory!
 * [Q](https://github.com/kriskowal/q)
 * [underscore.js](http://underscorejs.org/) - Used only for the [isEqual](http://underscorejs.org/#isEqual) function
 
@@ -53,6 +54,16 @@ The package has the following dependencies:
 `TODO`
 
 ## Change log
+
+### 0.0.14 2016 06 13
+
+* **Breaking Change** To avoid [this](http://stackoverflow.com/questions/33965435/testing-angular-when-mixing-q-and-es6-promises) issue during testing, ddd-tools now tries to use $q instead of Q if angular1.x is available. Feature needs to be deeply tested!
+  Angular is now a dev dependency of ddd-tools, and now we are rturning ng.IPromise from async calls, becaus $q is the thinnest interface.
+  The Repository namespace now contains a PromiseHandler which will contain Q or $q as needed.
+  Development with the library will be possible **if and only if angular and jquery typings are available**.
+* Added "replace" method to repositories interfaces. The replace method makes possible to save an item without incrementing its revisionId.
+* Added ItemReplacedEvent. Repositories will fire this event if an item is "replaced" (not added) with the "replace" method.
+  If item is not existent when calling "replace", an ItemAddedEvent will be fired.
 
 ### 0.0.13 2016 06 10
 

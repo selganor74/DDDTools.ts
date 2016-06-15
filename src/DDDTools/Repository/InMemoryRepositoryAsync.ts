@@ -1,3 +1,4 @@
+/// <reference path="./PromiseHandler.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 /// <reference path="./Errors.ts" />
 /// <reference path="../PersistableObject/Factory.ts" />
@@ -15,7 +16,6 @@ namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
-    import IPromise = Q.IPromise;
 
     import Serializer = Serialization.Serializer;
     import Deserializer = Serialization.Deserializer;
@@ -45,14 +45,16 @@ namespace DDDTools.Repository {
         }
 
         protected getByIdImplementation(id: TKey): IPromise<ITypeTracking> {
-            return Q.Promise((resolve, reject, notify) => {
-                try {
-                    var result = this.getByIdSync(id);
-                    resolve(result);
-                } catch (err) {
-                    reject(err);
-                }
-            });
+            var deferred = PromiseHandler.defer();
+
+            try {
+                var result = this.getByIdSync(id);
+                deferred.resolve(result);
+            } catch (err) {
+                deferred.reject(err);
+            }
+
+            return deferred.promise;
         }
 
         private saveSync(item: T): {} {
@@ -70,14 +72,16 @@ namespace DDDTools.Repository {
         }
 
         protected saveImplementation(item: T): IPromise<{}> {
-            return Q.Promise((resolve, reject, notify) => {
-                try {
-                    this.saveSync(item);
-                    resolve({});
-                } catch (err) {
-                    reject(err);
-                }
-            });
+            var deferred = PromiseHandler.defer();
+
+            try {
+                this.saveSync(item);
+                deferred.resolve({});
+            } catch (err) {
+                deferred.reject(err);
+            }
+
+            return deferred.promise;
         }
 
         private deleteSync(id: TKey): {} {
@@ -92,14 +96,16 @@ namespace DDDTools.Repository {
         }
 
         protected deleteImplementation(id: TKey): IPromise<{}> {
-            return Q.Promise((resolve, reject, notify) => {
-                try {
-                    this.deleteSync(id)
-                    resolve({});
-                } catch (err) {
-                    reject(err);
-                }
-            });
+            var deferred = PromiseHandler.defer();
+
+            try {
+                this.deleteSync(id)
+                deferred.resolve({});
+            } catch (err) {
+                deferred.reject(err);
+            }
+
+            return deferred.promise;
         }
     }
 }

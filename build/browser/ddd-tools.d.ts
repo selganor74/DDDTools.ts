@@ -272,11 +272,17 @@ declare namespace DDDTools.Aggregate {
     }
 }
 declare namespace DDDTools.Repository {
+    var PromiseHandler: ng.IQService;
+    export import IPromise = ng.IPromise;
+    export import Deferred = ng.IDeferred;
+}
+declare namespace DDDTools.Repository {
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     interface IRepository<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
         getById(id: TKey): T;
         save(item: T): void;
+        replace(item: T): void;
         delete(id: TKey): void;
     }
 }
@@ -287,6 +293,7 @@ declare namespace DDDTools.Repository {
     interface IRepositoryAsync<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
         getById(id: TKey): IPromise<T>;
         save(item: T): IPromise<{}>;
+        replace(item: T): IPromise<{}>;
         delete(id: TKey): IPromise<{}>;
     }
 }
@@ -309,6 +316,7 @@ declare namespace DDDTools.Repository {
         static ItemAddedEvent: string;
         static ItemUpdatedEvent: string;
         static ItemDeletedEvent: string;
+        static ItemReplacedEvent: string;
         static ItemRetrievedEvent: string;
     }
 }
@@ -369,6 +377,20 @@ declare namespace DDDTools.Repository {
     }
 }
 declare namespace DDDTools.Repository {
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class ItemReplacedEvent extends BaseValueObject<ItemReplacedEvent> implements IDomainEvent {
+        typeName: string;
+        typeVersion: string;
+        id: string;
+        objectState: ITypeTracking;
+        __typeName: string;
+        __typeVersion: string;
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+    }
+}
+declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
@@ -379,12 +401,14 @@ declare namespace DDDTools.Repository {
         getById(id: TKey): T;
         protected abstract saveImplementation(item: T): void;
         save(item: T): void;
+        replace(item: T): void;
+        private saveOrReplace(item, replaceOnly?);
         protected abstract deleteImplementation(id: TKey): void;
         delete(id: TKey): void;
     }
 }
+declare var PromiseHandler: typeof Q;
 declare namespace DDDTools.Repository {
-    import IPromise = Q.IPromise;
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
@@ -396,6 +420,8 @@ declare namespace DDDTools.Repository {
         protected abstract saveImplementation(item: T): IPromise<{}>;
         private doSave(item, deferred);
         save(item: T): IPromise<{}>;
+        replace(item: T): IPromise<{}>;
+        private saveOrReplace(item, replaceOnly?);
         protected abstract deleteImplementation(id: TKey): IPromise<{}>;
         delete(id: TKey): IPromise<{}>;
         private buildError(errorFromCall, errorIfErrorFromCallIsNotError);
@@ -417,7 +443,6 @@ declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
-    import IPromise = Q.IPromise;
     class InMemoryRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
         private storage;
         constructor(managedType: string);

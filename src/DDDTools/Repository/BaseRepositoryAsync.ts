@@ -27,9 +27,9 @@
 // import {ItemDeletedEvent} from "./ItemDeletedEvent";
 // import {DomainDispatcher} from "../DomainEvents/DomainDispatcher";
 
-namespace DDDTools.Repository {
+declare var PromiseHandler: typeof Q;
 
-    import IPromise = Q.IPromise;
+namespace DDDTools.Repository {
 
     import IPersistable = PersistableObject.IPersistable;
     import Factory = PersistableObject.Factory;
@@ -37,6 +37,7 @@ namespace DDDTools.Repository {
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     import DomainDispatcher = DomainEvents.DomainDispatcher;
+
 
     /**
      * Captures common behavior of repository, using theTemplate Method Pattern.
@@ -61,7 +62,7 @@ namespace DDDTools.Repository {
         protected abstract getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
 
         getById(id: TKey): IPromise<T> {
-            var deferred = Q.defer<T>();
+            var deferred = PromiseHandler.defer<T>();
 
             if (!id) {
                 deferred.reject(Errors.getErrorInstance(Errors.KeyNotSet, "id cannot be null or undefined"));
@@ -99,7 +100,7 @@ namespace DDDTools.Repository {
          */
         protected abstract saveImplementation(item: T): IPromise<{}>;
 
-        private doSave(item: T, deferred: Q.Deferred<{}>): IPromise<{}> {
+        private doSave(item: T, deferred: ng.IDeferred<{}>): IPromise<{}> {
             // Creates a new instance of the object that will be saved;
             this.saveImplementation(item).then(
                 () => {
@@ -114,7 +115,15 @@ namespace DDDTools.Repository {
         }
 
         save(item: T): IPromise<{}> {
-            var deferred = Q.defer<{}>();
+            return this.saveOrReplace(item, false);
+        }
+        
+        replace(item: T): IPromise<{}> {
+            return this.saveOrReplace(item, true);
+        }
+
+        private saveOrReplace(item: T, replaceOnly: boolean = false): IPromise<{}> {
+            var deferred = PromiseHandler.defer<{}>();
             var event: ItemUpdatedEvent | ItemAddedEvent;
 
             if (!item.getKey()) {
@@ -127,9 +136,13 @@ namespace DDDTools.Repository {
                 (readValue: T) => {
                     // the item already exist so we have to compare it with what we are saving.
                     if (!item.perfectlyMatch(readValue)) {
-                        item.incrementRevisionId();
+                        // Increment revision only if we are not replacing an item
+                        if(!replaceOnly) {
+                            item.incrementRevisionId();                            
+                            event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                        }
                         this.doSave(item, deferred);
-                        event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                        event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
                         DomainDispatcher.dispatch(event);
                     } else {
                         // What is in the database perfectly match what we are saving, so nothing to do!
@@ -153,6 +166,7 @@ namespace DDDTools.Repository {
                 }
             );
             return deferred.promise;
+            
         }
 
         /**
@@ -161,7 +175,7 @@ namespace DDDTools.Repository {
         protected abstract deleteImplementation(id: TKey): IPromise<{}>;
 
         delete(id: TKey): IPromise<{}> {
-            var deferred = Q.defer<{}>();
+            var deferred = PromiseHandler.defer<{}>();
             var event: ItemDeletedEvent;
             this.getById(id).then(
                 (item) => {

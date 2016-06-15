@@ -51,6 +51,7 @@ declare namespace CdC.Tests.BasePersistableObject {
         anObject: Object;
         aRegExp: RegExp;
         aDate: Date;
+        aNullValue: any;
     }
 }
 declare namespace CdC.Tests.ForBaseValueObject {

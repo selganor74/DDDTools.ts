@@ -79,6 +79,17 @@ namespace DDDTools.Repository {
         protected abstract saveImplementation(item: T): void;
 
         save(item: T): void {
+            this.saveOrReplace(item);
+        }
+        
+        /**
+         * Works just like save, but it never increments RevisionId, it trusts the one already present in the aggregate.
+         */
+        replace(item: T) {
+            this.saveOrReplace(item, true);
+        }
+
+        private saveOrReplace(item: T, replaceOnly: boolean = false) {
             try {
                 var key = item.getKey().toString();
             } catch (e) {
@@ -96,19 +107,21 @@ namespace DDDTools.Repository {
                 shouldIncrementRevision = false; // because the item was not in the repo!
             }
 
-            if (!item.perfectlyMatch(asItWas) && shouldIncrementRevision ) {
-                item.incrementRevisionId();
+            // Save occur only if stored item and saved item are different somehow.
+            if (!item.perfectlyMatch(asItWas) ) {
+                if (!replaceOnly && shouldIncrementRevision) {
+                    item.incrementRevisionId();
+                    event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                }
                 event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
-            }
 
-            // finally saves aggregate into the repository.
-            this.saveImplementation(item);
+                // finally saves aggregate into the repository.
+                this.saveImplementation(item);
 
-            if (event) {
                 DomainDispatcher.dispatch(event);
             }
-        }
 
+        }
         /**
          * You MUST override this method to provide "delete" functionality in your implementation.
          */
