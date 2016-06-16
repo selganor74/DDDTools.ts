@@ -44,11 +44,18 @@ namespace DDDTools.Repository {
             /**
              * The string representing the type managed by this repository. Will be compared with the __typeName property of the objects retrieved.
              */
-            private managedType: string
+            private managedType: string,
+            /**
+             * A string to dinetify the repository. Useful in scenarios where the same AggregateRoot might be saved in different locations. 
+             * Events must discern what location the item was saved/retrieved/delete to/from/from. It defaults to the empty string
+             */
+            private repositoryId?: string
         ) {
             if (managedType === "") {
                 Errors.throw(Errors.ManagedTypeNotSupplied);
             }
+
+            if (!repositoryId) this.repositoryId = "";
         }
 
         /**
@@ -65,7 +72,7 @@ namespace DDDTools.Repository {
                 }
                 var toReturn: T = Factory.createObjectsFromState(retrieved);
 
-                var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), retrieved);
+                var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), retrieved, this.repositoryId);
                 DomainDispatcher.dispatch(event);
 
                 return toReturn;
@@ -108,7 +115,7 @@ namespace DDDTools.Repository {
                 asItWas = this.getById(item.getKey());
             } catch (e) {
                 // This is expected if the do not exists in the Repo.
-                event = new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                event = new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
                 saveAction = SaveActionEnum.Add;
                 shouldIncrementRevision = false; // because the item was not in the repo!
             }
@@ -117,9 +124,9 @@ namespace DDDTools.Repository {
             if (!item.perfectlyMatch(asItWas) ) {
                 if (!replaceOnly && shouldIncrementRevision) {
                     item.incrementRevisionId();
-                    event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                    event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(),this.repositoryId);
                 }
-                event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
 
                 // finally saves aggregate into the repository.
                 this.saveImplementation(item, saveAction);
@@ -145,7 +152,7 @@ namespace DDDTools.Repository {
                 Errors.throw(Errors.ErrorDeletingItem, JSON.stringify(e));
             }
 
-            var event = new ItemDeletedEvent(asItWas.__typeName, asItWas.__typeVersion, id.toString(), asItWas.getState());
+            var event = new ItemDeletedEvent(asItWas.__typeName, asItWas.__typeVersion, id.toString(), asItWas.getState(), this.repositoryId);
 
             this.deleteImplementation(id);
 

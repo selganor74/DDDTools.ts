@@ -335,9 +335,10 @@ declare namespace DDDTools.Repository {
         typeVersion: string;
         id: string;
         objectState: ITypeTracking;
+        repositoryId: string;
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
@@ -349,9 +350,10 @@ declare namespace DDDTools.Repository {
         typeVersion: string;
         id: string;
         objectState: ITypeTracking;
+        repositoryId: string;
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
@@ -363,9 +365,10 @@ declare namespace DDDTools.Repository {
         typeVersion: string;
         id: string;
         objectState: ITypeTracking;
+        repositoryId: string;
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
@@ -377,9 +380,10 @@ declare namespace DDDTools.Repository {
         typeVersion: string;
         id: string;
         objectState: ITypeTracking;
+        repositoryId: string;
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
@@ -391,9 +395,10 @@ declare namespace DDDTools.Repository {
         typeVersion: string;
         id: string;
         objectState: ITypeTracking;
+        repositoryId: string;
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking);
+        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
@@ -402,7 +407,8 @@ declare namespace DDDTools.Repository {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     abstract class BaseRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepository<T, TKey> {
         private managedType;
-        constructor(managedType: string);
+        private repositoryId;
+        constructor(managedType: string, repositoryId?: string);
         protected abstract getByIdImplementation(id: TKey): ITypeTracking;
         getById(id: TKey): T;
         protected abstract saveImplementation(item: T, saveAction: SaveActionEnum): void;
@@ -420,7 +426,8 @@ declare namespace DDDTools.Repository {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     abstract class BaseRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> implements IRepositoryAsync<T, TKey> {
         private managedType;
-        constructor(managedType: string);
+        private repositoryId;
+        constructor(managedType: string, repositoryId?: string);
         protected abstract getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
         getById(id: TKey): IPromise<T>;
         protected abstract saveImplementation(item: T, saveAction: SaveActionEnum): IPromise<{}>;

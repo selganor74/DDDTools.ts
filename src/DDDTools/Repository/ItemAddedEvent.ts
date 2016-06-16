@@ -22,7 +22,8 @@ namespace DDDTools.Repository {
             public typeName: string,
             public typeVersion: string,
             public id: string,
-            public objectState: ITypeTracking
+            public objectState: ITypeTracking,
+            public repositoryId: string
         ) {
             super();
         }

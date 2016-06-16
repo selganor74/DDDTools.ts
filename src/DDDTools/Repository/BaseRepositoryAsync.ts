@@ -49,11 +49,18 @@ namespace DDDTools.Repository {
             /**
              * The string representing the type managed by this repository. Will be compared with the __typeName property of the objects retrieved.
              */
-            private managedType: string
+            private managedType: string,
+            /**
+             * A string to dinetify the repository. Useful in scenarios where the same AggregateRoot might be saved in different locations. 
+             * Events must discern what location the item was saved/retrieved/delete to/from/from. It defaults to the empty string
+             */
+            private repositoryId?: string
         ) {
             if (managedType === "" || managedType == undefined) {
                 Errors.throw(Errors.ManagedTypeNotSupplied);
             }
+
+            if (!repositoryId) this.repositoryId = "";
         }
 
         /**
@@ -83,7 +90,7 @@ namespace DDDTools.Repository {
                         return;
                     }
 
-                    var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), value);
+                    var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), value, this.repositoryId);
                     DomainDispatcher.dispatch(event);
 
                     deferred.resolve(toReturn);
@@ -140,10 +147,10 @@ namespace DDDTools.Repository {
                         // Increment revision only if we are not replacing an item
                         if (!replaceOnly) {
                             item.incrementRevisionId();
-                            event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                            event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
                         }
                         this.doSave(item, SaveActionEnum.Update).then(() => {
-                            event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                            event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
                             DomainDispatcher.dispatch(event);
                             deferred.resolve();
                         }, (error) => {
@@ -161,7 +168,7 @@ namespace DDDTools.Repository {
 
                         this.doSave(item, SaveActionEnum.Add).then(
                             () => {
-                                event = event || new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                                event = event || new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
                                 DomainDispatcher.dispatch(event);
                                 deferred.resolve();
                             },
@@ -191,7 +198,7 @@ namespace DDDTools.Repository {
             var event: ItemDeletedEvent;
             this.getById(id).then(
                 (item) => {
-                    var event = new ItemDeletedEvent(item.__typeName, item.__typeVersion, id.toString(), item.getState());
+                    var event = new ItemDeletedEvent(item.__typeName, item.__typeVersion, id.toString(), item.getState(), this.repositoryId);
                     this.deleteImplementation(id).then(
                         () => {
                             deferred.resolve();

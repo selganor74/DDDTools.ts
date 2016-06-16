@@ -55,6 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.16 2016 06 16
+
+* Added repositoryId property to BaseRepository* and RepositoryEvents. This allows to "discern" events by destination.
+
 ### 0.0.15 2016 06 16
 
 * saveImplementation methods in BaseRepository and BaseRepositoryAsync now receive a SaveActionEnum parameter to tell wheter the item must be created or updated.
