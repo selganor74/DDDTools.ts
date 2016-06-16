@@ -1,4 +1,5 @@
 /// <reference path="./IRepository.ts" />
+/// <reference path="./SaveActionEnum.ts" />
 /// <reference path="./Errors.ts" />
 /// <reference path="../PersistableObject/IPersistable.ts" />
 /// <reference path="../PersistableObject/Factory.ts" />
@@ -76,7 +77,7 @@ namespace DDDTools.Repository {
         /**
          * You MUST override this method to provide "save" functionality in your implementation. The template method "save" will manage the revisionId logic.
          */
-        protected abstract saveImplementation(item: T): void;
+        protected abstract saveImplementation(item: T, saveAction: SaveActionEnum): void;
 
         save(item: T): void {
             this.saveOrReplace(item);
@@ -99,11 +100,16 @@ namespace DDDTools.Repository {
             var event: ItemUpdatedEvent | ItemAddedEvent;
             var asItWas: T = null;
             var shouldIncrementRevision = true;
+            var saveAction: SaveActionEnum;
+
+            saveAction = SaveActionEnum.Update;
+
             try {
                 asItWas = this.getById(item.getKey());
             } catch (e) {
                 // This is expected if the do not exists in the Repo.
                 event = new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                saveAction = SaveActionEnum.Add;
                 shouldIncrementRevision = false; // because the item was not in the repo!
             }
 
@@ -116,7 +122,7 @@ namespace DDDTools.Repository {
                 event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
 
                 // finally saves aggregate into the repository.
-                this.saveImplementation(item);
+                this.saveImplementation(item, saveAction);
 
                 DomainDispatcher.dispatch(event);
             }

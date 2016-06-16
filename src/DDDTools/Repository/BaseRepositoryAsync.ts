@@ -1,9 +1,10 @@
 /// <reference path="../../../typings/browser.d.ts" />
 
 /// <reference path="./IRepositoryAsync.ts" />
+/// <reference path="./SaveActionEnum.ts" />
 /// <reference path="./Errors.ts" />
 /// <reference path="../PersistableObject/IPersistable.ts" />
-///  <reference path="../PersistableObject/Factory.ts" />
+/// <reference path="../PersistableObject/Factory.ts" />
 /// <reference path="../Aggregate/BaseAggregateRoot.ts" />
 /// <reference path="../Entity/IKeyValueObject.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
@@ -37,7 +38,6 @@ namespace DDDTools.Repository {
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     import DomainDispatcher = DomainEvents.DomainDispatcher;
-
 
     /**
      * Captures common behavior of repository, using theTemplate Method Pattern.
@@ -98,11 +98,12 @@ namespace DDDTools.Repository {
         /**
          * You MUST override this method to provide "save" functionality in your implementation. The template method "save" will manage the revisionId logic.
          */
-        protected abstract saveImplementation(item: T): IPromise<{}>;
+        protected abstract saveImplementation(item: T, saveAction: SaveActionEnum): IPromise<{}>;
 
-        private doSave(item: T, deferred: ng.IDeferred<{}>): IPromise<{}> {
+        private doSave(item: T, saveAction: SaveActionEnum): IPromise<{}> {
+            var deferred = PromiseHandler.defer();
             // Creates a new instance of the object that will be saved;
-            this.saveImplementation(item).then(
+            this.saveImplementation(item, saveAction).then(
                 () => {
                     deferred.resolve()
                 },
@@ -117,7 +118,7 @@ namespace DDDTools.Repository {
         save(item: T): IPromise<{}> {
             return this.saveOrReplace(item, false);
         }
-        
+
         replace(item: T): IPromise<{}> {
             return this.saveOrReplace(item, true);
         }
@@ -137,13 +138,18 @@ namespace DDDTools.Repository {
                     // the item already exist so we have to compare it with what we are saving.
                     if (!item.perfectlyMatch(readValue)) {
                         // Increment revision only if we are not replacing an item
-                        if(!replaceOnly) {
-                            item.incrementRevisionId();                            
+                        if (!replaceOnly) {
+                            item.incrementRevisionId();
                             event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
                         }
-                        this.doSave(item, deferred);
-                        event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
-                        DomainDispatcher.dispatch(event);
+                        this.doSave(item, SaveActionEnum.Update).then(() => {
+                            event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                            DomainDispatcher.dispatch(event);
+                            deferred.resolve();
+                        }, (error) => {
+                            var reason = this.buildError(error, Errors.ErrorReadingItem);
+                            deferred.reject(reason);
+                        });
                     } else {
                         // What is in the database perfectly match what we are saving, so nothing to do!
                         deferred.resolve();
@@ -153,20 +159,26 @@ namespace DDDTools.Repository {
                     if (error instanceof Error && error.name == Errors.ItemNotFound) {
                         // This is expected, the item is not in the repo, so we have to add it!
 
-                        this.doSave(item, deferred);
-
-                        event = event || new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
-                        DomainDispatcher.dispatch(event);
-
-                        return;
+                        this.doSave(item, SaveActionEnum.Add).then(
+                            () => {
+                                event = event || new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState());
+                                DomainDispatcher.dispatch(event);
+                                deferred.resolve();
+                            },
+                            (error) => {
+                                var reason = this.buildError(error, Errors.ErrorReadingItem);
+                                deferred.reject(reason);
+                            }
+                        );
+                    } else {
+                        // Other errors must be treated as ... "Errors"
+                        var reason = this.buildError(error, Errors.ErrorReadingItem);
+                        deferred.reject(reason);
                     }
-                    // Other errors must be treated as ... "Errors"
-                    var reason = this.buildError(error, Errors.ErrorReadingItem);
-                    deferred.reject(reason);
                 }
             );
             return deferred.promise;
-            
+
         }
 
         /**

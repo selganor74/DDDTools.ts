@@ -287,6 +287,12 @@ declare namespace DDDTools.Repository {
     }
 }
 declare namespace DDDTools.Repository {
+    enum SaveActionEnum {
+        Add = 0,
+        Update = 1,
+    }
+}
+declare namespace DDDTools.Repository {
     import IPromise = Q.IPromise;
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
@@ -399,7 +405,7 @@ declare namespace DDDTools.Repository {
         constructor(managedType: string);
         protected abstract getByIdImplementation(id: TKey): ITypeTracking;
         getById(id: TKey): T;
-        protected abstract saveImplementation(item: T): void;
+        protected abstract saveImplementation(item: T, saveAction: SaveActionEnum): void;
         save(item: T): void;
         replace(item: T): void;
         private saveOrReplace(item, replaceOnly?);
@@ -417,8 +423,8 @@ declare namespace DDDTools.Repository {
         constructor(managedType: string);
         protected abstract getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
         getById(id: TKey): IPromise<T>;
-        protected abstract saveImplementation(item: T): IPromise<{}>;
-        private doSave(item, deferred);
+        protected abstract saveImplementation(item: T, saveAction: SaveActionEnum): IPromise<{}>;
+        private doSave(item, saveAction);
         save(item: T): IPromise<{}>;
         replace(item: T): IPromise<{}>;
         private saveOrReplace(item, replaceOnly?);

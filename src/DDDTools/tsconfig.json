@@ -42,6 +42,7 @@
 		"Aggregate/BaseAggregateRoot.ts",
 		"Repository/PromiseHandler.ts",
 		"Repository/IRepository.ts",
+		"Repository/SaveActionEnum.ts",
 		"Repository/IRepositoryAsync.ts",
 		"Repository/Errors.ts",
 		"Repository/Events.ts",

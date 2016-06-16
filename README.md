@@ -55,6 +55,11 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.15 2016 06 16
+
+* saveImplementation methods in BaseRepository and BaseRepositoryAsync now receive a SaveActionEnum parameter to tell wheter the item must be created or updated.
+  In this way implementation that needs to know if an item exists or not are nto forced to make a new query.
+
 ### 0.0.14 2016 06 13
 
 * **Breaking Change** To avoid [this](http://stackoverflow.com/questions/33965435/testing-angular-when-mixing-q-and-es6-promises) issue during testing, ddd-tools now tries to use $q instead of Q if angular1.x is available. Feature needs to be deeply tested!
