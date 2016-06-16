@@ -329,76 +329,45 @@ declare namespace DDDTools.Repository {
 declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
     import BaseValueObject = ValueObject.BaseValueObject;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemAddedEvent extends BaseValueObject<ItemAddedEvent> implements IDomainEvent {
-        typeName: string;
-        typeVersion: string;
-        id: string;
-        objectState: ITypeTracking;
+    abstract class BaseRepositoryEvent<TEvent, TAggregate> extends BaseValueObject<TEvent> implements IDomainEvent {
+        item: TAggregate;
         repositoryId: string;
-        __typeName: string;
-        __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
+        constructor(item: TAggregate, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemDeletedEvent extends BaseValueObject<ItemDeletedEvent> implements IDomainEvent {
-        typeName: string;
-        typeVersion: string;
-        id: string;
-        objectState: ITypeTracking;
-        repositoryId: string;
+    class ItemAddedEvent<TAggregate> extends BaseRepositoryEvent<ItemAddedEvent<TAggregate>, TAggregate> implements IDomainEvent {
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemRetrievedEvent extends BaseValueObject<ItemRetrievedEvent> implements IDomainEvent {
-        typeName: string;
-        typeVersion: string;
-        id: string;
-        objectState: ITypeTracking;
-        repositoryId: string;
+    class ItemDeletedEvent<TAggregate> extends BaseRepositoryEvent<ItemDeletedEvent<TAggregate>, TAggregate> implements IDomainEvent {
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemUpdatedEvent extends BaseValueObject<ItemUpdatedEvent> implements IDomainEvent {
-        typeName: string;
-        typeVersion: string;
-        id: string;
-        objectState: ITypeTracking;
-        repositoryId: string;
+    class ItemRetrievedEvent<TAggregate> extends BaseRepositoryEvent<ItemRetrievedEvent<TAggregate>, TAggregate> implements IDomainEvent {
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
     }
 }
 declare namespace DDDTools.Repository {
     import IDomainEvent = DomainEvents.IDomainEvent;
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class ItemReplacedEvent extends BaseValueObject<ItemReplacedEvent> implements IDomainEvent {
-        typeName: string;
-        typeVersion: string;
-        id: string;
-        objectState: ITypeTracking;
-        repositoryId: string;
+    class ItemUpdatedEvent<TAggregate> extends BaseRepositoryEvent<ItemUpdatedEvent<TAggregate>, TAggregate> implements IDomainEvent {
         __typeName: string;
         __typeVersion: string;
-        constructor(typeName: string, typeVersion: string, id: string, objectState: ITypeTracking, repositoryId: string);
+    }
+}
+declare namespace DDDTools.Repository {
+    import IDomainEvent = DomainEvents.IDomainEvent;
+    class ItemReplacedEvent<TAggregate> extends BaseRepositoryEvent<ItemReplacedEvent<TAggregate>, TAggregate> implements IDomainEvent {
+        __typeName: string;
+        __typeVersion: string;
     }
 }
 declare namespace DDDTools.Repository {

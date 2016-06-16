@@ -46,6 +46,7 @@
 		"Repository/IRepositoryAsync.ts",
 		"Repository/Errors.ts",
 		"Repository/Events.ts",
+		"Repository/BaseRepositoryEvent.ts",
 		"Repository/ItemAddedEvent.ts",
 		"Repository/ItemDeletedEvent.ts",
 		"Repository/ItemRetrievedEvent.ts",

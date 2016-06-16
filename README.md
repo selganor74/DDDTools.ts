@@ -58,6 +58,7 @@ The package has the following dependencies:
 ### 0.0.16 2016 06 16
 
 * Added repositoryId property to BaseRepository* and RepositoryEvents. This allows to "discern" events by destination.
+* Repository Events are now generic on the AggregateType, and have a unique "item" property of the type managed by the Repository type.
 
 ### 0.0.15 2016 06 16
 

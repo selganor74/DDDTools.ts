@@ -90,7 +90,7 @@ namespace DDDTools.Repository {
                         return;
                     }
 
-                    var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), value, this.repositoryId);
+                    var event = new ItemRetrievedEvent(toReturn, this.repositoryId);
                     DomainDispatcher.dispatch(event);
 
                     deferred.resolve(toReturn);
@@ -132,7 +132,7 @@ namespace DDDTools.Repository {
 
         private saveOrReplace(item: T, replaceOnly: boolean = false): IPromise<{}> {
             var deferred = PromiseHandler.defer<{}>();
-            var event: ItemUpdatedEvent | ItemAddedEvent;
+            var event: ItemUpdatedEvent<T> | ItemAddedEvent<T>;
 
             if (!item.getKey()) {
                 var reason = Errors.getErrorInstance(Errors.KeyNotSet);
@@ -147,10 +147,10 @@ namespace DDDTools.Repository {
                         // Increment revision only if we are not replacing an item
                         if (!replaceOnly) {
                             item.incrementRevisionId();
-                            event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
+                            event = event || new ItemUpdatedEvent(item, this.repositoryId);
                         }
                         this.doSave(item, SaveActionEnum.Update).then(() => {
-                            event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
+                            event = event || new ItemReplacedEvent(item, this.repositoryId);
                             DomainDispatcher.dispatch(event);
                             deferred.resolve();
                         }, (error) => {
@@ -168,7 +168,7 @@ namespace DDDTools.Repository {
 
                         this.doSave(item, SaveActionEnum.Add).then(
                             () => {
-                                event = event || new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
+                                event = event || new ItemAddedEvent(item, this.repositoryId);
                                 DomainDispatcher.dispatch(event);
                                 deferred.resolve();
                             },
@@ -195,10 +195,10 @@ namespace DDDTools.Repository {
 
         delete(id: TKey): IPromise<{}> {
             var deferred = PromiseHandler.defer<{}>();
-            var event: ItemDeletedEvent;
+            var event: ItemDeletedEvent<T>;
             this.getById(id).then(
                 (item) => {
-                    var event = new ItemDeletedEvent(item.__typeName, item.__typeVersion, id.toString(), item.getState(), this.repositoryId);
+                    var event = new ItemDeletedEvent(item, this.repositoryId);
                     this.deleteImplementation(id).then(
                         () => {
                             deferred.resolve();

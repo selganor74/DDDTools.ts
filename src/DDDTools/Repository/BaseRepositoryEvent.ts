@@ -1,7 +1,6 @@
 /// <reference path="../DomainEvents/IDomainEvent.ts" />
 /// <reference path="../ValueObject/BaseValueObject.ts" />
 /// <reference path="./Events.ts" />
-/// <reference path="./BaseRepositoryEvent.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 
 // import {IDomainEvent} from "../DomainEvents/IDomainEvent";
@@ -15,9 +14,19 @@ namespace DDDTools.Repository {
     import BaseValueObject = ValueObject.BaseValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
 
-    export class ItemUpdatedEvent<TAggregate> extends BaseRepositoryEvent<ItemUpdatedEvent<TAggregate>, TAggregate> implements IDomainEvent {
-        __typeName = Events.ItemUpdatedEvent;
-        __typeVersion = "v1";
-    }
+    export abstract class BaseRepositoryEvent<TEvent,TAggregate> extends BaseValueObject<TEvent> implements IDomainEvent {
 
+        constructor(
+            /**
+             * The aggregate instance after the action has been performed.
+             */
+            public item: TAggregate,
+            /**
+             * The Id of the repository performing the operation
+             */
+            public repositoryId: string
+        ) {
+            super();
+        }
+    }
 }

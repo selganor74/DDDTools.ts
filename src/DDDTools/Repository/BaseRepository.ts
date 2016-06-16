@@ -72,7 +72,7 @@ namespace DDDTools.Repository {
                 }
                 var toReturn: T = Factory.createObjectsFromState(retrieved);
 
-                var event = new ItemRetrievedEvent(toReturn.__typeName, toReturn.__typeVersion, toReturn.getKey().toString(), retrieved, this.repositoryId);
+                var event = new ItemRetrievedEvent<T>(toReturn, this.repositoryId);
                 DomainDispatcher.dispatch(event);
 
                 return toReturn;
@@ -89,7 +89,7 @@ namespace DDDTools.Repository {
         save(item: T): void {
             this.saveOrReplace(item);
         }
-        
+
         /**
          * Works just like save, but it never increments RevisionId, it trusts the one already present in the aggregate.
          */
@@ -104,7 +104,7 @@ namespace DDDTools.Repository {
                 Errors.throw(Errors.KeyNotSet);
             }
 
-            var event: ItemUpdatedEvent | ItemAddedEvent;
+            var event: ItemUpdatedEvent<T> | ItemAddedEvent<T>;
             var asItWas: T = null;
             var shouldIncrementRevision = true;
             var saveAction: SaveActionEnum;
@@ -115,18 +115,18 @@ namespace DDDTools.Repository {
                 asItWas = this.getById(item.getKey());
             } catch (e) {
                 // This is expected if the do not exists in the Repo.
-                event = new ItemAddedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
+                event = new ItemAddedEvent(item, this.repositoryId);
                 saveAction = SaveActionEnum.Add;
                 shouldIncrementRevision = false; // because the item was not in the repo!
             }
 
             // Save occur only if stored item and saved item are different somehow.
-            if (!item.perfectlyMatch(asItWas) ) {
+            if (!item.perfectlyMatch(asItWas)) {
                 if (!replaceOnly && shouldIncrementRevision) {
                     item.incrementRevisionId();
-                    event = event || new ItemReplacedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(),this.repositoryId);
+                    event = event || new ItemReplacedEvent(item, this.repositoryId);
                 }
-                event = event || new ItemUpdatedEvent(item.__typeName, item.__typeVersion, item.getKey().toString(), item.getState(), this.repositoryId);
+                event = event || new ItemUpdatedEvent(item, this.repositoryId);
 
                 // finally saves aggregate into the repository.
                 this.saveImplementation(item, saveAction);
@@ -152,7 +152,7 @@ namespace DDDTools.Repository {
                 Errors.throw(Errors.ErrorDeletingItem, JSON.stringify(e));
             }
 
-            var event = new ItemDeletedEvent(asItWas.__typeName, asItWas.__typeVersion, id.toString(), asItWas.getState(), this.repositoryId);
+            var event = new ItemDeletedEvent(asItWas, this.repositoryId);
 
             this.deleteImplementation(id);
 
