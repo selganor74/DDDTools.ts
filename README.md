@@ -59,6 +59,8 @@ The package has the following dependencies:
 
 * Added repositoryId property to BaseRepository* and RepositoryEvents. This allows to "discern" events by destination.
 * Repository Events are now generic on the AggregateType, and have a unique "item" property of the type managed by the Repository type.
+* BugFix: BaseEntity.raiseEvent converted from private to protected to allow access to derivatives. 
+* **Breaking Change** Added setQuery method to IQuery* interfaces.
 
 ### 0.0.15 2016 06 16
 

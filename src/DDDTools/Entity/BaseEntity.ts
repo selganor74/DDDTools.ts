@@ -26,7 +26,7 @@ namespace DDDTools.Entity {
 
 		private key: TKey;
 
-		private raiseEvent(event: IDomainEvent) {
+		protected raiseEvent(event: IDomainEvent) {
 			DomainDispatcher.dispatch(event);
 		};
 

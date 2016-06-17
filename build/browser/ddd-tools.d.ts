@@ -6,12 +6,14 @@ declare namespace DDDTools.ErrorManagement {
 }
 declare namespace DDDTools.Query {
     interface IQuery<T> {
+        setQuery(queryObject: any): any;
         execute(): T[];
     }
 }
 declare namespace DDDTools.Query {
     import IPromise = Q.IPromise;
     interface IQueryAsync<T> {
+        setQuery(queryObject: any): any;
         execute(): IPromise<T[]>;
     }
 }
@@ -243,9 +245,10 @@ declare namespace DDDTools.Entity {
 }
 declare namespace DDDTools.Entity {
     import BasePersistableObject = PersistableObject.BasePersistableObject;
+    import IDomainEvent = DomainEvents.IDomainEvent;
     abstract class BaseEntity<T extends IEntity<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BasePersistableObject implements IEntity<T, TKey> {
         private key;
-        private raiseEvent(event);
+        protected raiseEvent(event: IDomainEvent): void;
         getKey(): TKey;
         setKey(key: TKey): void;
         equals(item: T): boolean;
