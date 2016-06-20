@@ -28,8 +28,6 @@
 // import {ItemDeletedEvent} from "./ItemDeletedEvent";
 // import {DomainDispatcher} from "../DomainEvents/DomainDispatcher";
 
-declare var PromiseHandler: typeof Q;
-
 namespace DDDTools.Repository {
 
     import IPersistable = PersistableObject.IPersistable;

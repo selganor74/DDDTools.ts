@@ -55,6 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.17 2016 06 20
+
+* **Possibly Breaking Change** Fix of return types in BaseRepositoryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
+
 ### 0.0.16 2016 06 16
 
 * Added repositoryId property to BaseRepository* and RepositoryEvents. This allows to "discern" events by destination.

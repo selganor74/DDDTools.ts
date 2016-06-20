@@ -391,7 +391,6 @@ declare namespace DDDTools.Repository {
         delete(id: TKey): void;
     }
 }
-declare var PromiseHandler: typeof Q;
 declare namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
