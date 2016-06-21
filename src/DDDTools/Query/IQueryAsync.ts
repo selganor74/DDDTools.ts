@@ -2,7 +2,7 @@
 
 namespace DDDTools.Query {
     
-    import IPromise = Q.IPromise;
+    import IPromise = Repository.IPromise;
     
     /**
      * Identifies a query to be executed against a Datastore in an async fashion
