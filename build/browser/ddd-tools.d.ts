@@ -296,7 +296,6 @@ declare namespace DDDTools.Repository {
     }
 }
 declare namespace DDDTools.Repository {
-    import IPromise = Q.IPromise;
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     interface IRepositoryAsync<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {

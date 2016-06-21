@@ -58,6 +58,8 @@ The package has the following dependencies:
 ### 0.0.17 2016 06 20
 
 * **Possibly Breaking Change** Fix of return types in BaseRepositoryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
+* **Possibly Breaking Change** Fix of return types in IRepositoryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
+
 
 ### 0.0.16 2016 06 16
 

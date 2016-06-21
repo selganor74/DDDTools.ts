@@ -8,7 +8,6 @@
  */
 
 namespace DDDTools.Repository {
-    import IPromise = Q.IPromise;
 
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
