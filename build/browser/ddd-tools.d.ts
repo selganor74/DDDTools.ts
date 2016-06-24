@@ -11,7 +11,7 @@ declare namespace DDDTools.Query {
     }
 }
 declare namespace DDDTools.Query {
-    import IPromise = Q.IPromise;
+    import IPromise = Repository.IPromise;
     interface IQueryAsync<T> {
         setQuery(queryObject: any): any;
         execute(): IPromise<T[]>;
