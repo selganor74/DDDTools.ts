@@ -25,11 +25,17 @@ namespace CdC.Tests.ForDispatcher {
 
         public aNumber: number = 0;
 
+        constructor() {
+
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", this.eventHandler, this);
+        }
+
         public aFunctionInMyContext() {
             this.aNumber = 1;
         }
 
         public eventHandler(event: IDomainEvent) {
+            expect(event).not.toBeUndefined("The event arrived to the eventhandler is undefined.");
             this.aFunctionInMyContext();
         }
         
@@ -157,6 +163,7 @@ namespace CdC.Tests.ForDispatcher {
 
         it("Handlers must be called in their orginal 'this' context", () => {
             DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+
             var classWithHandler = new aClassContainingAnHandlerAndSomeOtherStuff();
 
             spyOn(classWithHandler, "aFunctionInMyContext").and.callThrough();
@@ -165,7 +172,7 @@ namespace CdC.Tests.ForDispatcher {
 
             DomainDispatcher.dispatch(new aDomainEvent());
 
-            expect(classWithHandler.aFunctionInMyContext).toHaveBeenCalled();
+            expect(classWithHandler.aFunctionInMyContext).toHaveBeenCalledTimes(1);
 
         } );
     });

@@ -54,7 +54,7 @@ namespace DDDTools.DomainEvents {
             for (var element of this.delegatesRegistry[event.__typeName]) {
                 try {
                     if ((<any>element).__originalScope) {
-                        element.apply((<any>element).__originalScope, event);
+                        element.call((<any>element).__originalScope, event);
                     } else {
                         element(event);
                     }

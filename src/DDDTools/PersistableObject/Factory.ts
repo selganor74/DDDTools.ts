@@ -235,7 +235,7 @@ namespace DDDTools.PersistableObject {
         private static latestVersions: { [typeName: string]: string } = {}
         private static commonTypesRegistered = false;
 
-        public static registerType(typeName: string, typeVersion: string, typePrototype: new (...any) => IPersistable): void {
+        public static registerType(typeName: string, typeVersion: string, typePrototype: new (...args: any[]) => IPersistable): void {
             var sThis = TypeRegistry;
             if (!typePrototype) {
                 Errors.throw(Errors.CannotRegisterUndefined, "typePrototype supplied for " + typeName + " " + typeVersion + " is null or undefined!");
