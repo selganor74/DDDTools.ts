@@ -203,7 +203,7 @@ declare namespace DDDTools.DomainEvents {
 }
 declare namespace DDDTools.DomainEvents {
     interface IDispatcher {
-        registerHandler(eventTypeName: string, handler: IEventHandler): any;
+        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): any;
         unregisterHandler(eventTypeName: string, handler: IEventHandler): any;
         dispatch(event: IDomainEvent): any;
     }
@@ -212,7 +212,7 @@ declare namespace DDDTools.DomainEvents {
     class DomainDispatcher {
         private static dispatcherImplementation;
         static setDispatcherImplementation(dispatcher: IDispatcher): void;
-        static registerHandler(eventTypeName: string, handler: IEventHandler): void;
+        static registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
         static unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
         static dispatch(event: IDomainEvent): void;
     }
@@ -221,7 +221,7 @@ declare namespace DDDTools.DomainEvents {
     class InProcessDispatcher {
         private delegatesRegistry;
         clear(): void;
-        registerHandler(eventTypeName: string, handler: IEventHandler): void;
+        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
         unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
         dispatch(event: IDomainEvent): void;
         private buildErrorMessage(Errors);

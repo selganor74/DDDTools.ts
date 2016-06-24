@@ -6,7 +6,7 @@
 
 namespace DDDTools.DomainEvents {
     export interface IDispatcher {
-        registerHandler(eventTypeName: string, handler: IEventHandler);
+        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any);
         unregisterHandler(eventTypeName: string, handler: IEventHandler);
         dispatch(event: IDomainEvent);
     }

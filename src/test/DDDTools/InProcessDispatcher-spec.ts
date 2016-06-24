@@ -21,6 +21,19 @@ namespace CdC.Tests.ForDispatcher {
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
     import InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
 
+    class aClassContainingAnHandlerAndSomeOtherStuff {
+
+        public aNumber: number = 0;
+
+        public aFunctionInMyContext() {
+            this.aNumber = 1;
+        }
+
+        public eventHandler(event: IDomainEvent) {
+            this.aFunctionInMyContext();
+        }
+        
+    }
 
     class aDomainEvent extends BaseValueObject<aDomainEvent> implements IDomainEvent {
         __typeName = "CdC.Tests.Dispatcher.aDomainEvent";
@@ -141,5 +154,19 @@ namespace CdC.Tests.ForDispatcher {
             DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", eventHandler);
             DomainDispatcher.unregisterHandler("CdC.Tests.Dispatcher.aDomainEvent", secondEventHandler);
         });
+
+        it("Handlers must be called in their orginal 'this' context", () => {
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+            var classWithHandler = new aClassContainingAnHandlerAndSomeOtherStuff();
+
+            spyOn(classWithHandler, "aFunctionInMyContext").and.callThrough();
+
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", classWithHandler.eventHandler, classWithHandler);
+
+            DomainDispatcher.dispatch(new aDomainEvent());
+
+            expect(classWithHandler.aFunctionInMyContext).toHaveBeenCalled();
+
+        } );
     });
 }

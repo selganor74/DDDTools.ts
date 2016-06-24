@@ -17,13 +17,18 @@ namespace DDDTools.DomainEvents {
             this.delegatesRegistry = {};
         }
 
-        public registerHandler(eventTypeName: string, handler: IEventHandler) {
+        /**
+         * the scope parameter can be passed in to warranty that callback will be called in the original context [this]!!!
+         */
+        public registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any) {
             if (!this.delegatesRegistry[eventTypeName]) {
                 this.delegatesRegistry[eventTypeName] = [];
             }
+
             // Adds an handle if (and only if) the handler has not been "stamped"
             if (!(<any>handler).__handlerId) {
                 (<any>handler).__handlerId = SimpleGuid.generate();
+                (<any>handler).__originalScope = scope;
                 this.delegatesRegistry[eventTypeName].push(handler);
             }
         }
@@ -48,7 +53,11 @@ namespace DDDTools.DomainEvents {
             var Errors: Error[] = [];
             for (var element of this.delegatesRegistry[event.__typeName]) {
                 try {
-                    element(event);
+                    if ((<any>element).__originalScope) {
+                        element.apply((<any>element).__originalScope, event);
+                    } else {
+                        element(event);
+                    }
                 } catch (e) {
                     Errors.push(e);
                 }

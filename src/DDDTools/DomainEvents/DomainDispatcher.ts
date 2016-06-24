@@ -16,10 +16,10 @@ namespace DDDTools.DomainEvents {
             sThis.dispatcherImplementation = dispatcher;
         }
 
-        public static registerHandler(eventTypeName: string, handler: IEventHandler) {
+        public static registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any) {
             var sThis = DomainDispatcher;
             if (sThis.dispatcherImplementation) {
-                sThis.dispatcherImplementation.registerHandler(eventTypeName, handler);
+                sThis.dispatcherImplementation.registerHandler(eventTypeName, handler, scope);
             }
         }
 

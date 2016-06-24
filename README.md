@@ -55,6 +55,11 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.18 2016 06 24
+
+* Added scope parameter to DomainEvents.registerHandler to allow passing "original" context along with handler.
+* Fixed Factory.registerType signature to allow registering elements having a constructor with parameters.
+
 ### 0.0.17 2016 06 20
 
 * **Possibly Breaking Change** Fix of return types in BaseRepositoryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
