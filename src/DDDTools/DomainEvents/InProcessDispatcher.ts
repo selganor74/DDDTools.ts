@@ -9,6 +9,8 @@
 namespace DDDTools.DomainEvents {
 
     import SimpleGuid = Utils.SimpleGuid;
+    import PromiseHandler = Repository.PromiseHandler;
+    import IPromise = Repository.IPromise;
 
     type HandlerAndScopeContainer = { handler: IEventHandler, originalScope: any }
 
@@ -52,30 +54,50 @@ namespace DDDTools.DomainEvents {
             }
         }
 
-        public dispatch(event: IDomainEvent) {
+        public dispatch(event: IDomainEvent): IPromise<any> {
             if (!this.delegatesRegistry[event.__typeName]) {
                 return;
             }
-            var Errors: Error[] = [];
+            var errors: Error[] = [];
+            var promiseArray: IPromise<any>[] = [];
             for (var element in this.delegatesRegistry[event.__typeName]) {
                 try {
                     var handler = this.delegatesRegistry[event.__typeName][element].handler;
                     var scope = this.delegatesRegistry[event.__typeName][element].originalScope;
+                    
+                    var returnValue: any;
                     if (scope) {
-                        handler.call(scope, event);
+                        returnValue = handler.call(scope, event);
                     } else {
-                        handler(event);
+                        returnValue = handler(event);
+                    }
+                    // if we get a promise, we add it to the list of promises
+                    if (returnValue) {
+                        if (returnValue.then && typeof returnValue.then === 'function') {
+                            var promise;
+                            promise = returnValue.then(
+                                () => { return },
+                                (error) => {
+                                    errors.push(error);
+                                }
+                            );
+                            promiseArray.push(promise);
+                        }
                     }
                 } catch (e) {
-                    Errors.push(e);
+                    errors.push(e);
                 }
             }
-            if (Errors.length != 0) {
-                var message = this.buildErrorMessage(Errors);
-                var e = new Error(message);
-                e.name = "Dispatcher Error";
-                console.log(e);
-            }
+            // the promise returned will be resolved when all of the promises in the array will be resolved.
+            return PromiseHandler.all(promiseArray).then(
+                () => {
+                    if (errors.length != 0) {
+                        var message = this.buildErrorMessage(errors);
+                        var e = new Error(message);
+                        e.name = "Errors while processing event " + event.__typeName;
+                        console.log(e);
+                    }
+                });
         }
 
         private buildErrorMessage(Errors: Error[]): string {

@@ -20,6 +20,7 @@ namespace CdC.Tests.ForDispatcher {
     import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
     import InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
+    import PromiseHandler = DDDTools.Repository.PromiseHandler;
 
     class aClassContainingAnHandlerAndSomeOtherStuff {
 
@@ -191,7 +192,88 @@ namespace CdC.Tests.ForDispatcher {
             DomainDispatcher.dispatch(new aDomainEvent());
 
             expect(classWithHandler.aFunctionInMyContext).toHaveBeenCalledTimes(1);
+        });
 
-        } );
+        it("dispatch must return a promise that will be resolved when all event handlers are done", (done) => {
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+
+            var secondRun = false;
+            var firstRun = false;
+
+            function anHandlerReturningAPromise(event: IDomainEvent) {
+                var deferred = PromiseHandler.defer();
+
+                setTimeout(() => {
+                    firstRun = true;
+                    deferred.resolve();
+                }, 50);
+
+                return deferred.promise;
+            }
+
+            function anotherHandlerReturningAPromise(event: IDomainEvent) {
+                var deferred = PromiseHandler.defer();
+
+                setTimeout(() => {
+                    secondRun = true;
+                    deferred.resolve();
+                }, 100);
+
+                return deferred.promise;                
+            }
+
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", anHandlerReturningAPromise);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", anotherHandlerReturningAPromise);
+
+            DomainDispatcher.dispatch(new aDomainEvent()).then(
+                () => {
+                    expect(firstRun).toBeTruthy("Promise resolved but first handler didn't run.");
+                    expect(secondRun).toBeTruthy("Promise resolved but second handler didn't run.");
+                }
+            ).finally(() => {
+                done();
+            });
+        });
+
+        it("promises rejected by events must be logged", (done) => {
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+
+            spyOn(console, 'log').and.callThrough();
+            var secondRun = false;
+
+            function anHandlerReturningAPromise(event: IDomainEvent) {
+                var deferred = PromiseHandler.defer();
+
+                setTimeout(() => {
+                    secondRun = true;
+                    deferred.resolve("Ok");
+                }, 100);
+
+                return deferred.promise;
+            }
+
+            function anotherHandlerReturningAPromise(event: IDomainEvent) {
+                var deferred = PromiseHandler.defer();
+
+                setTimeout(() => {
+                    deferred.reject(new Error("this text must be logged to console"));
+                }, 50);
+
+                return deferred.promise;                
+            }
+
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", anotherHandlerReturningAPromise);
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", anHandlerReturningAPromise);
+
+            DomainDispatcher.dispatch(new aDomainEvent()).then(
+                () => {
+                    expect(console.log).toHaveBeenCalledTimes(1);
+                    expect(secondRun).toBeTruthy("Promise resolved but second handler didn't run");
+               }
+            ).finally(() => {
+                done();
+            });
+        });
+
     });
 }

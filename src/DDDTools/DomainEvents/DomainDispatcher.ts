@@ -8,6 +8,8 @@
 
 namespace DDDTools.DomainEvents {
 
+    import IPromise = Repository.IPromise;
+
     export class DomainDispatcher {
         private static dispatcherImplementation: IDispatcher;
 
@@ -30,10 +32,10 @@ namespace DDDTools.DomainEvents {
             }
         }
 
-        public static dispatch(event: IDomainEvent) {
+        public static dispatch(event: IDomainEvent): IPromise<any> {
             var sThis = DomainDispatcher;
             if (sThis.dispatcherImplementation) {
-                sThis.dispatcherImplementation.dispatch(event);
+                return sThis.dispatcherImplementation.dispatch(event);
             }
         }
     }

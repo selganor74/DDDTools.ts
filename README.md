@@ -55,6 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.20 2016 06 27
+
+* DomainEvents.dispatch now returns a promise. Useful especially during testing to know when event processing has completely done.
+
 ### 0.0.19 2016 06 27
 
 * Bug Fix: It is now possible to re-register the same handler in a different instance of the InProcessDispatcher.

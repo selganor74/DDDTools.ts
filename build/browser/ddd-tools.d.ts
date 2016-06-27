@@ -191,43 +191,6 @@ declare namespace DDDTools.PersistableObject {
         static computeNextVersion(typeVersion: string): string;
     }
 }
-declare namespace DDDTools.DomainEvents {
-    import IPersistable = PersistableObject.IPersistable;
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    interface IDomainEvent extends IPersistable, ITypeTracking {
-    }
-}
-declare namespace DDDTools.DomainEvents {
-    interface IEventHandler {
-        (domainEvent: IDomainEvent): void;
-    }
-}
-declare namespace DDDTools.DomainEvents {
-    interface IDispatcher {
-        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): any;
-        unregisterHandler(eventTypeName: string, handler: IEventHandler): any;
-        dispatch(event: IDomainEvent): any;
-    }
-}
-declare namespace DDDTools.DomainEvents {
-    class DomainDispatcher {
-        private static dispatcherImplementation;
-        static setDispatcherImplementation(dispatcher: IDispatcher): void;
-        static registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
-        static unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
-        static dispatch(event: IDomainEvent): void;
-    }
-}
-declare namespace DDDTools.DomainEvents {
-    class InProcessDispatcher {
-        private delegatesRegistry;
-        clear(): void;
-        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
-        unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
-        dispatch(event: IDomainEvent): void;
-        private buildErrorMessage(Errors);
-    }
-}
 declare namespace DDDTools.Entity {
     import IEquatable = CommonInterfaces.IEquatable;
     import IPersistable = PersistableObject.IPersistable;
@@ -242,6 +205,35 @@ declare namespace DDDTools.Entity {
     abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T>, IPersistable {
         constructor();
         abstract toString(): string;
+    }
+}
+declare namespace DDDTools.DomainEvents {
+    import IPersistable = PersistableObject.IPersistable;
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    interface IDomainEvent extends IPersistable, ITypeTracking {
+    }
+}
+declare namespace DDDTools.DomainEvents {
+    interface IEventHandler {
+        (domainEvent: IDomainEvent): any;
+    }
+}
+declare namespace DDDTools.DomainEvents {
+    import IPromise = Repository.IPromise;
+    interface IDispatcher {
+        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): any;
+        unregisterHandler(eventTypeName: string, handler: IEventHandler): any;
+        dispatch(event: IDomainEvent): IPromise<any>;
+    }
+}
+declare namespace DDDTools.DomainEvents {
+    import IPromise = Repository.IPromise;
+    class DomainDispatcher {
+        private static dispatcherImplementation;
+        static setDispatcherImplementation(dispatcher: IDispatcher): void;
+        static registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
+        static unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
+        static dispatch(event: IDomainEvent): IPromise<any>;
     }
 }
 declare namespace DDDTools.Entity {
@@ -436,6 +428,17 @@ declare namespace DDDTools.Repository {
         protected saveImplementation(item: T): IPromise<{}>;
         private deleteSync(id);
         protected deleteImplementation(id: TKey): IPromise<{}>;
+    }
+}
+declare namespace DDDTools.DomainEvents {
+    import IPromise = Repository.IPromise;
+    class InProcessDispatcher {
+        private delegatesRegistry;
+        clear(): void;
+        registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
+        unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
+        dispatch(event: IDomainEvent): IPromise<any>;
+        private buildErrorMessage(Errors);
     }
 }
 declare namespace DDDTools.UnitOfWork {

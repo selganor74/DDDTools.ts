@@ -5,7 +5,7 @@
 namespace DDDTools.DomainEvents {
 
     export interface IEventHandler {
-        (domainEvent: IDomainEvent): void;
+        (domainEvent: IDomainEvent): any;
     }
 
 }
