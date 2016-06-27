@@ -10,8 +10,10 @@ namespace DDDTools.DomainEvents {
 
     import SimpleGuid = Utils.SimpleGuid;
 
+    type HandlerAndScopeContainer = { handler: IEventHandler, originalScope: any }
+
     export class InProcessDispatcher {
-        private delegatesRegistry: { [eventTypeName: string]: IEventHandler[] } = {};
+        private delegatesRegistry: { [eventTypeName: string]: { [handlerId: string]: HandlerAndScopeContainer } } = {};
 
         public clear() {
             this.delegatesRegistry = {};
@@ -22,27 +24,31 @@ namespace DDDTools.DomainEvents {
          */
         public registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any) {
             if (!this.delegatesRegistry[eventTypeName]) {
-                this.delegatesRegistry[eventTypeName] = [];
+                this.delegatesRegistry[eventTypeName] = {};
             }
 
-            // Adds an handle if (and only if) the handler has not been "stamped"
+            var handlerId: string;
+
+            // "Stamps" the handler if not already "stamped"
             if (!(<any>handler).__handlerId) {
                 (<any>handler).__handlerId = SimpleGuid.generate();
-                (<any>handler).__originalScope = scope;
-                this.delegatesRegistry[eventTypeName].push(handler);
+            }
+
+            handlerId = (<any>handler).__handlerId;
+
+            if (!this.delegatesRegistry[eventTypeName][handlerId]) {
+                this.delegatesRegistry[eventTypeName][handlerId] = {
+                    handler: handler,
+                    originalScope: scope
+                }
             }
         }
 
         public unregisterHandler(eventTypeName: string, handler: IEventHandler) {
             // Act only id handler has been registered.
             if ((<any>handler).__handlerId) {
-                for (var element in this.delegatesRegistry[eventTypeName]) {
-                    var currentElement = this.delegatesRegistry[eventTypeName][element];
-                    if ((<any>currentElement).__handlerId === (<any>handler).__handlerId) {
-                        this.delegatesRegistry[eventTypeName].splice(Number(element), 1);
-                        break;
-                    }
-                }
+                var handlerId = (<any>handler).__handlerId;
+                delete this.delegatesRegistry[eventTypeName][handlerId];
             }
         }
 
@@ -51,12 +57,14 @@ namespace DDDTools.DomainEvents {
                 return;
             }
             var Errors: Error[] = [];
-            for (var element of this.delegatesRegistry[event.__typeName]) {
+            for (var element in this.delegatesRegistry[event.__typeName]) {
                 try {
-                    if ((<any>element).__originalScope) {
-                        element.call((<any>element).__originalScope, event);
+                    var handler = this.delegatesRegistry[event.__typeName][element].handler;
+                    var scope = this.delegatesRegistry[event.__typeName][element].originalScope;
+                    if (scope) {
+                        handler.call(scope, event);
                     } else {
-                        element(event);
+                        handler(event);
                     }
                 } catch (e) {
                     Errors.push(e);

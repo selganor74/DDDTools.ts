@@ -55,6 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.19 2016 06 27
+
+* Bug Fix: It is now possible to re-register the same handler in a different instance of the InProcessDispatcher.
+
 ### 0.0.18 2016 06 24
 
 * Added scope parameter to DomainEvents.registerHandler to allow passing "original" context along with handler.
@@ -65,7 +69,6 @@ The package has the following dependencies:
 * **Possibly Breaking Change** Fix of return types in BaseRepositoryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
 * **Possibly Breaking Change** Fix of return types in IRepositoryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
 * **Possibly Breaking Change** Fix of return types in IQueryAsync, should be PromiseHandler.IPromise, instead of Q.IPromise.
-
 
 ### 0.0.16 2016 06 16
 

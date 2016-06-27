@@ -175,5 +175,23 @@ namespace CdC.Tests.ForDispatcher {
             expect(classWithHandler.aFunctionInMyContext).toHaveBeenCalledTimes(1);
 
         } );
+
+        it("Must be possible to re-register an handler in a different instanced of the dispatcher.", () => {
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+
+            var classWithHandler = new aClassContainingAnHandlerAndSomeOtherStuff();
+
+            spyOn(classWithHandler, "aFunctionInMyContext").and.callThrough();
+
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", classWithHandler.eventHandler, classWithHandler);
+
+            DomainDispatcher.setDispatcherImplementation(new InProcessDispatcher());
+            DomainDispatcher.registerHandler("CdC.Tests.Dispatcher.aDomainEvent", classWithHandler.eventHandler, classWithHandler);
+
+            DomainDispatcher.dispatch(new aDomainEvent());
+
+            expect(classWithHandler.aFunctionInMyContext).toHaveBeenCalledTimes(1);
+
+        } );
     });
 }
