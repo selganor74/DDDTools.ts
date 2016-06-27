@@ -116,5 +116,33 @@ namespace CdC.Tests.ForBaseValueObject {
             expect(vo1.equals(vo2)).toBeTruthy("vo1 is reported to be not equal to vo2, while it is!");
             expect(vo1.equals(vo3)).toBeFalsy("vo1 is reportede to be equal to vo3, while it is not!");
         });
+
+        it("Must be possible to find multiple ValueObjects in an array via the findInArray function", () => {
+            var arrayOfVOs: TestValueObject_Object[] = [];
+
+            var vo1 = new TestValueObject_Object(
+                { p1: 3, p2: 42 }
+            );
+            var vo2 = new TestValueObject_Object(
+                { p1: 3, p2: 42 }
+            );
+            var vo3 = new TestValueObject_Object(
+                { p1: 6, p3: 96 }
+            );
+
+            arrayOfVOs.push(vo1);
+            arrayOfVOs.push(vo2);
+            arrayOfVOs.push(vo3);
+            
+            var toFind = new TestValueObject_Object(
+                { p1: 6, p3: 96 }
+            );
+
+            var result = toFind.findInArray(arrayOfVOs);
+            for(var i of result) {
+                expect(arrayOfVOs[i].equals(toFind)).toBeTruthy("Some elements found do not equals element to find");
+            }
+            
+        });
     });
 }

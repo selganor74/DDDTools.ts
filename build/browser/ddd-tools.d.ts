@@ -158,6 +158,7 @@ declare namespace DDDTools.ValueObject {
     abstract class BaseValueObject<T> extends BasePersistableObject implements IValueObject<T> {
         constructor();
         equals(item: T): boolean;
+        findInArray(collection: T[]): string[];
     }
 }
 declare namespace DDDTools.ValueObjects {
