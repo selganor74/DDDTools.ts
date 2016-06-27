@@ -58,6 +58,7 @@ The package has the following dependencies:
 ### 0.0.20 2016 06 27
 
 * DomainEvents.dispatch now returns a promise. Useful especially during testing to know when event processing has completely done.
+* Added repositoryId parameter to BaseInMemoryRepositoryAsync.
 
 ### 0.0.19 2016 06 27
 

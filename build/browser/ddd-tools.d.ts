@@ -421,7 +421,7 @@ declare namespace DDDTools.Repository {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     class InMemoryRepositoryAsync<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseRepositoryAsync<T, TKey> implements IRepositoryAsync<T, TKey> {
         private storage;
-        constructor(managedType: string);
+        constructor(managedType: string, repositoryId?: string);
         private getByIdSync(id);
         protected getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
         private saveSync(item);
