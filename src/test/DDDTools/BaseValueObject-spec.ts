@@ -129,20 +129,24 @@ namespace CdC.Tests.ForBaseValueObject {
             var vo3 = new TestValueObject_Object(
                 { p1: 6, p3: 96 }
             );
+            var vo4 = new TestValueObject_Object(
+                { p1: 6, p3: 96 }
+            );
 
             arrayOfVOs.push(vo1);
             arrayOfVOs.push(vo2);
             arrayOfVOs.push(vo3);
+            arrayOfVOs.push(vo4);
             
             var toFind = new TestValueObject_Object(
                 { p1: 6, p3: 96 }
             );
 
             var result = toFind.findInArray(arrayOfVOs);
+            expect(result.length).toEqual(2, "The function did not find the 2 elements it should have found.");
             for(var i of result) {
-                expect(arrayOfVOs[i].equals(toFind)).toBeTruthy("Some elements found do not equals element to find");
+                expect(arrayOfVOs[i].equals(toFind)).toBeTruthy("Some elements found do not equals element to find.");
             }
-            
         });
     });
 }

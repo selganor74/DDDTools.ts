@@ -58,6 +58,7 @@ The package has the following dependencies:
 ### 0.0.19 2016 06 27
 
 * Bug Fix: It is now possible to re-register the same handler in a different instance of the InProcessDispatcher.
+* Added findInArray function to BaseValueObject.
 
 ### 0.0.18 2016 06 24
 
