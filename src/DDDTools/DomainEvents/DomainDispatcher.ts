@@ -1,3 +1,5 @@
+/// <reference path="../Promises/PromiseHandler.ts" />
+
 /// <reference path="./IDomainEvent.ts" />
 /// <reference path="./IDispatcher.ts" />
 /// <reference path="./IEventHandler.ts" />
@@ -8,7 +10,7 @@
 
 namespace DDDTools.DomainEvents {
 
-    import IPromise = Repository.IPromise;
+    import IPromise = Promises.IPromise;
 
     export class DomainDispatcher {
         private static dispatcherImplementation: IDispatcher;

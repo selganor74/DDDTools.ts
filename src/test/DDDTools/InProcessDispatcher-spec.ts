@@ -20,7 +20,7 @@ namespace CdC.Tests.ForDispatcher {
     import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
     import InProcessDispatcher = DDDTools.DomainEvents.InProcessDispatcher;
-    import PromiseHandler = DDDTools.Repository.PromiseHandler;
+    import PromiseHandler = DDDTools.Promises.PromiseHandler;
 
     class aClassContainingAnHandlerAndSomeOtherStuff {
 

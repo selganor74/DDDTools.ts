@@ -55,6 +55,12 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.21 2016 07 06
+
+* **Breaking Change** Added "Promises" namespace into which have been moved the Repository.PromiseHandler et al. management.
+* Added StateMachine and Saga prototypes... still nothing to rely on
+* The generated ddd-tools.d.ts is now keeping comments! 
+
 ### 0.0.20 2016 06 27
 
 * DomainEvents.dispatch now returns a promise. Useful especially during testing to know when event processing has completely done.

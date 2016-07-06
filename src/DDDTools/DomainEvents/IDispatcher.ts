@@ -6,7 +6,7 @@
 
 namespace DDDTools.DomainEvents {
 
-    import IPromise = Repository.IPromise;
+    import IPromise = Promises.IPromise;
 
     export interface IDispatcher {
         registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any);

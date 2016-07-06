@@ -6,10 +6,12 @@
 		"outFile": "../../build/browser/ddd-tools.js",
 		"declaration": true,
 		"inlineSourceMap": true,
-		"inlineSources": true
+		"inlineSources": true,
+		"removeComments": false
 	},
 	"files": [
 		"ErrorManagement/BaseErrors.ts",
+		"Promises/PromiseHandler.ts",
 		"Query/IQuery.ts",
 		"Query/IQueryAsync.ts",
 		"Utils/SimpleGuid.ts",
@@ -35,7 +37,6 @@
 		"Entity/BaseEntity.ts",
 		"Aggregate/IAggregateRoot.ts",
 		"Aggregate/BaseAggregateRoot.ts",
-		"Repository/PromiseHandler.ts",
 		"Repository/IRepository.ts",
 		"Repository/SaveActionEnum.ts",
 		"Repository/IRepositoryAsync.ts",

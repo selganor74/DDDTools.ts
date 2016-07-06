@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/browser.d.ts" />
 
-namespace DDDTools.Repository {
+namespace DDDTools.Promises {
 
     export var PromiseHandler: ng.IQService;
     export import IPromise = ng.IPromise;

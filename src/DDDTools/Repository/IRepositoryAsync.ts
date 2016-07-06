@@ -12,6 +12,8 @@ namespace DDDTools.Repository {
     import IAggregateRoot = Aggregate.IAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
 
+    import IPromise = Promises.IPromise;
+
     export interface IRepositoryAsync<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> {
 
         /**

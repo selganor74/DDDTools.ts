@@ -9,8 +9,8 @@
 namespace DDDTools.DomainEvents {
 
     import SimpleGuid = Utils.SimpleGuid;
-    import PromiseHandler = Repository.PromiseHandler;
-    import IPromise = Repository.IPromise;
+    import PromiseHandler = Promises.PromiseHandler;
+    import IPromise = Promises.IPromise;
 
     type HandlerAndScopeContainer = { handler: IEventHandler, originalScope: any }
 

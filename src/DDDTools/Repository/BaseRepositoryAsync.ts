@@ -1,5 +1,6 @@
 /// <reference path="../../../typings/browser.d.ts" />
 
+/// <reference path="../Promises/PromiseHandler.ts" />
 /// <reference path="./IRepositoryAsync.ts" />
 /// <reference path="./SaveActionEnum.ts" />
 /// <reference path="./Errors.ts" />
@@ -36,6 +37,9 @@ namespace DDDTools.Repository {
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
     import DomainDispatcher = DomainEvents.DomainDispatcher;
+
+    import PromiseHandler = Promises.PromiseHandler;
+    import IPromise = Promises.IPromise;
 
     /**
      * Captures common behavior of repository, using theTemplate Method Pattern.

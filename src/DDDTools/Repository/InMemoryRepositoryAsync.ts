@@ -1,4 +1,4 @@
-/// <reference path="./PromiseHandler.ts" />
+/// <reference path="../Promises/PromiseHandler.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
 /// <reference path="./Errors.ts" />
 /// <reference path="../PersistableObject/Factory.ts" />
@@ -16,6 +16,9 @@ namespace DDDTools.Repository {
     import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
     import IKeyValueObject = Entity.IKeyValueObject;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
+
+    import PromiseHandler = Promises.PromiseHandler;
+    import IPromise = Promises.IPromise;
 
     import Serializer = Serialization.Serializer;
     import Deserializer = Serialization.Deserializer;
