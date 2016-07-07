@@ -311,6 +311,63 @@ declare namespace DDDTools.PersistableObject {
         static computeNextVersion(typeVersion: string): string;
     }
 }
+declare namespace DDDTools.StateMachine {
+    interface IStateMachine<
+        /**
+         * An enum or string literal representing the possible statuses of the machine
+         */
+    TStatuses, 
+        /**
+         * An enum or string literal representing the possible events
+         */
+    TEvents> {
+        /**
+         * Will throw an exception if isEventValid returns false, otherwise it will advance the machine to the next status.
+         */
+        processEvent(event: TEvents): void;
+        /**
+         * Returns true if the event is valid for the current status.
+         */
+        isEventValidForCurrentStatus(event: TEvents): boolean;
+        /**
+         * Returns the current status of the machine
+         */
+        getCurrentStatus(): TStatuses;
+        /**
+         * Returns the previous status of the machine
+         */
+        getPreviousStatus(): TStatuses;
+    }
+}
+declare namespace DDDTools.StateMachine {
+    import BasePersistableObject = DDDTools.PersistableObject.BasePersistableObject;
+    class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
+        protected stateMachineDefinition: {
+            [event: string]: {
+                [fromStatus: string]: TStatuses;
+            };
+        };
+        /**
+         * Please, remember to set these values in your derived types !
+         */
+        __typeName: string;
+        __typeVersion: string;
+        protected currentStatus: TStatuses;
+        protected previousStatus: TStatuses;
+        constructor(initialStatus: TStatuses, stateMachineDefinition: {
+            [event: string]: {
+                [fromStatus: string]: TStatuses;
+            };
+        });
+        getCurrentStatus(): TStatuses;
+        getPreviousStatus(): TStatuses;
+        isEventValidForCurrentStatus(event: TEvents): boolean;
+        /**
+         * Will cause the state machine to advance to the next status... or throw an axception.
+         */
+        processEvent(event: TEvents): void;
+    }
+}
 declare namespace DDDTools.Entity {
     import IEquatable = CommonInterfaces.IEquatable;
     import IPersistable = PersistableObject.IPersistable;
@@ -690,6 +747,41 @@ declare namespace DDDTools.DomainEvents {
         unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
         dispatch(event: IDomainEvent): IPromise<any>;
         private buildErrorMessage(Errors);
+    }
+}
+declare namespace DDDTools.Saga {
+    interface ISaga {
+        start(): void;
+        stop(): void;
+        recover(): void;
+    }
+}
+declare namespace DDDTools.Saga {
+    import BaseAggregateRoot = Aggregate.BaseAggregateRoot;
+    import IAggregateRoot = Aggregate.IAggregateRoot;
+    import IKeyValueObject = Entity.IKeyValueObject;
+    import IRepositoryAsync = Repository.IRepositoryAsync;
+    abstract class BaseSaga<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>, 
+        /**
+         * TStatuses must be an enum or a string literal
+         */
+    TStatuses, 
+        /**
+         * TEvents must be an enum or a string literal
+         */
+    TEvents> extends BaseAggregateRoot<T, TKey> {
+        private repository;
+        private initialStatus;
+        private finalStatuses;
+        constructor(repository: IRepositoryAsync<T, TKey>, initialStatus: TStatuses, finalStatuses: TStatuses[]);
+        /**
+         * You must override this function to handle events and saga status
+         */
+        abstract triggerEvent(event: TEvents): void;
+        abstract registerEvents(): void;
+        abstract unregisterEvents(): void;
+        start(): void;
+        stop(): void;
     }
 }
 /**
