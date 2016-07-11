@@ -4,8 +4,10 @@
 
 namespace DDDTools.DomainEvents {
 
+    import IPromise = Promises.IPromise;
+
     export interface IEventHandler {
-        (domainEvent: IDomainEvent): any;
+        (domainEvent: IDomainEvent): void | IPromise<any> | any;
     }
 
 }

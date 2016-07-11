@@ -73,10 +73,9 @@ namespace DDDTools.DomainEvents {
                     }
                     // if we get a promise, we add it to the list of promises
                     if (returnValue) {
-                        if (returnValue.then && typeof returnValue.then === 'function') {
+                        if (( returnValue.then && typeof returnValue.then === 'function') && (returnValue.catch && typeof returnValue.catch === 'function')) {
                             var promise;
-                            promise = returnValue.then(
-                                () => { return },
+                            promise = (<IPromise<any>>returnValue).catch(
                                 (error) => {
                                     errors.push(error);
                                 }
