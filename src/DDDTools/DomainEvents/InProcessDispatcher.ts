@@ -73,7 +73,7 @@ namespace DDDTools.DomainEvents {
                     }
                     // if we get a promise, we add it to the list of promises
                     if (returnValue) {
-                        if (( returnValue.then && typeof returnValue.then === 'function') && (returnValue.catch && typeof returnValue.catch === 'function')) {
+                        if (this.isAPromise(returnValue)) {
                             var promise;
                             promise = (<IPromise<any>>returnValue).catch(
                                 (error) => {
@@ -97,6 +97,10 @@ namespace DDDTools.DomainEvents {
                         console.log(e);
                     }
                 });
+        }
+
+        private isAPromise(valueToTest: any) {
+            return ( valueToTest.then && typeof valueToTest.then === 'function') && (valueToTest.catch && typeof valueToTest.catch === 'function')
         }
 
         private buildErrorMessage(Errors: Error[]): string {
