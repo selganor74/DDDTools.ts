@@ -56,7 +56,7 @@ namespace DDDTools.DomainEvents {
 
         public dispatch(event: IDomainEvent): IPromise<any> {
             if (!this.delegatesRegistry[event.__typeName]) {
-                return;
+                return PromiseHandler.when();
             }
             var errors: Error[] = [];
             var promiseArray: IPromise<any>[] = [];
