@@ -390,19 +390,38 @@ declare namespace DDDTools.Entity {
 declare namespace DDDTools.DomainEvents {
     import IPersistable = PersistableObject.IPersistable;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
+    /**
+     * Role interface to identify a Domain Event
+     */
     interface IDomainEvent extends IPersistable, ITypeTracking {
     }
 }
 declare namespace DDDTools.DomainEvents {
+    import IPromise = Promises.IPromise;
+    /**
+     * Form of an Event Handler.
+     * When asyncronous processing occour within an Handler, it is good practice to return a promise, so the dispatcher (and the event raiser)
+     */
     interface IEventHandler {
-        (domainEvent: IDomainEvent): any;
+        (domainEvent: IDomainEvent): IPromise<any> | void;
     }
 }
 declare namespace DDDTools.DomainEvents {
     import IPromise = Promises.IPromise;
     interface IDispatcher {
+        /**
+         * register an handler for an event type.
+         * the scope parameter is the context (this) in which the handler will be executed
+         */
         registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): any;
+        /**
+         * unregister a previoulsy registered handler for an event type.
+         */
         unregisterHandler(eventTypeName: string, handler: IEventHandler): any;
+        /**
+         * dispatches an event to the registered handlers.
+         * it will return a promise that will be resolved when all promises will be resolved, and rejected if any will be rejected.
+         */
         dispatch(event: IDomainEvent): IPromise<any>;
     }
 }
@@ -746,6 +765,7 @@ declare namespace DDDTools.DomainEvents {
         registerHandler(eventTypeName: string, handler: IEventHandler, scope?: any): void;
         unregisterHandler(eventTypeName: string, handler: IEventHandler): void;
         dispatch(event: IDomainEvent): IPromise<any>;
+        private isAPromise(valueToTest);
         private buildErrorMessage(Errors);
     }
 }

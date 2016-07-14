@@ -95,7 +95,10 @@ namespace DDDTools.DomainEvents {
                         var e = new Error(message);
                         e.name = "Errors while processing event " + event.__typeName;
                         console.log(e);
+                        console.log(event);
                     }
+                },(error) => {
+                    console.log(error);                    
                 });
         }
 

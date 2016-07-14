@@ -11,6 +11,7 @@
 namespace DDDTools.DomainEvents {
 
     import IPromise = Promises.IPromise;
+    import PromiseHandler = Promises.PromiseHandler;
 
     export class DomainDispatcher {
         private static dispatcherImplementation: IDispatcher;
@@ -38,6 +39,9 @@ namespace DDDTools.DomainEvents {
             var sThis = DomainDispatcher;
             if (sThis.dispatcherImplementation) {
                 return sThis.dispatcherImplementation.dispatch(event);
+            } else {
+                // If a dispatcherImplementation is not set, we should return a fake promise, to allow clients to always write their handlers!
+                return PromiseHandler.when();
             }
         }
     }

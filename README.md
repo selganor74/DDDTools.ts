@@ -55,12 +55,15 @@ The package has the following dependencies:
 
 ## Change log
 
-### 0.0.21 2016 
+### 0.0.21 2016 07 14
 
 * **Breaking Change** Added "Promises" namespace into which have been moved the Repository.PromiseHandler et al. management.
 * Added StateMachine and Saga prototypes... still nothing to rely on
 * The generated ddd-tools.d.ts is now keeping comments! 
 * EventHandlers now can return promises. InProcessDispatcher.dispatch will return a promise, that will be resolved when all handlers have completed processing.
+* DomainDispatcher.dispatch, now always return a promise, so clients can write their own "then" functions even if there's no IDispatcher implementation set.
+* DomainDispatcher.dispatch must always resolve (and not reject) the returned promise. Events rejections are logged but don't affect clients.
+* In BaseRepositoryAsync promises will be fulfilled only when event processing have been completed (right or wrong).
 
 ### 0.0.20 2016 06 27
 

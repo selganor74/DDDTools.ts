@@ -93,9 +93,11 @@ namespace DDDTools.Repository {
                     }
 
                     var event = new ItemRetrievedEvent(toReturn, this.repositoryId);
-                    DomainDispatcher.dispatch(event);
-
-                    deferred.resolve(toReturn);
+                    return DomainDispatcher.dispatch(event).then(
+                        () => {
+                            deferred.resolve(toReturn);
+                        }
+                    );
                 },
                 (error: any) => {
                     var reason = this.buildError(error, Errors.ItemNotFound);
@@ -153,8 +155,10 @@ namespace DDDTools.Repository {
                         }
                         this.doSave(item, SaveActionEnum.Update).then(() => {
                             event = event || new ItemReplacedEvent(item, this.repositoryId);
-                            DomainDispatcher.dispatch(event);
-                            deferred.resolve();
+                            return DomainDispatcher.dispatch(event).then(() => {
+                                deferred.resolve();
+                            });
+
                         }, (error) => {
                             var reason = this.buildError(error, Errors.ErrorReadingItem);
                             deferred.reject(reason);
@@ -171,8 +175,9 @@ namespace DDDTools.Repository {
                         this.doSave(item, SaveActionEnum.Add).then(
                             () => {
                                 event = event || new ItemAddedEvent(item, this.repositoryId);
-                                DomainDispatcher.dispatch(event);
-                                deferred.resolve();
+                                return DomainDispatcher.dispatch(event).then(() => {
+                                    deferred.resolve();
+                                });
                             },
                             (error) => {
                                 var reason = this.buildError(error, Errors.ErrorReadingItem);
@@ -203,8 +208,9 @@ namespace DDDTools.Repository {
                     var event = new ItemDeletedEvent(item, this.repositoryId);
                     this.deleteImplementation(id).then(
                         () => {
-                            deferred.resolve();
-                            DomainDispatcher.dispatch(event);
+                            return DomainDispatcher.dispatch(event).then(() => {
+                                deferred.resolve();
+                            });
                         },
                         (error: any) => {
                             var reason = this.buildError(error, Errors.ErrorDeletingItem)

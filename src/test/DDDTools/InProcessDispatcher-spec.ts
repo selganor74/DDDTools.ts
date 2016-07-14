@@ -267,7 +267,7 @@ namespace CdC.Tests.ForDispatcher {
 
             DomainDispatcher.dispatch(new aDomainEvent()).then(
                 () => {
-                    expect(console.log).toHaveBeenCalledTimes(1);
+                    expect(console.log).toHaveBeenCalledTimes(2);
                     expect(secondRun).toBeTruthy("Promise resolved but second handler didn't run");
                }
             ).finally(() => {
