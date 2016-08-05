@@ -133,9 +133,13 @@ declare namespace DDDTools.Serialization {
          */
         private static identityMap;
         /**
-         * Desesializes an object from a JSON string.
+         * Deserializes an object from a JSON string.
          */
         static deserialize(toDeserialize: string): any;
+        /**
+         * Deserializes an object previously serialized with "SerializeToObject"
+         */
+        static deserializeFromObject(toDeserialize: any): any;
         /**
          * Cleans the reconsituted instances from the __objectInstanceId property,
          * and empties the IdentityMap.
@@ -174,19 +178,20 @@ declare namespace DDDTools.Serialization {
          */
         static serialize(toSerialize: any): string;
         /**
-         * Preprocess the object tree to be serialized to find and replace Date objects with something different...
+         * Serializes an object to ... a new object. The serialized object will have Serializable version of Dates, null and RegExp value, instead of the original types.
+         * The serialized object will have only data and no methods for non native objects.
+         */
+        static serializeToObject(toSerialize: any): any;
+        /**
+         * Preprocess the object tree to be serialized to find and replace Date, null, RegExp, ... objects with something different...
          */
         private static preprocessForSerializablesSubstitution(sourceObject);
+        private static touchSourceObject(sourceObject);
         private static untouchSourceObject(sourceObject);
         /**
          * Postprocess the object tree to be serialized to find and replace SerializableDate/RegExp objects with Original types again...
          */
         private static postprocessForSerializableSubstitution(sourceObject);
-        /**
-         * It's duty is to "touch" every object processe to add an __objectInstanceId property.
-         * This function will be called by JSON.stringify
-         */
-        private static customSerializer(key, value);
     }
 }
 /**

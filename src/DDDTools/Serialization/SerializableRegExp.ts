@@ -28,7 +28,7 @@ namespace DDDTools.Serialization {
             var parts = conditionedString.split("/");
             
             // parts[0] must always be the empty string;
-            if (parts[0] !== "") throw new Error("This should never happen!");
+            if (parts[0] !== "") throw new Error("splitRegExpAndFlags: This should never happen!");
             
             // We have to restore what 
             parts[1] = parts[1].replace(reallyUnlikelyString, "\\/");

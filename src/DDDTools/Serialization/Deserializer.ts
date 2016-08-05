@@ -31,12 +31,21 @@ namespace DDDTools.Serialization {
 
 
         /**
-         * Desesializes an object from a JSON string.
+         * Deserializes an object from a JSON string.
          */
         public static deserialize(toDeserialize: string): any {
             Deserializer.identityMap = new SimpleIdentityMap();
             var toReturn = JSON.parse(toDeserialize, Deserializer.customReviver);
             Deserializer.cleanup();
+            return toReturn;
+        }
+
+        /**
+         * Deserializes an object previously serialized with "SerializeToObject"
+         */
+        public static deserializeFromObject(toDeserialize: any): any {
+            var sourceAsString = JSON.stringify(toDeserialize);
+            var toReturn = Deserializer.deserialize(sourceAsString);
             return toReturn;
         }
 

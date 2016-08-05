@@ -55,6 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.22 2016 08 06
+
+* Added Serializer.serializeToObject and Deserializer.deserializeFromObject.
+
 ### 0.0.21 2016 07 14
 
 * **Breaking Change** Added "Promises" namespace into which have been moved the Repository.PromiseHandler et al. management.

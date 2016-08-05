@@ -16,9 +16,10 @@ namespace DDDTools.Serialization {
         public static serialize(toSerialize: any): string {
             var toReturn;
             Touch.resetTouchIndex();
-            toSerialize = Serializer.preprocessForSerializablesSubstitution(toSerialize);
+            Serializer.preprocessForSerializablesSubstitution(toSerialize);
+            Serializer.touchSourceObject(toSerialize);
             try {
-                toReturn = JSON.stringify(toSerialize, Serializer.customSerializer);
+                toReturn = JSON.stringify(toSerialize);
             } finally {
                 Serializer.postprocessForSerializableSubstitution(toSerialize);
                 Serializer.untouchSourceObject(toSerialize);
@@ -27,7 +28,19 @@ namespace DDDTools.Serialization {
         }
 
         /**
-         * Preprocess the object tree to be serialized to find and replace Date objects with something different...
+         * Serializes an object to ... a new object. The serialized object will have Serializable version of Dates, null and RegExp value, instead of the original types.
+         * The serialized object will have only data and no methods for non native objects.
+         */
+        public static serializeToObject(toSerialize: any): any {
+            var sThis = Serializer;
+            var sourceAsString = sThis.serialize(toSerialize);
+            var toReturn = JSON.parse(sourceAsString);
+            
+            return toReturn;
+        }
+
+        /**
+         * Preprocess the object tree to be serialized to find and replace Date, null, RegExp, ... objects with something different...
          */
         private static preprocessForSerializablesSubstitution(sourceObject: any) {
             for (var idx in sourceObject) {
@@ -55,6 +68,26 @@ namespace DDDTools.Serialization {
             return sourceObject;
         }
 
+        private static touchSourceObject(sourceObject: any) {
+            var sThis = Serializer;
+            
+            if (sourceObject === null) return;
+            
+            if (!Touch.hasBeenTouched(sourceObject)) {
+                Touch.touch(sourceObject);
+            }
+            for (var idx in sourceObject) {
+                var current = sourceObject[idx];
+                if (typeof current === 'object' || Array.isArray(current)) {
+                    sThis.touchSourceObject(current);
+                    sourceObject[idx] = current;
+                    // sourceObject[idx] = sThis.preprocessForSerializablesSubstitution(current);
+                    continue;
+                }
+            }
+            
+        }
+        
         private static untouchSourceObject(sourceObject: any) {
             var sThis = Serializer;
             
@@ -67,7 +100,8 @@ namespace DDDTools.Serialization {
                 var current = sourceObject[idx];
                 if (typeof current === 'object' || Array.isArray(current)) {
                     sThis.untouchSourceObject(current);
-                    sourceObject[idx] = Serializer.preprocessForSerializablesSubstitution(current);
+                    sourceObject[idx] = current;
+                    // sourceObject[idx] = sThis.preprocessForSerializablesSubstitution(current);
                     continue;
                 }
             }
@@ -99,19 +133,5 @@ namespace DDDTools.Serialization {
             return sourceObject;
         }
 
-        /**
-         * It's duty is to "touch" every object processe to add an __objectInstanceId property.
-         * This function will be called by JSON.stringify
-         */
-        private static customSerializer(key: string, value: any) {
-            var sThis = Serializer;
-
-            if (typeof value === "object" && value !== null) {
-                if (!Touch.hasBeenTouched(value)) {
-                    Touch.touch(value);
-                }
-            }
-            return value;
-        }
     }
 }
