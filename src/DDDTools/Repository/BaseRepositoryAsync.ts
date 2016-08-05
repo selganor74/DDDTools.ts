@@ -66,7 +66,7 @@ namespace DDDTools.Repository {
         }
 
         /**
-         * You MUST override this method to provide functionality to access to the repository and get a "stateObject" to use for object "reconstruction".
+         * You MUST override this method to provide functionality to access the repository and get a "stateObject" to use for object "reconstruction".
          */
         protected abstract getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
 
