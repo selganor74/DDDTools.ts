@@ -55,14 +55,15 @@ The package has the following dependencies:
 
 ## Change log
 
-### 0.0.22 2016 08 06
+### 0.0.22 2016 08 19
 
 * Added Serializer.serializeToObject and Deserializer.deserializeFromObject.
+* Refinements of the BaseStateMachine. It now supports handler on before and after status enter and exit, plus an handler on succesful event processing.
 
 ### 0.0.21 2016 07 14
 
 * **Breaking Change** Added "Promises" namespace into which have been moved the Repository.PromiseHandler et al. management.
-* Added StateMachine and Saga prototypes... still nothing to rely on
+* Added StateMachine and Saga prototypes... still nothing to rely on!
 * The generated ddd-tools.d.ts is now keeping comments! 
 * EventHandlers now can return promises. InProcessDispatcher.dispatch will return a promise, that will be resolved when all handlers have completed processing.
 * DomainDispatcher.dispatch, now always return a promise, so clients can write their own "then" functions even if there's no IDispatcher implementation set.

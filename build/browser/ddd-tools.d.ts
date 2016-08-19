@@ -344,54 +344,6 @@ declare namespace DDDTools.StateMachine {
         getPreviousStatus(): TStatuses;
     }
 }
-declare namespace DDDTools.StateMachine {
-    import BasePersistableObject = DDDTools.PersistableObject.BasePersistableObject;
-    class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
-        protected stateMachineDefinition: {
-            [event: string]: {
-                [fromStatus: string]: TStatuses;
-            };
-        };
-        /**
-         * Please, remember to set these values in your derived types !
-         */
-        __typeName: string;
-        __typeVersion: string;
-        protected currentStatus: TStatuses;
-        protected previousStatus: TStatuses;
-        constructor(initialStatus: TStatuses, stateMachineDefinition: {
-            [event: string]: {
-                [fromStatus: string]: TStatuses;
-            };
-        });
-        getCurrentStatus(): TStatuses;
-        getPreviousStatus(): TStatuses;
-        isEventValidForCurrentStatus(event: TEvents): boolean;
-        /**
-         * Will cause the state machine to advance to the next status... or throw an axception.
-         */
-        processEvent(event: TEvents): void;
-    }
-}
-declare namespace DDDTools.Entity {
-    import IEquatable = CommonInterfaces.IEquatable;
-    import IPersistable = PersistableObject.IPersistable;
-    interface IEntity<T, TKey extends IKeyValueObject<TKey>> extends IEquatable<T>, IPersistable {
-        getKey(): TKey;
-        setKey(key: TKey): void;
-    }
-}
-declare namespace DDDTools.Entity {
-    import BaseValueObject = ValueObject.BaseValueObject;
-    import IPersistable = PersistableObject.IPersistable;
-    abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T>, IPersistable {
-        constructor();
-        /**
-         * Derived classes must reimplement this method.
-         */
-        abstract toString(): string;
-    }
-}
 declare namespace DDDTools.DomainEvents {
     import IPersistable = PersistableObject.IPersistable;
     import ITypeTracking = CommonInterfaces.ITypeTracking;
@@ -428,6 +380,95 @@ declare namespace DDDTools.DomainEvents {
          * it will return a promise that will be resolved when all promises will be resolved, and rejected if any will be rejected.
          */
         dispatch(event: IDomainEvent): IPromise<any>;
+    }
+}
+declare namespace DDDTools.StateMachine {
+    import BasePersistableObject = DDDTools.PersistableObject.BasePersistableObject;
+    import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
+    import IPromise = DDDTools.Promises.IPromise;
+    class HandlerResult {
+        okToChange: boolean;
+        reason: string;
+        constructor(okToChange?: boolean, reason?: string);
+    }
+    class StateMachineEvent<TStatuses, TEvents> extends BasePersistableObject implements IDomainEvent {
+        __typeName: string;
+        __typeVersion: string;
+        currentStatus: TStatuses;
+        previousStatus: TStatuses;
+        destinationStatus: TStatuses;
+        processingEvent: TEvents;
+    }
+    type EventHandler<TStatuses, TEvents> = (event: StateMachineEvent<TStatuses, TEvents>) => IPromise<HandlerResult>;
+    enum KindsOfEventHandler {
+        beforeEnterStatus = 0,
+        afterEnterStatus = 1,
+        beforeExitStatus = 2,
+        afterExitStatus = 3,
+        onSuccesfulEventProcessed = 4,
+    }
+    class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
+        protected stateMachineDefinition: {
+            [event: string]: {
+                [fromStatus: string]: TStatuses;
+            };
+        };
+        /**
+         * Please, remember to set this value in your derived types !
+         */
+        __typeName: string;
+        /**
+         * Please, remember to set this value in your derived types !
+         */
+        __typeVersion: string;
+        private currentStatus;
+        private previousStatus;
+        private beforeEnterStatusHandlers;
+        private afterEnterStatusHandlers;
+        private beforeExitStatusHandlers;
+        private afterExitStatusHandlers;
+        private onSuccesfulEventProcessedHandlers;
+        constructor(initialStatus: TStatuses, stateMachineDefinition: {
+            [event: string]: {
+                [fromStatus: string]: TStatuses;
+            };
+        });
+        registerHandler(handler: EventHandler<TStatuses, TEvents>, kindOfHandler: KindsOfEventHandler): void;
+        /**
+         * Gets the current status of the State Machine
+         */
+        getCurrentStatus(): TStatuses;
+        /**
+         * Gets the previous status of the Machine
+         */
+        getPreviousStatus(): TStatuses;
+        /**
+         * Tells if an event is allowed to be processed in the current state
+         */
+        isEventValidForCurrentStatus(event: TEvents): boolean;
+        /**
+         * Will cause the state machine to advance to the next status... or throw an exception.
+         */
+        processEvent(event: TEvents): IPromise<HandlerResult>;
+    }
+}
+declare namespace DDDTools.Entity {
+    import IEquatable = CommonInterfaces.IEquatable;
+    import IPersistable = PersistableObject.IPersistable;
+    interface IEntity<T, TKey extends IKeyValueObject<TKey>> extends IEquatable<T>, IPersistable {
+        getKey(): TKey;
+        setKey(key: TKey): void;
+    }
+}
+declare namespace DDDTools.Entity {
+    import BaseValueObject = ValueObject.BaseValueObject;
+    import IPersistable = PersistableObject.IPersistable;
+    abstract class BaseKeyValueObject<T> extends BaseValueObject<T> implements IKeyValueObject<T>, IPersistable {
+        constructor();
+        /**
+         * Derived classes must reimplement this method.
+         */
+        abstract toString(): string;
     }
 }
 declare namespace DDDTools.DomainEvents {
@@ -708,7 +749,7 @@ declare namespace DDDTools.Repository {
              */
             repositoryId?: string);
         /**
-         * You MUST override this method to provide functionality to access to the repository and get a "stateObject" to use for object "reconstruction".
+         * You MUST override this method to provide functionality to access the repository and get a "stateObject" to use for object "reconstruction".
          */
         protected abstract getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
         getById(id: TKey): IPromise<T>;

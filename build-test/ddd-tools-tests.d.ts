@@ -54,6 +54,8 @@ declare namespace CdC.Tests.BasePersistableObject {
         aNullValue: any;
     }
 }
+declare namespace CdC.Tests.BaseStateMachine {
+}
 declare namespace CdC.Tests.ForBaseValueObject {
     import BaseValueObject = DDDTools.ValueObject.BaseValueObject;
     class TestValueObject extends BaseValueObject<TestValueObject> {
