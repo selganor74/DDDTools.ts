@@ -1,8 +1,6 @@
 typescript ddd tools
 ====================
 
-(https://git.loccioni.com/IT/ddd-tools)
-
 A typescript implementation of the basic DDD patterns.
 
 ## What is in it?
@@ -32,8 +30,8 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ## Usage
 
-Package can be installed via npm from registry https://npm.loccioni.com.  
-Once installed you need to reference **node_modules/typescript-ddd-tools/build/browser/ddd-tools.js**
+Build via "grunt build"
+Once built you need to reference **node_modules/typescript-ddd-tools/build/browser/ddd-tools.js**
 in your **index.html**, and reference **ddd-tools.d.ts** in the same directory to 
 have typescript ambient definitions.
 The library is quite invasive, meaning that it is impossible to use different 
@@ -59,6 +57,7 @@ The package has the following dependencies:
 
 * Added Serializer.serializeToObject and Deserializer.deserializeFromObject.
 * Refinements of the BaseStateMachine. It now supports handler on before and after status enter and exit, plus an handler on succesful event processing.
+* Added tests for the BaseStateMachine.
 
 ### 0.0.21 2016 07 14
 
