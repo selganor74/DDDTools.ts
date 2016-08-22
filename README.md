@@ -30,7 +30,7 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ## Usage
 
-Build via "grunt build"
+Build via "grunt build".
 Once built you need to reference **node_modules/typescript-ddd-tools/build/browser/ddd-tools.js**
 in your **index.html**, and reference **ddd-tools.d.ts** in the same directory to 
 have typescript ambient definitions.
@@ -53,8 +53,10 @@ The package has the following dependencies:
 
 ## Change log
 
-### 0.0.22 2016 08 19
+### 0.0.22 2016 08 22
 
+* **Possibly Breaking Change** BaseRepositories now throw exception when saving objects that are older than those already saved.
+* Aggregates' __revisionId are now incremented even on first save. 
 * Added Serializer.serializeToObject and Deserializer.deserializeFromObject.
 * Refinements of the BaseStateMachine. It now supports handler on before and after status enter and exit, plus an handler on succesful event processing.
 * Added tests for the BaseStateMachine.

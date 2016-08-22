@@ -517,7 +517,7 @@ declare namespace DDDTools.Aggregate {
     abstract class BaseAggregateRoot<T extends IAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>> extends BaseEntity<T, TKey> implements IAggregateRoot<T, TKey>, IEntity<T, TKey> {
         private __revisionId;
         getRevisionId(): number;
-        incrementRevisionId(): void;
+        incrementRevisionId(concurrentObject?: IAggregateRoot<T, TKey>): void;
         /**
          * Compares an aggregate with another. Returns true if aggregate's data are exactly equal.
          */
@@ -597,6 +597,7 @@ declare namespace DDDTools.Repository {
         static WrongTypeFromImplementation: string;
         static ManagedTypeNotSupplied: string;
         static InvalidKey: string;
+        static SavingOldObject: string;
     }
 }
 declare namespace DDDTools.Repository {

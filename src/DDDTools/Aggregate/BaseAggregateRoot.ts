@@ -36,7 +36,7 @@ namespace DDDTools.Aggregate {
             return this.__revisionId;
         }
 
-        public incrementRevisionId() {
+        public incrementRevisionId(concurrentObject?: IAggregateRoot<T, TKey>) {
             this.__revisionId++;
         }
 

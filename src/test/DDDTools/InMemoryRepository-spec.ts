@@ -284,16 +284,16 @@ namespace CdC.Tests {
 
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(0);
+            expect(e.getRevisionId()).toEqual(1);
 
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(0);
+            expect(e.getRevisionId()).toEqual(1);
 
             e.aTestProperty = "... after saving";
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(1);
+            expect(e.getRevisionId()).toEqual(2);
         });
 
 
@@ -309,12 +309,39 @@ namespace CdC.Tests {
 
             repo.save(e);
 
-            expect(e.getRevisionId()).toEqual(0);
+            expect(e.getRevisionId()).toEqual(1);
 
             e.aTestProperty = "... after saving";
             repo.replace(e);
 
+            expect(e.getRevisionId()).toEqual(1);
+        });
+
+        it("When saving a stale item (__revisonId lower than saved item __revisionId) an exception must be thrown.", () => {
+            // pending("Need to refactor IPErsistable to add functions for State Comparison.");
+
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            var key = new Key(); 
+            e.setKey(key);
+            e.aTestProperty = "Before saving...";
+
             expect(e.getRevisionId()).toEqual(0);
+
+            repo.save(e);
+
+            var f = new TestAggregate();
+            f.setKey(key);
+            f.aTestProperty = "Before saving...";
+
+            try {
+                repo.save(f);
+                expect(false).toBeTruthy("We shouldn't get here...");
+            } catch(q) {
+                expect(q instanceof Error).toBeTruthy("Returned error should be instance of class Error");
+                expect(q.name).toEqual(Errors.SavingOldObject);
+                expect(f.getRevisionId()).toEqual(0);
+            }
         });
     });
 }

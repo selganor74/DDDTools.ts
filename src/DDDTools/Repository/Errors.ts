@@ -15,5 +15,6 @@ namespace DDDTools.Repository {
         public static WrongTypeFromImplementation = "Wrong type from Implementation";
         public static ManagedTypeNotSupplied = "Repository needs to know what type it can manage";
         public static InvalidKey = "Invalid Key";
+        public static SavingOldObject = "Saving object with __revisionId lower than currently saved object. This is actually not permitted. If you really need to, use 'replace' instead of save.";
     }
 }

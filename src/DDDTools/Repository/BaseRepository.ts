@@ -106,34 +106,56 @@ namespace DDDTools.Repository {
 
             var event: ItemUpdatedEvent<T> | ItemAddedEvent<T>;
             var asItWas: T = null;
-            var shouldIncrementRevision = true;
+            var shouldSaveItem = true;
             var saveAction: SaveActionEnum;
-
-            saveAction = SaveActionEnum.Update;
+            var itemIsNew: boolean;
 
             try {
                 asItWas = this.getById(item.getKey());
+                itemIsNew = false;
             } catch (e) {
+                if (e instanceof Error && e.name === Errors.ItemNotFound) {
+                    itemIsNew = true;
+                } else {
+                    throw e;
+                }
+            }
+
+            if (itemIsNew) {
+                shouldSaveItem = true;
                 // This is expected if the do not exists in the Repo.
                 event = new ItemAddedEvent(item, this.repositoryId);
                 saveAction = SaveActionEnum.Add;
-                shouldIncrementRevision = false; // because the item was not in the repo!
+                // Save occur only if stored item and saved item are different somehow.
+                event = event || new ItemUpdatedEvent(item, this.repositoryId);
+                if (!replaceOnly) {
+                    item.incrementRevisionId(asItWas);
+                }
             }
 
-            // Save occur only if stored item and saved item are different somehow.
-            if (!item.perfectlyMatch(asItWas)) {
-                if (!replaceOnly && shouldIncrementRevision) {
-                    item.incrementRevisionId();
-                    event = event || new ItemReplacedEvent(item, this.repositoryId);
+            if (!itemIsNew) {
+                shouldSaveItem = false;
+                if (!item.perfectlyMatch(asItWas)) {
+                    if (item.getRevisionId() < asItWas.getRevisionId()) {
+                        var error = Errors.getErrorInstance(Errors.SavingOldObject);
+                        error.message = "Error saving item of type " + this.managedType + " with key " + item.getKey().toString() + " because item's __revisionId (" + item.getRevisionId() + ") is less than saved item's __revisionId (" + asItWas.getRevisionId() + ").";
+                        throw error;
+                    }
+                    shouldSaveItem = true;
+                    saveAction = SaveActionEnum.Update;
+                    if (!replaceOnly) {
+                        item.incrementRevisionId(asItWas);
+                        event = event || new ItemReplacedEvent(item, this.repositoryId);
+                    }
                 }
-                event = event || new ItemUpdatedEvent(item, this.repositoryId);
+            }
 
+            if (shouldSaveItem) {
                 // finally saves aggregate into the repository.
                 this.saveImplementation(item, saveAction);
 
                 DomainDispatcher.dispatch(event);
             }
-
         }
         /**
          * You MUST override this method to provide "delete" functionality in your implementation.

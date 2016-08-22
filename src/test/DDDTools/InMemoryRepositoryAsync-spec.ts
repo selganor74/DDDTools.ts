@@ -298,7 +298,6 @@ namespace CdC.Tests.RepAsync {
         });
 
         it("RevisionId must be incremented only if object to be saved differs from object saved", (done) => {
-            // pending("Need to refactor IPErsistable to add functions for State Comparison.");
 
             var repo = new TestRepository();
             var e = new TestAggregate();
@@ -309,14 +308,14 @@ namespace CdC.Tests.RepAsync {
 
             repo.save(e).then(() => {
                 // RevisionId should not be incremented if item was new!
-                expect(e.getRevisionId()).toEqual(0);
-                return repo.save(e);
-            }).then(() => {
-                expect(e.getRevisionId()).toEqual(0);
-                e.aTestProperty = "... after saving";
+                expect(e.getRevisionId()).toEqual(1);
                 return repo.save(e);
             }).then(() => {
                 expect(e.getRevisionId()).toEqual(1);
+                e.aTestProperty = "... after saving";
+                return repo.save(e);
+            }).then(() => {
+                expect(e.getRevisionId()).toEqual(2);
                 done();
             }, (err) => {
                 expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
@@ -336,14 +335,14 @@ namespace CdC.Tests.RepAsync {
 
             repo.save(e).then(() => {
                 // RevisionId should not be incremented if item was new!
-                expect(e.getRevisionId()).toEqual(0);
+                expect(e.getRevisionId()).toEqual(1);
                 return repo.save(e);
             }).then(() => {
-                expect(e.getRevisionId()).toEqual(0);
+                expect(e.getRevisionId()).toEqual(1);
                 e.aTestProperty = "... after saving";
                 return repo.replace(e);
             }).then(() => {
-                expect(e.getRevisionId()).toEqual(0);
+                expect(e.getRevisionId()).toEqual(1);
                 done();
             }, (err) => {
                 expect(false).toBeTruthy("Exception while saving or retrieving the item. " + err.message)
@@ -380,6 +379,33 @@ namespace CdC.Tests.RepAsync {
                     done();
                 }
             );
+        });
+
+        it("When saving a 'stale' item (__revisionId lower than saved version's __revisionId) an Exception must be thrown.", (done) => {
+
+            var repo = new TestRepository();
+            var e = new TestAggregate();
+            var key = new Key();
+            e.setKey(key);
+            e.aTestProperty = "Before saving...";
+
+            repo.save(e).then(
+                () => {
+                    var f = new TestAggregate();
+                    f.setKey(key);
+                    f.aTestProperty = "Before saving...";
+                    return repo.save(f);
+                }
+            ).then(
+                () => {
+                    expect(false).toBeTruthy("This save should not be succesful!");
+                    done();
+                },
+                (err) => {
+                    expect(err instanceof Error).toBeTruthy("Should have been returned an error.");
+                    expect(err.name).toEqual(Errors.SavingOldObject);
+                    done();
+                });
         });
     });
 }

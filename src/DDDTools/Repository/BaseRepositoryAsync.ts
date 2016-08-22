@@ -150,6 +150,14 @@ namespace DDDTools.Repository {
                     if (!item.perfectlyMatch(readValue)) {
                         // Increment revision only if we are not replacing an item
                         if (!replaceOnly) {
+                            // Interesting case when revisionId of the item to save is less than the revisionId of the already saved item. 
+                            // Two choices: Throw an exception or use the "greatest" revisionId and increment that... I'll go for for the first choice...
+                            if (item.getRevisionId() < readValue.getRevisionId()) {
+                                var error = Errors.getErrorInstance(Errors.SavingOldObject);
+                                error.message = "Error saving item of type " + this.managedType + " with key " + item.getKey().toString() + " because item's __revisionId (" + item.getRevisionId() + ") is less than saved item's __revisionId (" + readValue.getRevisionId() + ").";
+                                deferred.reject(error);
+                                return;
+                            }
                             item.incrementRevisionId();
                             event = event || new ItemUpdatedEvent(item, this.repositoryId);
                         }
@@ -171,7 +179,9 @@ namespace DDDTools.Repository {
                 (error: any) => {
                     if (error instanceof Error && error.name == Errors.ItemNotFound) {
                         // This is expected, the item is not in the repo, so we have to add it!
-
+                        if (!replaceOnly) {
+                            item.incrementRevisionId();
+                        }
                         this.doSave(item, SaveActionEnum.Add).then(
                             () => {
                                 event = event || new ItemAddedEvent(item, this.repositoryId);
