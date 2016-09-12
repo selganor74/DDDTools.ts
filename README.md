@@ -55,6 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.23 2016 09 10
+
+* Fixed some bugs in BaseStateMachine. Added tests to check for correct serialization and store in repositories.
+
 ### 0.0.22 2016 08 19
 
 * Added Serializer.serializeToObject and Deserializer.deserializeFromObject.

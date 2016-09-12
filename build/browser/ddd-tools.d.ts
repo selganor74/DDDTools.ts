@@ -280,7 +280,7 @@ declare namespace DDDTools.PersistableObject {
         /**
          * Registers a new IPersistable type with the Factory
          */
-        static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable): void;
+        static registerType(typeName: string, typeVersion: string, typePrototype: new (...args) => IPersistable): void;
         /**
          * Creates an instance of the specified type. If typeVersion is not supplied, latest available version is returned.
          */
@@ -407,20 +407,24 @@ declare namespace DDDTools.StateMachine {
         afterExitStatus = 3,
         onSuccesfulEventProcessed = 4,
     }
+    class HandlerCollection<TStatuses, TEvents> extends BasePersistableObject {
+        __typeName: string;
+        __typeVersion: string;
+        private handlers;
+        registerHandler(handler: EventHandler<TStatuses, TEvents>, eventType: KindsOfEventHandler): void;
+        runHandlers(event: StateMachineEvent<TStatuses, TEvents>): IPromise<HandlerResult>;
+        private hasAlreadyBeenRegistered(handler, eventType);
+        private touchHandler(handler, eventType);
+    }
+    /**
+     * Please, remember to set __typeName and __typeVersion in your derived types !
+     */
     class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
         protected stateMachineDefinition: {
             [event: string]: {
                 [fromStatus: string]: TStatuses;
             };
         };
-        /**
-         * Please, remember to set this value in your derived types !
-         */
-        __typeName: string;
-        /**
-         * Please, remember to set this value in your derived types !
-         */
-        __typeVersion: string;
         private currentStatus;
         private previousStatus;
         private beforeEnterStatusHandlers;
@@ -433,6 +437,10 @@ declare namespace DDDTools.StateMachine {
                 [fromStatus: string]: TStatuses;
             };
         });
+        /**
+         * Overrides the PersistableObject's setState to avoid restoring collection of "fake handlers"'
+         */
+        setState(state: any): void;
         registerHandler(handler: EventHandler<TStatuses, TEvents>, kindOfHandler: KindsOfEventHandler): void;
         /**
          * Gets the current status of the State Machine
