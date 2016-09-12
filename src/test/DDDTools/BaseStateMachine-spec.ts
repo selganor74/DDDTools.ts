@@ -12,6 +12,12 @@ namespace CdC.Tests.BaseStateMachine {
     import HandlerResult = DDDTools.StateMachine.HandlerResult;
     import PromiseHandler = DDDTools.Promises.PromiseHandler;
 
+    import InMemoryRepositoryAsync = DDDTools.Repository.InMemoryRepositoryAsync;
+    import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;
+    import Guid = DDDTools.ValueObjects.Guid;
+
+    import Factory = DDDTools.PersistableObject.Factory;
+
     import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
 
     type States = "State_A" | "State_B" | "State_C";
@@ -32,12 +38,38 @@ namespace CdC.Tests.BaseStateMachine {
         __typeVersion = "v1";
     }
 
+    class IdFakeAggregate extends Guid {
+        __typeName = "IdFakeAggregate";
+        __typeVersion = "v1";
+
+    }
+    
+    class AFakeAggregate extends BaseAggregateRoot<AFakeAggregate, IdFakeAggregate> {
+        __typeName = "AFakeAggregate";
+        __typeVersion = "v1";
+
+        public sm: aStateMachine = new aStateMachine("State_A", stateMachineDefinition);
+    }
+
+    var fakeSMRepo: InMemoryRepositoryAsync<AFakeAggregate, IdFakeAggregate>;
+
     describe("BaseStateMachine", () => {
 
         var sut: aStateMachine;
+        var sutInAggregate: AFakeAggregate;
+        var idSutInAggregate: IdFakeAggregate;
 
         beforeEach(() => {
             sut = new aStateMachine("State_A", stateMachineDefinition);
+            fakeSMRepo = new InMemoryRepositoryAsync<AFakeAggregate, IdFakeAggregate>("AFakeAggregate");
+
+            Factory.registerType("aStateMachine", "v1", aStateMachine);
+            Factory.registerType("IdFakeAggregate", "v1", IdFakeAggregate);
+            Factory.registerType("AFakeAggregate", "v1", AFakeAggregate);
+
+            idSutInAggregate = new IdFakeAggregate();
+            sutInAggregate = new AFakeAggregate();   
+            sutInAggregate.setKey(idSutInAggregate);         
         });
 
         it("Must be possible to instantiate the state machine", () => {
@@ -146,6 +178,30 @@ namespace CdC.Tests.BaseStateMachine {
                 done();
             });
 
+        });
+
+        it ("Must be possible to store and retrieve the state machine as an attribute of an aggregate.", (done) => {    
+
+            var sutReloaded: AFakeAggregate;
+
+            fakeSMRepo.save(sutInAggregate).then(
+                () => {
+                    return fakeSMRepo.getById(idSutInAggregate)
+                })
+                .then((sutInAggregate) => {
+                    sutReloaded = sutInAggregate;
+                    return sutInAggregate.sm.processEvent("From_A_to_B")
+                })
+                .then((result) => {
+                    expect(result.okToChange).toBeTruthy();
+                    expect(sutReloaded.sm.getCurrentStatus()).toEqual("State_B");
+                })
+                .catch((error) => {
+                    expect(false).toBeTruthy("Errors during test: " + JSON.stringify(error) + " " + error.message);
+                })
+                .finally(() => {
+                    done();
+                });
         });
     });
 

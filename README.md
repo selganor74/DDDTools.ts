@@ -53,7 +53,15 @@ The package has the following dependencies:
 
 ## Change log
 
+<<<<<<< HEAD
 ### 0.0.22 2016 08 22
+=======
+### 0.0.23 2016 09 10
+
+* Fixed some bugs in BaseStateMachine. Added tests to check for correct serialization and store in repositories.
+
+### 0.0.22 2016 08 19
+>>>>>>> develop
 
 * **Possibly Breaking Change** BaseRepositories now throw exception when saving objects that are older than those already saved.
 * Aggregates' __revisionId are now incremented even on first save. 

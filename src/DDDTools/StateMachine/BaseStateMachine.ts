@@ -10,6 +10,7 @@ namespace DDDTools.StateMachine {
     import IDomainEvent = DDDTools.DomainEvents.IDomainEvent;
     import IPromise = DDDTools.Promises.IPromise;
     import PromiseHandler = DDDTools.Promises.PromiseHandler;
+    import Factory = DDDTools.PersistableObject.Factory;
 
     export class HandlerResult {
 
@@ -43,7 +44,11 @@ namespace DDDTools.StateMachine {
         ___handlesEvent: KindsOfEventHandler[];
     }
 
-    class HandlerCollection<TStatuses, TEvents> {
+    export class HandlerCollection<TStatuses, TEvents> extends BasePersistableObject {
+
+        __typeName = "HandlerCollection";
+        __typeVersion = "v1";
+
         private handlers: EventHandler<TStatuses, TEvents>[] = [];
 
         public registerHandler(handler: EventHandler<TStatuses, TEvents>, eventType: KindsOfEventHandler) {
@@ -121,16 +126,11 @@ namespace DDDTools.StateMachine {
 
     }
 
+    /**
+     * Please, remember to set __typeName and __typeVersion in your derived types !
+     * __typeName and __typeVersion should be set on the constructor too, but this mean changing a lot of things.
+     */
     export class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
-        /**
-         * Please, remember to set this value in your derived types !
-         */
-        __typeName = "";
-
-        /**
-         * Please, remember to set this value in your derived types !
-         */
-        __typeVersion = "";
 
         private currentStatus: TStatuses = null;
         private previousStatus: TStatuses = null;
@@ -145,6 +145,26 @@ namespace DDDTools.StateMachine {
         ) {
             super();
             this.currentStatus = initialStatus;
+            
+            // TODO: The components registration should be kept somewhere else... or make the component's type registration in the constructor become a rule.
+            try {
+                Factory.registerType("HandlerCollection", "v1", HandlerCollection);
+            } catch(e) {
+                // The type as already registered, so nothing to do.
+            }     
+        }
+
+        /**
+         * Overrides the PersistableObject's setState to avoid restoring collection of "fake handlers"'
+         */
+        public setState(state: any) {
+            super.setState(state);
+            // We need to reinitialize the handlers collection. as if they were 
+            this.beforeEnterStatusHandlers = new HandlerCollection();
+            this.afterEnterStatusHandlers = new HandlerCollection();
+            this.beforeExitStatusHandlers = new HandlerCollection();
+            this.afterExitStatusHandlers = new HandlerCollection();
+            this.onSuccesfulEventProcessedHandlers = new HandlerCollection();
         }
 
         public registerHandler(handler: EventHandler<TStatuses, TEvents>, kindOfHandler: KindsOfEventHandler) {
@@ -240,7 +260,7 @@ namespace DDDTools.StateMachine {
                     return this.afterEnterStatusHandlers.runHandlers(smEvent);
                 }).then(() => {
                     return this.onSuccesfulEventProcessedHandlers.runHandlers(smEvent);
-                }).catch((reason: HandlerResult) =>  {
+                }).catch((reason: HandlerResult) => {
                     // Some Handler decided not to allow the state change, so we simply return why!
                     return PromiseHandler.when(reason);
                 });

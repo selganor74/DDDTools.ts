@@ -21,7 +21,7 @@ namespace DDDTools.PersistableObject {
         /**
          * Registers a new IPersistable type with the Factory
          */
-        public static registerType(typeName: string, typeVersion: string, typePrototype: new () => IPersistable) {
+        public static registerType(typeName: string, typeVersion: string, typePrototype: new (...args) => IPersistable) {
             var sThis = Factory;
             if (!sThis.typeRegistry) {
                 sThis.typeRegistry = new TypeRegistry()
@@ -35,7 +35,8 @@ namespace DDDTools.PersistableObject {
         public static createTypeInstance<T extends IPersistable>(typeName: string, typeVersion?: string): T {
 
             if (!Factory.typeRegistry) {
-                Errors.throw(Errors.TypeRegistryNotSet, "Please register at least a type with the Factory.");
+                var typeVersionMessage = typeVersion ? " version '" + typeVersion + "'" : "";
+                Errors.throw(Errors.TypeRegistryNotSet, "Please register at least a type with the Factory for the type '" + typeName + "'" + typeVersionMessage );
             }
 
             return TypeRegistry.getTypeInstance<T>(typeName, typeVersion);
