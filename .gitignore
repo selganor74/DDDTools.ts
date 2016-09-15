@@ -17,7 +17,7 @@
 [Rr]eleases/
 [Xx]64/
 [Xx]86/
-[Bb]uild/
+#[Bb]uild/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -248,3 +248,5 @@ node_modules/
 .tscache/
 *.tmp.txt
 .alm/
+.baseDir.ts
+.grunt/
