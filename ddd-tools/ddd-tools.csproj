@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{EB761C1E-F2AA-4504-AF60-CDF5E63B1195}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gruntfile.js" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="web.config" />
+    <Content Include="_SpecRunner.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\.baseDir.ts" />
+    <TypeScriptCompile Include="src\DDDTools\.baseDir.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Aggregate\BaseAggregateRoot.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Aggregate\IAggregateRoot.ts" />
+    <TypeScriptCompile Include="src\DDDTools\CommonInterfaces\IEquatable.ts" />
+    <TypeScriptCompile Include="src\DDDTools\CommonInterfaces\ITypeTracking.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\DomainDispatcher.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\IDispatcher.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\IDomainEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\IEventHandler.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\InProcessDispatcher.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Entity\BaseEntity.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Entity\BaseKeyValueObject.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Entity\IEntity.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Entity\IKeyValueObject.ts" />
+    <TypeScriptCompile Include="src\DDDTools\ErrorManagement\BaseErrors.ts" />
+    <TypeScriptCompile Include="src\DDDTools\PersistableObject\BasePersistableObject.ts" />
+    <TypeScriptCompile Include="src\DDDTools\PersistableObject\Errors.ts" />
+    <TypeScriptCompile Include="src\DDDTools\PersistableObject\Factory.ts" />
+    <TypeScriptCompile Include="src\DDDTools\PersistableObject\IPersistable.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Promises\PromiseHandler.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Query\IQuery.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Query\IQueryAsync.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\BaseRepository.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\BaseRepositoryAsync.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\BaseRepositoryEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\Errors.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\Events.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\InMemoryRepository.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\InMemoryRepositoryAsync.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\IRepository.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\IRepositoryAsync.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\ItemAddedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\ItemDeletedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\ItemReplacedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\ItemRetrievedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\ItemUpdatedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Repository\SaveActionEnum.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Saga\BaseSaga.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Saga\ISaga.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\Deserializer.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableDate.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableNull.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableRegExp.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\Serializer.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\Touch.ts" />
+    <TypeScriptCompile Include="src\DDDTools\StateMachine\BaseStateMachine.ts" />
+    <TypeScriptCompile Include="src\DDDTools\StateMachine\IStateMachine.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\Events.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IdentityMap.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IUnitOfWork.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\ObjectDeletedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\ObjectRetrievedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\ObjectSavedEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\UnitOfWork.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\UnitOfWorkErrors.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Utils\SimpleGuid.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Utils\SimpleIdentityMap.ts" />
+    <TypeScriptCompile Include="src\DDDTools\ValueObjects\Guid.ts" />
+    <TypeScriptCompile Include="src\DDDTools\ValueObject\BaseValueObject.ts" />
+    <TypeScriptCompile Include="src\DDDTools\ValueObject\IValueObject.ts" />
+    <TypeScriptCompile Include="src\test\.baseDir.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\BasePersistableObject-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\BaseStateMachine-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\BaseValueObject-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\InMemoryRepository-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\InMemoryRepositoryAsync-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\InProcessDispatcher-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\Serialization-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\UnitOfWork-spec.ts" />
+    <TypeScriptCompile Include="typings\browser.d.ts" />
+    <TypeScriptCompile Include="typings\browser\ambient\angular\index.d.ts" />
+    <TypeScriptCompile Include="typings\browser\ambient\jasmine\index.d.ts" />
+    <TypeScriptCompile Include="typings\browser\ambient\jquery\index.d.ts" />
+    <TypeScriptCompile Include="typings\browser\ambient\q\index.d.ts" />
+    <TypeScriptCompile Include="typings\browser\ambient\underscore\index.d.ts" />
+    <TypeScriptCompile Include="typings\main.d.ts" />
+    <TypeScriptCompile Include="typings\main\ambient\angular\index.d.ts" />
+    <TypeScriptCompile Include="typings\main\ambient\jasmine\index.d.ts" />
+    <TypeScriptCompile Include="typings\main\ambient\jquery\index.d.ts" />
+    <TypeScriptCompile Include="typings\main\ambient\q\index.d.ts" />
+    <TypeScriptCompile Include="typings\main\ambient\underscore\index.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="src\DDDTools\tsconfig.json" />
+    <Content Include="src\test\tsconfig.json" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Content Include="typings.json" />
+    <Content Include=".npmignore" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>ddd_tools</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>8792</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:8792/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>
