@@ -418,6 +418,7 @@ declare namespace DDDTools.StateMachine {
     }
     /**
      * Please, remember to set __typeName and __typeVersion in your derived types !
+     * __typeName and __typeVersion should be set on the constructor too, but this mean changing a lot of things.
      */
     class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
         protected stateMachineDefinition: {
