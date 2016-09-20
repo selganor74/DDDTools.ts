@@ -115,7 +115,6 @@
     <Content Include="src\DDDTools\tsconfig.json" />
     <Content Include="src\test\tsconfig.json" />
     <Content Include="package.json" />
-    <Content Include="README.md" />
     <Content Include="typings.json" />
     <Content Include=".npmignore" />
     <None Include="web.Debug.config">

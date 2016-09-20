@@ -138,26 +138,7 @@ namespace DDDTools.PersistableObject {
             }
             return true;
         }
-
-        /**
-         * Returns the "Fully Qualified TypeName" of type "typeName" for the supplied "version".
-         * FQTN is computed from typeName adding the version string in the right place.
-         * Example
-         * typeName: Application.Model.Offerta
-         * version: v2
-         * return: Application.Model.v2.Offerta
-         */
-        // private static computeFullyQualifiedTypeName(typeName: string, typeVersion: string): string {
-        //     var fqtnPartsArray = typeName.split(".");
-        //     var className = fqtnPartsArray.pop();
-        //     fqtnPartsArray.push(typeVersion);
-        //     fqtnPartsArray.push(className);
-        //     var newFqtn = fqtnPartsArray.join(".");
-        //     return newFqtn;
-        // };
-
     }
-    // }
 
     /**
      * The Upgrader is an helper class to automate the "upgrade process" of an object's state.
