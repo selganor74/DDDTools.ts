@@ -70,6 +70,7 @@ namespace DDDTools.Repository {
          */
         protected abstract getByIdImplementation(id: TKey): IPromise<ITypeTracking>;
 
+
         getById(id: TKey): IPromise<T> {
             var deferred = PromiseHandler.defer<T>();
 
@@ -82,25 +83,29 @@ namespace DDDTools.Repository {
                 (value: T) => {
                     if (value.__typeName != this.managedType && !(this.managedType == undefined)) {
                         var reason = Errors.getErrorInstance(Errors.WrongTypeFromImplementation, "Expecting " + this.managedType + " but obtained " + value.__typeName + " from database.");
+                        console.log("getById: " + reason);
                         deferred.reject(reason);
                         return;
                     }
+
                     try {
                         var toReturn: T = <T>(Factory.createObjectsFromState(value));
                     } catch (e) {
+                        console.log("getById: " + JSON.stringify(e));
                         deferred.reject(e);
                         return;
                     }
 
                     var event = new ItemRetrievedEvent(toReturn, this.repositoryId);
-                    return DomainDispatcher.dispatch(event).then(
+                    return DomainDispatcher.dispatch(event).finally(
                         () => {
                             deferred.resolve(toReturn);
                         }
                     );
-                },
+                }).catch(
                 (error: any) => {
                     var reason = this.buildError(error, Errors.ItemNotFound);
+                    console.log("getById: " + reason);
                     deferred.reject(reason);
                 });
             return deferred.promise;
@@ -140,48 +145,42 @@ namespace DDDTools.Repository {
 
             if (!item.getKey()) {
                 var reason = Errors.getErrorInstance(Errors.KeyNotSet);
-                deferred.reject(reason);
-                return deferred.promise;
+                return PromiseHandler.reject(reason);
             }
 
             this.getById(item.getKey()).then(
                 (readValue: T) => {
                     // the item already exist so we have to compare it with what we are saving.
-                    if (!item.perfectlyMatch(readValue)) {
-                        // Increment revision only if we are not replacing an item
-                        if (!replaceOnly) {
-                            // Interesting case when revisionId of the item to save is less than the revisionId of the already saved item. 
-                            // Two choices: Throw an exception or use the "greatest" revisionId and increment that... I'll go for for the first choice...
-                            if (item.getRevisionId() < readValue.getRevisionId()) {
-                                var error = Errors.getErrorInstance(Errors.SavingOldObject);
-                                error.message = "Error saving item of type " + this.managedType + " with key " + item.getKey().toString() + " because item's __revisionId (" + item.getRevisionId() + ") is less than saved item's __revisionId (" + readValue.getRevisionId() + ").";
-                                deferred.reject(error);
-                                return;
-                            }
-                            item.incrementRevisionId();
-                            event = event || new ItemUpdatedEvent(item, this.repositoryId);
-                        }
-                        this.doSave(item, SaveActionEnum.Update).then(() => {
-                            event = event || new ItemReplacedEvent(item, this.repositoryId);
-                            return DomainDispatcher.dispatch(event).then(() => {
-                                deferred.resolve();
-                            });
-
-                        }, (error) => {
-                            var reason = this.buildError(error, Errors.ErrorReadingItem);
-                            deferred.reject(reason);
-                        });
-                    } else {
-                        // What is in the database perfectly match what we are saving, so nothing to do!
+                    if (item.perfectlyMatch(readValue)) {
+                        // What is in the database perfectly matches what we are saving, so nothing to do!
                         deferred.resolve();
+                        return;
                     }
+
+                    // Increment revision only if we are not replacing an item
+                    if (!replaceOnly) {
+                        item.incrementRevisionId();
+                        event = event || new ItemUpdatedEvent(item, this.repositoryId);
+                    }
+
+                    if (replaceOnly) {
+                        event = event || new ItemReplacedEvent(item, this.repositoryId);
+                    }
+
+                    return this.doSave(item, SaveActionEnum.Update).then(() => {
+                        return DomainDispatcher.dispatch(event).then(() => {
+                            deferred.resolve();
+                        });
+
+                    }).catch((error) => {
+                        var reason = this.buildError(error, Errors.ErrorReadingItem);
+                        deferred.reject(reason);
+                    });
                 },
                 (error: any) => {
                     if (error instanceof Error && error.name == Errors.ItemNotFound) {
                         // This is expected, the item is not in the repo, so we have to add it!
-                        if (!replaceOnly) {
-                            item.incrementRevisionId();
-                        }
+
                         this.doSave(item, SaveActionEnum.Add).then(
                             () => {
                                 event = event || new ItemAddedEvent(item, this.repositoryId);
@@ -233,6 +232,7 @@ namespace DDDTools.Repository {
                         deferred.resolve();
                         return;
                     }
+                    deferred.reject(error);
                 }
             );
             return deferred.promise;

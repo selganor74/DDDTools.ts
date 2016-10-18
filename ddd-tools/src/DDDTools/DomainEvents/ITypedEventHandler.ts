@@ -1,4 +1,5 @@
-/// <reference path="./IDomainEvent.ts" />
+﻿/// <reference path="./IDomainEvent.ts" />
+/// <reference path="../Promises/PromiseHandler.ts" />
 
 namespace DDDTools.DomainEvents {
 
@@ -8,8 +9,8 @@ namespace DDDTools.DomainEvents {
      * Form of an Event Handler.
      * When asyncronous processing occour within an Handler, it is good practice to return a promise, so the dispatcher (and the event raiser)
      */
-    export interface IEventHandler {
-        (domainEvent: IDomainEvent): IPromise<any> | void;
+    export interface ITypedEventHandler<T extends IDomainEvent> {
+        (domainEvent: T): IPromise<any> | void;
     }
 
 }

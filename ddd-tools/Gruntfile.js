@@ -1,3 +1,4 @@
+/// <binding AfterBuild='build' />
 module.exports = function (grunt) {
 
     // Project configuration.
@@ -46,6 +47,12 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'node_modules/underscore/',
                         src: ['underscore.js'],
+                        dest: 'build-test/lib'
+                    }, // pulls in log4javascript
+                    {
+                        expand: true,
+                        cwd: 'node_modules/log4javascript/',
+                        src: ['log4javascript.js'],
                         dest: 'build-test/lib'
                     }
                     

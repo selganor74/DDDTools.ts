@@ -37,8 +37,10 @@
     <TypeScriptCompile Include="src\DDDTools\DomainEvents\DomainDispatcher.ts" />
     <TypeScriptCompile Include="src\DDDTools\DomainEvents\IDispatcher.ts" />
     <TypeScriptCompile Include="src\DDDTools\DomainEvents\IDomainEvent.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\IEventConsumer.ts" />
     <TypeScriptCompile Include="src\DDDTools\DomainEvents\IEventHandler.ts" />
     <TypeScriptCompile Include="src\DDDTools\DomainEvents\InProcessDispatcher.ts" />
+    <TypeScriptCompile Include="src\DDDTools\DomainEvents\ITypedEventHandler.ts" />
     <TypeScriptCompile Include="src\DDDTools\Entity\BaseEntity.ts" />
     <TypeScriptCompile Include="src\DDDTools\Entity\BaseKeyValueObject.ts" />
     <TypeScriptCompile Include="src\DDDTools\Entity\IEntity.ts" />
@@ -51,6 +53,7 @@
     <TypeScriptCompile Include="src\DDDTools\Promises\PromiseHandler.ts" />
     <TypeScriptCompile Include="src\DDDTools\Query\IQuery.ts" />
     <TypeScriptCompile Include="src\DDDTools\Query\IQueryAsync.ts" />
+    <TypeScriptCompile Include="src\DDDTools\ReadModel\IReadModelAsync.ts" />
     <TypeScriptCompile Include="src\DDDTools\Repository\BaseRepository.ts" />
     <TypeScriptCompile Include="src\DDDTools\Repository\BaseRepositoryAsync.ts" />
     <TypeScriptCompile Include="src\DDDTools\Repository\BaseRepositoryEvent.ts" />
@@ -87,6 +90,7 @@
     <TypeScriptCompile Include="src\DDDTools\Utils\SimpleGuid.ts" />
     <TypeScriptCompile Include="src\DDDTools\Utils\SimpleIdentityMap.ts" />
     <TypeScriptCompile Include="src\DDDTools\ValueObjects\Guid.ts" />
+    <TypeScriptCompile Include="src\DDDTools\ValueObjects\Money.ts" />
     <TypeScriptCompile Include="src\DDDTools\ValueObject\BaseValueObject.ts" />
     <TypeScriptCompile Include="src\DDDTools\ValueObject\IValueObject.ts" />
     <TypeScriptCompile Include="src\test\.baseDir.ts" />
@@ -96,6 +100,7 @@
     <TypeScriptCompile Include="src\test\DDDTools\InMemoryRepository-spec.ts" />
     <TypeScriptCompile Include="src\test\DDDTools\InMemoryRepositoryAsync-spec.ts" />
     <TypeScriptCompile Include="src\test\DDDTools\InProcessDispatcher-spec.ts" />
+    <TypeScriptCompile Include="src\test\DDDTools\Money-spec.ts" />
     <TypeScriptCompile Include="src\test\DDDTools\Serialization-spec.ts" />
     <TypeScriptCompile Include="src\test\DDDTools\UnitOfWork-spec.ts" />
     <TypeScriptCompile Include="typings\browser.d.ts" />
@@ -115,9 +120,9 @@
     <Content Include="src\DDDTools\tsconfig.json" />
     <Content Include="src\test\tsconfig.json" />
     <Content Include="package.json" />
-    <Content Include="README.md" />
     <Content Include="typings.json" />
     <Content Include=".npmignore" />
+    <Content Include="README.md" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
