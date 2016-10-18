@@ -1,3 +1,4 @@
+/// <binding AfterBuild='build' />
 module.exports = function (grunt) {
 
     // Project configuration.

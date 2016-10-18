@@ -33,7 +33,12 @@ namespace DDDTools.ReadModel {
         /**
         Will delete an element of the ReadModel collection.
         */
-        delete(key: string): IPromise<void>;
+        deleteByKey(key: string): IPromise<void>;
+
+        /**
+        Will delete a set of elements of the ReadModel collection identified by a query.
+        */
+        deleteByQuery(query: any): IPromise<void>;
 
         /**
         Will clear the collection deleting all of the content.

@@ -1,5 +1,3 @@
-/// <reference path="../../node_modules/log4javascript/log4javascript.d.ts" />
-/// <reference path="../../typings/browser.d.ts" />
 /**
  * Minimal Error handling base behaviors for the domain model.
  */
@@ -24,25 +22,29 @@ declare namespace DDDTools.ReadModel {
         not necessarily an aggregate root.
         Objects stored in the ReadModel will probably have all public members.
      */
-    interface IReadModelAsync<T, TKey> {
+    interface IReadModelAsync<T> {
         /**
             Will insert a new object in the readmodel.
             It will throw an error if an object with the same key already exist.
          */
-        insert(value: T, key: TKey): IPromise<void>;
+        insert(value: T, key: string): IPromise<void>;
         /**
             Will update an existing onject in the readmodel
             It will throw an error if the object doesn't exist.
          */
-        update(value: T, key: TKey): IPromise<void>;
+        update(value: T, key: string): IPromise<void>;
         /**
         Will insert or update an object with a specified key
         */
-        insertOrUpdate(value: T, key: TKey): IPromise<void>;
+        insertOrUpdate(value: T, key: string): IPromise<void>;
         /**
         Will delete an element of the ReadModel collection.
         */
-        delete(key: TKey): IPromise<void>;
+        deleteByKey(key: string): IPromise<void>;
+        /**
+        Will delete a set of elements of the ReadModel collection identified by a query.
+        */
+        deleteByQuery(query: any): IPromise<void>;
         /**
         Will clear the collection deleting all of the content.
         */
@@ -51,62 +53,6 @@ declare namespace DDDTools.ReadModel {
         By now the query object is left to the implementation.
         */
         select(query: any): IPromise<T[]>;
-    }
-}
-declare namespace DDDTools.ReadModel {
-    import IPromise = DDDTools.Promises.IPromise;
-    type FilterFunction<T> = (value: T) => boolean;
-    interface IQueryable<T> {
-        and(filter: FilterFunction<T>): IQueryable<T>;
-        or(filter: FilterFunction<T>): IQueryable<T>;
-        not(): IQueryable<T>;
-        equals(fieldName: string, value: string | number): IQueryable<T>;
-        toArray(): IPromise<T[]>;
-    }
-}
-declare namespace DDDTools.ReadModel {
-    import BaseErrors = ErrorManagement.BaseErrors;
-    class Errors extends BaseErrors {
-        static ItemNotFound: string;
-        static ItemAlreadyInCollection: string;
-        static ErrorUpdatingItem: string;
-        static ErrorReadingItem: string;
-        static ErrorDeletingItem: string;
-        static InvalidKey: string;
-    }
-}
-declare namespace DDDTools.ReadModel {
-    import IPromise = Promises.IPromise;
-    abstract class BaseReadModelAsync<T, TKey> implements IReadModelAsync<T, TKey> {
-        constructor();
-        insert(value: T, key: TKey): IPromise<void>;
-        /**
-            Will update an existing onject in the readmodel
-            It will throw an error if the object doesn't exist.
-         */
-        update(value: T, key: TKey): IPromise<void>;
-        /**
-        Will insert or update an object with a specified key
-        */
-        insertOrUpdate(value: T, key: TKey): IPromise<void>;
-        /**
-        Will delete an element of the ReadModel collection.
-        */
-        delete(key: TKey): IPromise<void>;
-        /**
-        Will clear the collection deleting all of the content.
-        */
-        clear(): IPromise<void>;
-        /**
-         * By now the query object is left to the implementation.
-         */
-        where(filterFunction: FilterFunction): IQueryable<T>;
-        protected abstract insertImplementation(value: T, key: TKey): IPromise<void>;
-        protected abstract updateImplementation(value: T, key: TKey): IPromise<void>;
-        protected abstract deleteImplementation(key: TKey): IPromise<void>;
-        protected abstract clearImplementation(): IPromise<void>;
-        protected abstract whereImplementation(filterFunction: FilterFunction): IQueryable<T>;
-        protected abstract getByKeyImplementation(key: TKey): IPromise<T>;
     }
 }
 declare namespace DDDTools.Query {

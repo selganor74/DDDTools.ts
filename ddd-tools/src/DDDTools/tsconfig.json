@@ -13,7 +13,6 @@
     "ErrorManagement/BaseErrors.ts",
     "Promises/PromiseHandler.ts",
     "ReadModel/IReadModelAsync.ts",
-    "ReadModel/BaseReadModelAsync.ts",
     "Query/IQuery.ts",
     "Query/IQueryAsync.ts",
     "Utils/SimpleGuid.ts",
