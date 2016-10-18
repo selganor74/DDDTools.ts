@@ -36,6 +36,9 @@ declare namespace CdC.Tests.BasePersistableObject {
         __typeName: string;
         __typeVersion: string;
         getUpgradedInstance(fromInstance: CdC.Tests.BasePersistableObject.v1.TestEntity): TestEntity;
+        /**
+         * This property was not in "v1".
+         */
         aNewProperty: string;
     }
     class TestEntityNonUpgradable extends BaseEntity<TestEntityNonUpgradable, Guid> {
@@ -151,11 +154,10 @@ declare namespace CdC.Tests.RepAsync {
 }
 declare namespace CdC.Tests.ForDispatcher {
 }
-import Serializer = DDDTools.Serialization.Serializer;
-import Deserializer = DDDTools.Serialization.Deserializer;
-import SerializableDate = DDDTools.Serialization.SerializableDate;
-import SerializableNull = DDDTools.Serialization.SerializableNull;
-import SerializableRegExp = DDDTools.Serialization.SerializableRegExp;
+declare namespace CdC.Tests.ValueObjects.Money {
+}
+declare namespace CdC.Tests.Serialization {
+}
 declare namespace CdC.Tests.ForUnitOfWork {
     import InMemoryRepository = DDDTools.Repository.InMemoryRepository;
     import BaseAggregateRoot = DDDTools.Aggregate.BaseAggregateRoot;

@@ -1,9 +1,6 @@
 /// <reference path="./IDomainEvent.ts" />
 /// <reference path="./IEventHandler.ts" />
 
-// import {IDomainEvent} from "./IDomainEvent";
-// import {IEventHandler} from "./IEventHandler";
-
 namespace DDDTools.DomainEvents {
 
     import IPromise = Promises.IPromise;

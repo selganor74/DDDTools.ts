@@ -55,9 +55,10 @@ The package has the following dependencies:
 
 ## Change log
 
-### 0.0.26 
+### 0.0.24 2016 10 18
 
 * Added "Money" Value Object to handle Money values.
+* Added "IReadModel" Interface. Implementation are left to implementation modules.
 
 ### 0.0.23 2016 09 10
 

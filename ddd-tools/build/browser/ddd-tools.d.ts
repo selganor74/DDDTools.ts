@@ -1,3 +1,5 @@
+/// <reference path="../../node_modules/log4javascript/log4javascript.d.ts" />
+/// <reference path="../../typings/browser.d.ts" />
 /**
  * Minimal Error handling base behaviors for the domain model.
  */
@@ -11,6 +13,101 @@ declare namespace DDDTools.Promises {
     var PromiseHandler: ng.IQService;
     export import IPromise = ng.IPromise;
     export import Deferred = ng.IDeferred;
+}
+declare namespace DDDTools.ReadModel {
+    import IPromise = Promises.IPromise;
+    /**
+        Identifies a readmodel in the system.
+        A Readmodel will be probably persisted to some kind of database,
+        either in memory or disk or ...
+        It is somehow similar to a repository, but it can store any kind of status,
+        not necessarily an aggregate root.
+        Objects stored in the ReadModel will probably have all public members.
+     */
+    interface IReadModelAsync<T, TKey> {
+        /**
+            Will insert a new object in the readmodel.
+            It will throw an error if an object with the same key already exist.
+         */
+        insert(value: T, key: TKey): IPromise<void>;
+        /**
+            Will update an existing onject in the readmodel
+            It will throw an error if the object doesn't exist.
+         */
+        update(value: T, key: TKey): IPromise<void>;
+        /**
+        Will insert or update an object with a specified key
+        */
+        insertOrUpdate(value: T, key: TKey): IPromise<void>;
+        /**
+        Will delete an element of the ReadModel collection.
+        */
+        delete(key: TKey): IPromise<void>;
+        /**
+        Will clear the collection deleting all of the content.
+        */
+        clear(): IPromise<void>;
+        /**
+        By now the query object is left to the implementation.
+        */
+        select(query: any): IPromise<T[]>;
+    }
+}
+declare namespace DDDTools.ReadModel {
+    import IPromise = DDDTools.Promises.IPromise;
+    type FilterFunction<T> = (value: T) => boolean;
+    interface IQueryable<T> {
+        and(filter: FilterFunction<T>): IQueryable<T>;
+        or(filter: FilterFunction<T>): IQueryable<T>;
+        not(): IQueryable<T>;
+        equals(fieldName: string, value: string | number): IQueryable<T>;
+        toArray(): IPromise<T[]>;
+    }
+}
+declare namespace DDDTools.ReadModel {
+    import BaseErrors = ErrorManagement.BaseErrors;
+    class Errors extends BaseErrors {
+        static ItemNotFound: string;
+        static ItemAlreadyInCollection: string;
+        static ErrorUpdatingItem: string;
+        static ErrorReadingItem: string;
+        static ErrorDeletingItem: string;
+        static InvalidKey: string;
+    }
+}
+declare namespace DDDTools.ReadModel {
+    import IPromise = Promises.IPromise;
+    abstract class BaseReadModelAsync<T, TKey> implements IReadModelAsync<T, TKey> {
+        constructor();
+        insert(value: T, key: TKey): IPromise<void>;
+        /**
+            Will update an existing onject in the readmodel
+            It will throw an error if the object doesn't exist.
+         */
+        update(value: T, key: TKey): IPromise<void>;
+        /**
+        Will insert or update an object with a specified key
+        */
+        insertOrUpdate(value: T, key: TKey): IPromise<void>;
+        /**
+        Will delete an element of the ReadModel collection.
+        */
+        delete(key: TKey): IPromise<void>;
+        /**
+        Will clear the collection deleting all of the content.
+        */
+        clear(): IPromise<void>;
+        /**
+         * By now the query object is left to the implementation.
+         */
+        where(filterFunction: FilterFunction): IQueryable<T>;
+        protected abstract insertImplementation(value: T, key: TKey): IPromise<void>;
+        protected abstract updateImplementation(value: T, key: TKey): IPromise<void>;
+        protected abstract deleteImplementation(key: TKey): IPromise<void>;
+        protected abstract clearImplementation(): IPromise<void>;
+        protected abstract whereImplementation(filterFunction: FilterFunction): IQueryable<T>;
+        protected abstract getByKeyImplementation(key: TKey): IPromise<T>;
+    }
 }
 declare namespace DDDTools.Query {
     /**
@@ -461,6 +558,69 @@ declare namespace DDDTools.StateMachine {
         processEvent(event: TEvents): IPromise<HandlerResult>;
     }
 }
+/**
+ * Collection of general and commonly used ValueObjects.
+ */
+declare namespace DDDTools.ValueObjects {
+    import IValueObject = ValueObject.IValueObject;
+    import BaseValueObject = ValueObject.BaseValueObject;
+    /**
+     * A simple value object to manage money.
+     */
+    class Money extends BaseValueObject<Money> implements IValueObject<Money> {
+        __typeName: string;
+        __typeVersion: string;
+        private amount;
+        private amountEuro;
+        private exchange;
+        private currency;
+        /**
+         *
+         * @param amount    amount in the currency specified by currency
+         * @param currency  currency of the amount specified (if not supplied will be Currencies.EURO)
+         * @param exchange  multiplier exchange to apply. This is always the €/currency amount ==> 1 * {currency} = {exchange} * €
+         */
+        constructor(amount?: number | Money, currency?: Currency, exchange?: number);
+        copy(): Money;
+        getAmount(): number;
+        getAmountEuro(): number;
+        getCurrency(): Currency;
+        changeAmount(newAmount: number): Money;
+        changeExchange(newExchange: number): Money;
+        changeCurrency(newCurrency: Currency): Money;
+        plus(toAdd: Money): Money;
+        minus(toSubstract: Money): Money;
+        multiplyBy(multiplier: number): Money;
+        divideBy(divisor: number): Money;
+        /**
+         *
+         * @param percent0_100 Percent to apply in 100th ( 1 means 1% ).
+         *
+         * @example var currentAmount = new Money( 1000.0 )
+         *          var withPercentApplied = currentAmount.incrementByPercent( 50% ); { ==> 1500 }
+         */
+        incrementByPercent(percent0_100: number): void;
+        /**
+         *
+         * @param percent0_100 Percent to apply in 100th ( 1 means 1% ).
+         *
+         * @example var currentAmount = new Money( 1000.0 )
+         *          var withPercentApplied = currentAmount.decrementPercent( 50% ); { ==> 500 }
+         */
+        decrementByPercent(percent0_100: number): void;
+        private formatNumber(decimals?, thousandsSeparator?, decimalSeparator?);
+        toString(decimals?: number, thousandsSeparator?: string, decimalSeparator?: string, showCurrency?: boolean): string;
+    }
+    class Currency {
+        name: string;
+        symbol: string;
+        constructor(name: string, symbol: string);
+    }
+    class Currencies {
+        static EURO: Currency;
+        static DOLLAR: Currency;
+    }
+}
 declare namespace DDDTools.Entity {
     import IEquatable = CommonInterfaces.IEquatable;
     import IPersistable = PersistableObject.IPersistable;
@@ -826,8 +986,17 @@ declare namespace DDDTools.DomainEvents {
 }
 declare namespace DDDTools.Saga {
     interface ISaga {
+        /**
+         * setup the saga's event handlers.
+         */
         start(): void;
+        /**
+         * deregisters all of the event handlers registered by the saga
+         */
         stop(): void;
+        /**
+         * recovers all the "still running sagas"
+         */
         recover(): void;
     }
 }
