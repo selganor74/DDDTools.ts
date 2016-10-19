@@ -79,6 +79,7 @@
     <TypeScriptCompile Include="src\DDDTools\Serialization\Touch.ts" />
     <TypeScriptCompile Include="src\DDDTools\StateMachine\BaseStateMachine.ts" />
     <TypeScriptCompile Include="src\DDDTools\StateMachine\IStateMachine.ts" />
+    <TypeScriptCompile Include="src\DDDTools\StateMachine\StateMachineDefinitionRegistry.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\Events.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IdentityMap.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IUnitOfWork.ts" />
@@ -122,7 +123,9 @@
     <Content Include="package.json" />
     <Content Include="typings.json" />
     <Content Include=".npmignore" />
-    <Content Include="README.md" />
+    <Content Include="..\README.md">
+      <Link>README.md</Link>
+    </Content>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
