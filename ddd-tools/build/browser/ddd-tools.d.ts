@@ -448,7 +448,7 @@ declare namespace DDDTools.StateMachine {
         afterEnterStatus = 1,
         beforeExitStatus = 2,
         afterExitStatus = 3,
-        onSuccesfulEventProcessed = 4,
+        onSuccessfulEventProcessed = 4,
     }
     class HandlerCollection<TStatuses, TEvents> extends BasePersistableObject {
         __typeName: string;
@@ -459,30 +459,27 @@ declare namespace DDDTools.StateMachine {
         private hasAlreadyBeenRegistered(handler, eventType);
         private touchHandler(handler, eventType);
     }
+    type StateMachineDefinition<TStatuses, TEvents> = {
+        [event: string]: {
+            [fromStatus: string]: TStatuses;
+        };
+    };
     /**
      * Please, remember to set __typeName and __typeVersion in your derived types !
      * __typeName and __typeVersion should be set on the constructor too, but this mean changing a lot of things.
      */
     class BaseStateMachine<TStatuses, TEvents> extends BasePersistableObject implements IStateMachine<TStatuses, TEvents> {
-        protected stateMachineDefinition: {
-            [event: string]: {
-                [fromStatus: string]: TStatuses;
-            };
-        };
+        protected stateMachineDefinition: StateMachineDefinition<TStatuses, TEvents>;
         private currentStatus;
         private previousStatus;
         private beforeEnterStatusHandlers;
         private afterEnterStatusHandlers;
         private beforeExitStatusHandlers;
         private afterExitStatusHandlers;
-        private onSuccesfulEventProcessedHandlers;
-        constructor(initialStatus: TStatuses, stateMachineDefinition: {
-            [event: string]: {
-                [fromStatus: string]: TStatuses;
-            };
-        });
+        private onSuccessfulEventProcessedHandlers;
+        constructor(initialStatus: TStatuses, stateMachineDefinition?: StateMachineDefinition<TStatuses, TEvents>);
         /**
-         * Overrides the PersistableObject's setState to avoid restoring collection of "fake handlers"'
+         * Overrides the PersistableObject's setState to avoid restoring a collection of "fake handlers"'
          */
         setState(state: any): void;
         registerHandler(handler: EventHandler<TStatuses, TEvents>, kindOfHandler: KindsOfEventHandler): void;
@@ -502,6 +499,18 @@ declare namespace DDDTools.StateMachine {
          * Will cause the state machine to advance to the next status... or throw an exception.
          */
         processEvent(event: TEvents): IPromise<HandlerResult>;
+    }
+}
+declare namespace DDDTools.StateMachine {
+    class StateMachineDefinitionRegistry {
+        private static stateMachineDefinitionRegistry;
+        private static buildTypeAndVersionString(typeName, typeVersion);
+        static registerStateMachine<TStatuses, TEvents>(stateMachineType: string, stateMachineVersion: string, stateMachineDefinition: StateMachineDefinition<TStatuses, TEvents>): void;
+        static getStateMachine<TStatuses, TEvents>(stateMachineType: string, stateMachineVersion: string): {
+            [event: string]: {
+                [fromStatus: string]: any;
+            };
+        };
     }
 }
 /**

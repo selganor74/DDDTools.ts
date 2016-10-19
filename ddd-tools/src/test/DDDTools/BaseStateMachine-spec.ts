@@ -172,7 +172,7 @@ namespace CdC.Tests.BaseStateMachine {
                 expect(counter).toBe(5, "onSuccesfulEventProcessed must be the fifth called");
                 counter++;
                 return PromiseHandler.when(new HandlerResult(true, ""))
-            }, KindsOfEventHandler.onSuccesfulEventProcessed);
+            }, KindsOfEventHandler.onSuccessfulEventProcessed);
 
             sut.processEvent("From_A_to_B").then((result) => {
                 done();
@@ -197,7 +197,7 @@ namespace CdC.Tests.BaseStateMachine {
                     expect(sutReloaded.sm.getCurrentStatus()).toEqual("State_B");
                 })
                 .catch((error) => {
-                    expect(false).toBeTruthy("Errors during test: " + JSON.stringify(error) + " " + error.message);
+                    expect(false).toBeTruthy("Errors during test: " + error + " " + error.message);
                 })
                 .finally(() => {
                     done();

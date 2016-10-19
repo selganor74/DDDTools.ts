@@ -55,9 +55,15 @@ The package has the following dependencies:
 
 ## Change log
 
-### 0.0.26 
+### 0.0.25 2016 10 19
+
+* Added StateMachineDefinitionRegistry. Allows to "change" the stateMachineDefinitions, without the need of an upgrade process of the state machine.
+* Added the README.md as linked existing item in visual studio. Still don't know if it is the right choice as Visual Studio seems to store an absolut path to the file. 
+
+### 0.0.24 2016 10 18
 
 * Added "Money" Value Object to handle Money values.
+* Added "IReadModel" Interface. Implementations are left to implementation modules.
 
 ### 0.0.23 2016 09 10
 

@@ -37,7 +37,7 @@ namespace DDDTools.StateMachine {
         afterEnterStatus,
         beforeExitStatus,
         afterExitStatus,
-        onSuccesfulEventProcessed
+        onSuccessfulEventProcessed
     }
 
     interface ITouchableEventHandler {
@@ -126,6 +126,9 @@ namespace DDDTools.StateMachine {
 
     }
 
+    export type StateMachineDefinition<TStatuses, TEvents> = { [event: string]: { [fromStatus: string]: TStatuses } };
+
+
     /**
      * Please, remember to set __typeName and __typeVersion in your derived types !
      * __typeName and __typeVersion should be set on the constructor too, but this mean changing a lot of things.
@@ -138,33 +141,52 @@ namespace DDDTools.StateMachine {
         private afterEnterStatusHandlers = new HandlerCollection();
         private beforeExitStatusHandlers = new HandlerCollection();
         private afterExitStatusHandlers = new HandlerCollection();
-        private onSuccesfulEventProcessedHandlers = new HandlerCollection();
+        private onSuccessfulEventProcessedHandlers = new HandlerCollection();
 
         constructor(initialStatus: TStatuses,
-            protected stateMachineDefinition: { [event: string]: { [fromStatus: string]: TStatuses } }
+            protected stateMachineDefinition?: StateMachineDefinition<TStatuses, TEvents>
         ) {
             super();
+
+            if (!stateMachineDefinition) {
+                var smd = StateMachineDefinitionRegistry.getStateMachine(this.__typeName, this.__typeVersion);
+                if (smd) {
+                    this.stateMachineDefinition = smd;
+                }
+            }
+
             this.currentStatus = initialStatus;
-            
+
             // TODO: The components registration should be kept somewhere else... or make the component's type registration in the constructor become a rule.
             try {
                 Factory.registerType("HandlerCollection", "v1", HandlerCollection);
             } catch(e) {
-                // The type as already registered, so nothing to do.
+                // The type has already registered, so nothing to do.
             }     
         }
 
         /**
-         * Overrides the PersistableObject's setState to avoid restoring collection of "fake handlers"'
+         * Overrides the PersistableObject's setState to avoid restoring a collection of "fake handlers"'
          */
         public setState(state: any) {
             super.setState(state);
+
+            // Allows to use the state machines definition put on the registry.
+            // Doing this way it is possible to change a state machine without having to 
+            // Setup an upgrade process. T
+            // At this moment the registrydefinition is optional, so this version of the 
+            // state machine is fully compatible with the previous version.
+            var smd = StateMachineDefinitionRegistry.getStateMachine(this.__typeName, this.__typeVersion);
+            if (smd) {
+                this.stateMachineDefinition = smd;
+            }
+
             // We need to reinitialize the handlers collection. as if they were 
+            this.onSuccessfulEventProcessedHandlers = new HandlerCollection();
             this.beforeEnterStatusHandlers = new HandlerCollection();
             this.afterEnterStatusHandlers = new HandlerCollection();
             this.beforeExitStatusHandlers = new HandlerCollection();
             this.afterExitStatusHandlers = new HandlerCollection();
-            this.onSuccesfulEventProcessedHandlers = new HandlerCollection();
         }
 
         public registerHandler(handler: EventHandler<TStatuses, TEvents>, kindOfHandler: KindsOfEventHandler) {
@@ -259,7 +281,7 @@ namespace DDDTools.StateMachine {
                 }).then(() => {
                     return this.afterEnterStatusHandlers.runHandlers(smEvent);
                 }).then(() => {
-                    return this.onSuccesfulEventProcessedHandlers.runHandlers(smEvent);
+                    return this.onSuccessfulEventProcessedHandlers.runHandlers(smEvent);
                 }).catch((reason: HandlerResult) => {
                     // Some Handler decided not to allow the state change, so we simply return why!
                     return PromiseHandler.when(reason);
