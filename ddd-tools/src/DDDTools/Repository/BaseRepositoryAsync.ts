@@ -83,7 +83,6 @@ namespace DDDTools.Repository {
                 (value: T) => {
                     if (value.__typeName != this.managedType && !(this.managedType == undefined)) {
                         var reason = Errors.getErrorInstance(Errors.WrongTypeFromImplementation, "Expecting " + this.managedType + " but obtained " + value.__typeName + " from database.");
-                        console.log("getById: " + reason);
                         deferred.reject(reason);
                         return;
                     }
@@ -91,7 +90,6 @@ namespace DDDTools.Repository {
                     try {
                         var toReturn: T = <T>(Factory.createObjectsFromState(value));
                     } catch (e) {
-                        console.log("getById: " + JSON.stringify(e));
                         deferred.reject(e);
                         return;
                     }
@@ -105,7 +103,6 @@ namespace DDDTools.Repository {
                 }).catch(
                 (error: any) => {
                     var reason = this.buildError(error, Errors.ItemNotFound);
-                    console.log("getById: " + reason);
                     deferred.reject(reason);
                 });
             return deferred.promise;

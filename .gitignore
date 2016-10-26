@@ -250,3 +250,6 @@ node_modules/
 .alm/
 .baseDir.ts
 .grunt/
+
+# Excludes the README copied from solution's root
+ddd-tools/README.md

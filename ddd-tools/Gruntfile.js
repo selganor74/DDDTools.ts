@@ -29,6 +29,16 @@ module.exports = function (grunt) {
             "after-build": ['build/**/.baseDir.*']
         },
         "copy": {
+            "build-browser": {
+                files: [
+                    {
+                        expand: true,
+                        cwd: "../",
+                        src: "README.md",
+                        dest: "."
+                    }
+                ]
+            },
             "build-tests": {
                 files: [
                     // { // pulls in q
@@ -111,7 +121,7 @@ module.exports = function (grunt) {
 
     // TASKS
     grunt.registerTask('run', ['http-server']);
-    grunt.registerTask('build', ['clean', 'ts:build-browser', 'lineremover:build', 'clean:after-build']);
+    grunt.registerTask('build', ['clean', 'ts:build-browser', 'lineremover:build', 'copy:build-browser', 'clean:after-build']);
     grunt.registerTask('build-tests', ['clean', 'ts:build-browser', 'ts:build-tests', 'copy', 'lineremover:build', 'clean:after-build']);
     grunt.registerTask('run-tests', ['build-tests', 'jasmine:run-tests']);
 };
