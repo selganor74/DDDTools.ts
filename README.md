@@ -55,6 +55,11 @@ The package has the following dependencies:
 
 ## Change log
 
+### 0.0.26 2016 10 27
+
+* Removed some console.log from BaseRepositoryAsync, to avoid cluttering console output in production environment
+* Restored README.md in published npm package
+
 ### 0.0.25 2016 10 19
 
 * Added StateMachineDefinitionRegistry. Allows to "change" the stateMachineDefinitions, without the need of an upgrade process of the state machine.
