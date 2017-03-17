@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>2.2</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -83,10 +83,12 @@
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\Events.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IdentityMap.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IUnitOfWork.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\IUnitOfWorkAsync.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\ObjectDeletedEvent.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\ObjectRetrievedEvent.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\ObjectSavedEvent.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\UnitOfWork.ts" />
+    <TypeScriptCompile Include="src\DDDTools\UnitOfWork\UnitOfWorkAsync.ts" />
     <TypeScriptCompile Include="src\DDDTools\UnitOfWork\UnitOfWorkErrors.ts" />
     <TypeScriptCompile Include="src\DDDTools\Utils\SimpleGuid.ts" />
     <TypeScriptCompile Include="src\DDDTools\Utils\SimpleIdentityMap.ts" />
@@ -123,9 +125,6 @@
     <Content Include="package.json" />
     <Content Include="typings.json" />
     <Content Include=".npmignore" />
-    <Content Include="..\README.md">
-      <Link>README.md</Link>
-    </Content>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

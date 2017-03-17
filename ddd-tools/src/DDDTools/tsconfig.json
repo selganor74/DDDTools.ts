@@ -65,12 +65,14 @@
     "Saga/ISaga.ts",
     "Saga/BaseSaga.ts",
     "UnitOfWork/IUnitOfWork.ts",
+    "UnitOfWork/IUnitOfWorkAsync.ts",
     "UnitOfWork/UnitOfWorkErrors.ts",
     "UnitOfWork/Events.ts",
     "UnitOfWork/ObjectDeletedEvent.ts",
     "UnitOfWork/ObjectRetrievedEvent.ts",
     "UnitOfWork/ObjectSavedEvent.ts",
     "UnitOfWork/IdentityMap.ts",
-    "UnitOfWork/UnitOfWork.ts"
+    "UnitOfWork/UnitOfWork.ts",
+    "UnitOfWork/UnitOfWorkAsync.ts"
   ]
 }

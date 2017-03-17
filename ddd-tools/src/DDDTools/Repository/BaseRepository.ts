@@ -35,7 +35,7 @@ namespace DDDTools.Repository {
     import DomainDispatcher = DomainEvents.DomainDispatcher;
 
     /**
-     * Captures common behavior of repository, using theTemplate Method Pattern.
+     * Captures common behavior of repository, using the Template Method Pattern.
      */
     export abstract class BaseRepository<T extends BaseAggregateRoot<T, TKey>, TKey extends IKeyValueObject<TKey>>
         implements IRepository<T, TKey> {

@@ -7,7 +7,7 @@ A typescript implementation of the basic DDD patterns.
 
 ## What is in it?
 
-The package exports a DDDTools "namespace" composed by these elements
+The package exports a DDDTools "namespace" composed by the following elements
 
 ### Main Patterns
 
@@ -20,13 +20,14 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ### Tools and utilities
 
-* **Serialization**: "Smart" Serialization/Deserialization which takes into account 
-  reconstitution of object trees and of "special types" like Date and RegExp.
+* **Serialization**: "Smart" Serialization/Deserialization able to serialize and
+  reconstitute object trees and "special types" such as Date and RegExp.
   It can be used "as a stand alone" tool.
   
 * **PersistableObject**: Manages "evolution" of objects that can be persisted. 
   Objects whose state can survive between program "executions" must provide a 
-  mean of "upgrading" their state, to follow changes due requirements and bugs. 
+  mean of "upgrading" their state, to follow changes due to requirements change 
+  and/or bugs. 
   
 * **ValueObjects**: a growable collection of general purpose Value Objects.
 
@@ -55,10 +56,16 @@ The package has the following dependencies:
 
 ## Change log
 
+### ? ?
+
+* Moved to typescript 2.2
+* Fixed some typos in README.md
+* Linked README.md as "Solution Item"
+
 ### 0.0.26 2016 10 27
 
 * Removed some console.log from BaseRepositoryAsync, to avoid cluttering console output in production environment
-* Restored README.md in published npm package
+* Restored README.md in published npm 
 
 ### 0.0.25 2016 10 19
 
