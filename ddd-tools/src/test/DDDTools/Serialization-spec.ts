@@ -111,10 +111,16 @@ namespace CdC.Tests.Serialization {
                 b: "Ciao"
             }
 
+            var anArrayDefinedExternally = [0, 1, 2, 3];
+
             var anObject = {
                 property1: "A Property",
                 property2: "Another Property",
                 anArray: ["1", "3", { property1: "Echo" }],
+                anArrayContainingAParticularInstance: [instanceOfAnObject],
+                anArrayContainingTheSameParticularInstance: [instanceOfAnObject],
+                anArrayInstance: anArrayDefinedExternally,
+                anotherArrayInstance: anArrayDefinedExternally,
                 aNullValue: null,
                 aDate: new Date(),
                 aRegExp: /abc/i,
@@ -127,6 +133,10 @@ namespace CdC.Tests.Serialization {
             var deserialized = Deserializer.deserializeFromObject(serialized);
 
             expect(deserialized).toEqual(anObject, "serializeToObject + deserializeFromObject must return the original object!");
+            expect((<any>deserialized).instance1 === (<any>deserialized).instance2).toBeTruthy("serializeToObject + deserializeFromObject do not preserve object structure and instances.");
+            expect((<any>deserialized).anArrayContainingAParticularInstance[0] === (<any>deserialized).anArrayContainingTheSameParticularInstance[0]).toBeTruthy("serializeToObject + deserializeFromObject do not preserve object structure and instances in arrays.");
+            expect((<any>deserialized).anArrayInstance === (<any>deserialized).anotherArrayInstance).toBeTruthy("serializeToObject + deserializeFromObject do not preserve arrays instances.");
+
         });
     });
 }
