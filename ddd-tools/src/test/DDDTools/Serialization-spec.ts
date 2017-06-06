@@ -3709,44 +3709,85 @@ namespace CdC.Tests.Serialization {
 
         it("Measure time and size overhead in serialization.", () => {
 
+            let numOfIterations = 100;
+
             let jsonString = JSON.stringify(bigObject,null,0);
 
-            let now = performance.now();
             let serializedString = Serializer.serialize(bigObject);
-            let done = performance.now();
 
             let jsonStringSize = jsonString.length;
             let serializedStringSize = serializedString.length;
 
             let sizeOverhead = serializedStringSize - jsonStringSize;
             let sizeOverheadPercent = Math.round((sizeOverhead / jsonStringSize) * 100.);
-            let timeToSerialize = Math.round((done - now) * 1000.)/ 1000.;
+
+            let avgTimeToDeserialize: number = 0;
+            let avgTimeToSerialize: number = 0;
+
+            let avgJsonSerializeTime: number = 0;
+            let avgJsonDeserializeTime: number = 0;
+
+            for (let idx = 1; idx <= numOfIterations; idx++) {
+
+                let now = performance.now();
+                serializedString = Serializer.serialize(bigObject);
+                let done = performance.now();
+
+                let timeToSerialize = Math.round((done - now) * 100.) / 100.;
+
+                now = performance.now();
+                let deserializedObject = Deserializer.deserialize(serializedString);
+                done = performance.now();
+
+                let timeToDeserialize = Math.round((done - now) * 100.) / 100.;
+
+                now = performance.now();
+                serializedString = JSON.stringify(bigObject,null,0);
+                done = performance.now();
+
+                let jsonSerializeTime = done - now;
+
+                now = performance.now();
+                deserializedObject = JSON.parse(serializedString);
+                done = performance.now();
+
+                let jsonDeserializeTime = done - now;
+
+                let deserializationToSerializationRatioPercent = Math.round((timeToDeserialize / timeToSerialize) * 100.);
+                let deserializationToSerializationRatio = Math.round((timeToDeserialize / timeToSerialize) * 100.) / 100.;
+
+                avgJsonSerializeTime += (jsonSerializeTime - avgJsonSerializeTime) / idx;
+                avgJsonDeserializeTime += (jsonDeserializeTime - avgJsonDeserializeTime) / idx;
+
+                avgTimeToSerialize += (timeToSerialize - avgTimeToSerialize) / idx;
+                avgTimeToDeserialize += (timeToDeserialize - avgTimeToDeserialize) / idx;
+            }
+
+            let avgDeserializationToSerializationRatioPercent = Math.round( (avgTimeToDeserialize / avgTimeToSerialize) * 100);
+            let avgDeserializationToSerializationRatio = Math.round((avgTimeToDeserialize / avgTimeToSerialize) * 100) / 100.;
+
+            let avgJsonDeserializationToSerializationRatio = Math.round((avgJsonDeserializeTime / avgJsonSerializeTime) * 100.) / 100.;
 
             console.log("bigObject stringify size: " + jsonStringSize);
             console.log("serialized string size: " + serializedStringSize);
             console.log("size Overhead: " + sizeOverhead);
             console.log("size Overhead Percent: " + sizeOverheadPercent + " %");
 
-            console.log("Time to serialize: " + timeToSerialize + " ms");
+            console.log("Average Time to serialize: " + (Math.round(avgTimeToSerialize * 100.) / 100.) + " ms");
+            console.log("Average Time to deserialize: " + (Math.round(avgTimeToDeserialize * 100.) / 100.) + " ms");
+            console.log("Average Deserialization to Serialization Percent: " + avgDeserializationToSerializationRatioPercent + " %");
+            console.log("Average Serialization to Deserialization Ratio: 1:" + avgDeserializationToSerializationRatio);
 
-            now = performance.now();
-            let deserializedObject = Deserializer.deserialize(serializedString);
-            done = performance.now();
+            console.log("Average pure JSON.stringify time: " + ( Math.round(avgJsonSerializeTime * 100. ) / 100. ) + " ms");
+            console.log("Average pure JSON.parse time: " + ( Math.round(avgJsonDeserializeTime * 100. ) / 100. ) + " ms");
+            console.log("Average pure JSON parse/stringify Ratio: 1:" + avgJsonDeserializationToSerializationRatio);
 
-            let timeToDeserialize = Math.round((done - now) * 100.) / 100.;
-            let deserializationToSerializationRatioPercent = Math.round((timeToDeserialize / timeToSerialize) * 100.);
-            let deserializationToSerializationRatio = Math.round((timeToDeserialize / timeToSerialize) * 100.) / 100.;
-
-            console.log("Time to deserialize: " + timeToDeserialize + " ms");
-            console.log("Deserialization to Serialization Percent: " + deserializationToSerializationRatioPercent + " %");
-            console.log("Serialization to Deserialization Ratio: 1:" + deserializationToSerializationRatio);
-
-
-
+            console.log("Serialization overhead over pure JSON.stringify percent: " + Math.round(avgTimeToSerialize / avgJsonSerializeTime * 100) + " %");
+            console.log("Deserialization overhead over pure JSON.parse percent: " + Math.round(avgTimeToDeserialize / avgJsonDeserializeTime * 100) + " %");
+            console.log("NOTE: average calculated over " + numOfIterations + " Serialization/Deserialization cycles");
 
             expect(true).toBeTruthy();
         });
-
     });
 
     describe("Serialization", () => {

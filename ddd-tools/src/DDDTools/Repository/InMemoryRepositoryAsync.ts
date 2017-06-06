@@ -28,7 +28,7 @@ namespace DDDTools.Repository {
         implements IRepositoryAsync<T, TKey>
     {
         private storage: { [id: string]: string } = {};
-        
+
         constructor(managedType: string, repositoryId?: string) {
             super(managedType, repositoryId);
         }

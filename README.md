@@ -59,21 +59,30 @@ The package has the following dependencies:
 ### 1.0.0 2017 06 06
 
 * **BREAKING CHANGE** Fixed Array Instance reconstitution! Previos behavior was not to correctly reconstitute array instances, so the same array referenced by to variable was "duplicated" (one instance per reference) during the serialization/deserialization process.
+* **POTENTIALLY BREAKING CHANGE** revisionId steps from 0 to 1 at first save.
+* **POTENTIALLY BREAKING CHANGE** restored (when did it disappear?) check on saving of stale objects.
 * Moved to typescript 2.2
 * Fixed some typos in README.md
-* * Linked README.md as "Solution Item"
+* Linked README.md as "Solution Item"
 * Added some performance tests to spot Serialization/Deserialization Bottlnecks.
 
 Performance tests are actually returning these values on an i7-6820HQ (8 cores) @ 2.70 GHz
 ```
-log: bigObject stringify size: 89676 <-- Length of the JSON.stringify of the test object
-log: serialized string size: 115043  <-- Length of the serialized version of the object
-log: size Overhead: 25367            <-- Delta between the 2 sizes
-log: size Overhead Percent: 28 %     <-- Serialized version of the object is bigger than its "stringified" version by 28% 
-log: Time to serialize: 3.718 ms     <-- Time to serialize the test item
-log: Time to deserialize: 31.44 ms   <-- Time to deserialize the test item
-log: Deserialization to Serialization Percent: 846 % <-- Deserialization to Serialization time ratio.
-log: Serialization to Deserialization Ratio: 1:8.46  <-- Deserializing an object takes 8.5 times the time to serialize it.
+log: bigObject stringify size: 89676
+log: serialized string size: 115043
+log: size Overhead: 25367
+log: size Overhead Percent: 28 %
+log: Average Time to serialize: 4.45 ms
+log: Average Time to deserialize: 30.13 ms
+log: Average Deserialization to Serialization Percent: 677 %
+log: Average Serialization to Deserialization Ratio: 1:6.77
+log: Average pure JSON.stringify time: 0.79 ms
+log: Average pure JSON.parse time: 0.97 ms
+log: Average pure JSON parse/stringify Ratio: 1:1.23
+log: Serialization overhead over pure JSON.stringify percent: 566 %
+log: Deserialization overhead over pure JSON.parse percent: 3118 %
+
+log: NOTE: average calculated over 100 Serialization/Deserialization cycles
 ```
 
 

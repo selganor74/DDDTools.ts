@@ -154,6 +154,13 @@ namespace DDDTools.Repository {
                         return;
                     }
 
+                    // if we are not replacing we should check id revision Id of the object we are saving is greater than or equal
+                    // to the revisionId of the already saved Object
+                    if (!replaceOnly) {
+                        if (item.getRevisionId() < readValue.getRevisionId()) {
+                            return deferred.reject( Errors.getErrorInstance(Errors.SavingOldObject) );
+                        }
+                    }
                     // Increment revision only if we are not replacing an item
                     if (!replaceOnly) {
                         item.incrementRevisionId();
@@ -169,7 +176,7 @@ namespace DDDTools.Repository {
                             deferred.resolve();
                         });
 
-                    }).catch((error) => {
+                    }, (error) => {
                         var reason = this.buildError(error, Errors.ErrorReadingItem);
                         deferred.reject(reason);
                     });
@@ -177,6 +184,10 @@ namespace DDDTools.Repository {
                 (error: any) => {
                     if (error instanceof Error && error.name == Errors.ItemNotFound) {
                         // This is expected, the item is not in the repo, so we have to add it!
+                        // To correctly manage revision collisions, we need to increment revisionId the first time
+                        // an aggregate is saved... otherwise, the system won't be able to discern if an aggregate 
+                        // has been saved or not...
+                        item.incrementRevisionId();
 
                         this.doSave(item, SaveActionEnum.Add).then(
                             () => {
