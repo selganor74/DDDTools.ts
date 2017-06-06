@@ -45,9 +45,9 @@ namespace DDDTools.PersistableObject {
                 Errors.throw(Errors.StateIsNotAnObject, "state deve essere un oggetto");
             }
 
-            for (var element in state) {
+            for (let element in state) {
                 var currentStateElement = state[element];
-                this[element] = Factory.createObjectsFromState(currentStateElement);
+                (<any>this)[element] = Factory.createObjectsFromState(currentStateElement);
             }
 
             // console.log( JSON.stringify( this.getState() ) );

@@ -7,7 +7,7 @@ A typescript implementation of the basic DDD patterns.
 
 ## What is in it?
 
-The package exports a DDDTools "namespace" composed by these elements
+The package exports a DDDTools "namespace" composed by the following elements
 
 ### Main Patterns
 
@@ -20,13 +20,14 @@ The package exports a DDDTools "namespace" composed by these elements
 
 ### Tools and utilities
 
-* **Serialization**: "Smart" Serialization/Deserialization which takes into account 
-  reconstitution of object trees and of "special types" like Date and RegExp.
+* **Serialization**: "Smart" Serialization/Deserialization able to serialize and
+  reconstitute object trees and "special types" such as Date and RegExp.
   It can be used "as a stand alone" tool.
   
 * **PersistableObject**: Manages "evolution" of objects that can be persisted. 
   Objects whose state can survive between program "executions" must provide a 
-  mean of "upgrading" their state, to follow changes due requirements and bugs. 
+  mean of "upgrading" their state, to follow changes due to requirements change 
+  and/or bugs. 
   
 * **ValueObjects**: a growable collection of general purpose Value Objects.
 
@@ -55,10 +56,31 @@ The package has the following dependencies:
 
 ## Change log
 
+### 1.0.0 2017 06 06
+
+* **BREAKING CHANGE** Fixed Array Instance reconstitution! Previos behavior was not to correctly reconstitute array instances, so the same array referenced by to variable was "duplicated" (one instance per reference) during the serialization/deserialization process.
+* Moved to typescript 2.2
+* Fixed some typos in README.md
+* * Linked README.md as "Solution Item"
+* Added some performance tests to spot Serialization/Deserialization Bottlnecks.
+
+Performance tests are actually returning these values on an i7-6820HQ (8 cores) @ 2.70 GHz
+```
+log: bigObject stringify size: 89676 <-- Length of the JSON.stringify of the test object
+log: serialized string size: 115043  <-- Length of the serialized version of the object
+log: size Overhead: 25367            <-- Delta between the 2 sizes
+log: size Overhead Percent: 28 %     <-- Serialized version of the object is bigger than its "stringified" version by 28% 
+log: Time to serialize: 3.718 ms     <-- Time to serialize the test item
+log: Time to deserialize: 31.44 ms   <-- Time to deserialize the test item
+log: Deserialization to Serialization Percent: 846 % <-- Deserialization to Serialization time ratio.
+log: Serialization to Deserialization Ratio: 1:8.46  <-- Deserializing an object takes 8.5 times the time to serialize it.
+```
+
+
 ### 0.0.26 2016 10 27
 
 * Removed some console.log from BaseRepositoryAsync, to avoid cluttering console output in production environment
-* Restored README.md in published npm package
+* Restored README.md in published npm 
 
 ### 0.0.25 2016 10 19
 

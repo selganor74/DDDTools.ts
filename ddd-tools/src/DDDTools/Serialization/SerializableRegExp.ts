@@ -1,4 +1,5 @@
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
+/// <reference path="IBaseTypeWrapper.ts" />
 
 // import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
 
@@ -6,14 +7,15 @@ namespace DDDTools.Serialization {
 
     import ITypeTracking = CommonInterfaces.ITypeTracking;
 
-    export class SerializableRegExp implements ITypeTracking {
+    export class SerializableRegExp implements ITypeTracking, IBaseTypeWrapper {
         __typeName: string = "SerializableRegExp";
         __typeVersion: string = "v1";
         __regularExpression: string;
         __flags: string;
 
         constructor(regExp: RegExp) {
-            this.splitRegExpAndFlags( regExp );
+            this.splitRegExpAndFlags(regExp);
+            Touch.touch(this);
         }
 
         private splitRegExpAndFlags( regExp: RegExp ) {
@@ -57,7 +59,7 @@ namespace DDDTools.Serialization {
         /**
          * Get back a Regular Expression from the SerializableRegExp instance
          */
-        public getRegExp(): RegExp {
+        public getOriginalValue(): RegExp {
             return SerializableRegExp.getRegExpFromRegExpAndFlags(this.__regularExpression, this.__flags);
         }
     }
