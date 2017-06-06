@@ -1,6 +1,7 @@
 /// <reference path="./SerializableDate.ts" />
 /// <reference path="./SerializableRegExp.ts" />
 /// <reference path="./SerializableNull.ts" />
+/// <reference path="./SerializableArray.ts" />
 /// <reference path="./Touch.ts" />
 
 // import {SerializableDate} from "./SerializableDate";
@@ -16,10 +17,10 @@ namespace DDDTools.Serialization {
         public static serialize(toSerialize: any): string {
             var toReturn;
             Touch.resetTouchIndex();
-            Serializer.preprocessForSerializablesSubstitution(toSerialize);
             Serializer.touchSourceObject(toSerialize);
+            Serializer.preprocessForSerializablesSubstitution(toSerialize);
             try {
-                toReturn = JSON.stringify(toSerialize);
+                toReturn = JSON.stringify(toSerialize, undefined, 0);
             } finally {
                 Serializer.postprocessForSerializableSubstitution(toSerialize);
                 Serializer.untouchSourceObject(toSerialize);
@@ -35,7 +36,7 @@ namespace DDDTools.Serialization {
             var sThis = Serializer;
             var sourceAsString = sThis.serialize(toSerialize);
             var toReturn = JSON.parse(sourceAsString);
-            
+
             return toReturn;
         }
 
@@ -60,7 +61,12 @@ namespace DDDTools.Serialization {
                     sourceObject[idx] = newFakeRegExp;
                     continue;
                 }
-                if (typeof current === 'object' || Array.isArray(current)) {
+                if (Array.isArray(current)) {
+                    let tmpArray = Serializer.preprocessForSerializablesSubstitution(current);
+                    sourceObject[idx] = new SerializableArray(tmpArray);
+                    continue;
+                }
+                if (typeof current === 'object') {
                     sourceObject[idx] = Serializer.preprocessForSerializablesSubstitution(current);
                     continue;
                 }
@@ -70,9 +76,9 @@ namespace DDDTools.Serialization {
 
         private static touchSourceObject(sourceObject: any) {
             var sThis = Serializer;
-            
+
             if (sourceObject === null) return;
-            
+
             if (!Touch.hasBeenTouched(sourceObject)) {
                 Touch.touch(sourceObject);
             }
@@ -85,14 +91,14 @@ namespace DDDTools.Serialization {
                     continue;
                 }
             }
-            
+
         }
-        
+
         private static untouchSourceObject(sourceObject: any) {
             var sThis = Serializer;
-            
+
             if (sourceObject === null) return;
-            
+
             if (Touch.hasBeenTouched(sourceObject)) {
                 Touch.untouch(sourceObject);
             }
@@ -114,18 +120,23 @@ namespace DDDTools.Serialization {
             for (var idx in sourceObject) {
                 var current = sourceObject[idx];
                 if (current instanceof SerializableDate) {
-                    sourceObject[idx] = (<SerializableDate>current).getDate();
+                    sourceObject[idx] = current.getOriginalValue();
                     continue;
                 }
                 if (current instanceof SerializableNull) {
-                    sourceObject[idx] = null;
+                    sourceObject[idx] = current.getOriginalValue();
                     continue;
                 }
                 if (current instanceof SerializableRegExp) {
-                    sourceObject[idx] = (<SerializableRegExp>current).getRegExp();
+                    sourceObject[idx] = current.getOriginalValue();
                     continue;
                 }
-                if (typeof current === 'object' || Array.isArray(current)) {
+                if (current instanceof SerializableArray) {
+                    let tmpArray = current.getOriginalValue();
+                    sourceObject[idx] = Serializer.postprocessForSerializableSubstitution(tmpArray);
+                    continue;
+                }
+                if (typeof current === 'object') {
                     sourceObject[idx] = Serializer.postprocessForSerializableSubstitution(current);
                     continue;
                 }

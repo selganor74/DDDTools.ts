@@ -72,6 +72,8 @@
     <TypeScriptCompile Include="src\DDDTools\Saga\BaseSaga.ts" />
     <TypeScriptCompile Include="src\DDDTools\Saga\ISaga.ts" />
     <TypeScriptCompile Include="src\DDDTools\Serialization\Deserializer.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\IBaseTypeWrapper.ts" />
+    <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableArray.ts" />
     <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableDate.ts" />
     <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableNull.ts" />
     <TypeScriptCompile Include="src\DDDTools\Serialization\SerializableRegExp.ts" />

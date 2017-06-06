@@ -34,9 +34,11 @@ namespace DDDTools.Serialization {
          * Deserializes an object from a JSON string.
          */
         public static deserialize(toDeserialize: string): any {
+
             Deserializer.identityMap = new SimpleIdentityMap();
             var toReturn = JSON.parse(toDeserialize, Deserializer.customReviver);
             Deserializer.cleanup();
+
             return toReturn;
         }
 
@@ -78,13 +80,16 @@ namespace DDDTools.Serialization {
                 if (sThis.hasBeenTouched(value)) {
                     if (idMap.isTracked(value.__objectInstanceId)) {
                         return idMap.getById(value.__objectInstanceId)
-                    } else {
-                        value = sThis.FakeRegExpDeserializer(value);
-                        value = sThis.FakeDateDeserializer(value);
-                        value = sThis.FakeNullDeserializer(value);
-                        if (value !== null) {
-                            idMap.add(value.__objectInstanceId, value);
-                        }
+                    } 
+
+                    value = sThis.FakeRegExpDeserializer(value);
+                    value = sThis.FakeDateDeserializer(value);
+                    value = sThis.FakeArrayDeserializer(value);
+                    // This must be the last deserializer calld as it may return null !
+                    value = sThis.FakeNullDeserializer(value);
+
+                    if (value !== null) {
+                        idMap.add(value.__objectInstanceId, value);                       
                     }
                 }
             }
@@ -117,7 +122,7 @@ namespace DDDTools.Serialization {
 
         /**
          * Manages Date Deserialization
-         * TODO: Find a way to move this responsibility to the SerializableRegExp
+         * TODO: Find a way to move this responsibility to the SerializableDate
          */
         private static FakeDateDeserializer(value: any): any {
             if (value.__typeName) {
@@ -136,6 +141,19 @@ namespace DDDTools.Serialization {
             if (value.__typeName) {
                 if (value.__typeName === "SerializableNull") {
                     value = null;
+                }
+            }
+            return value;
+        }
+
+        /**
+         * Manages Array Deserialization
+         * TODO: Find a way to move this responsibility to the SerializableArray
+         */
+        private static FakeArrayDeserializer(value: any): any {
+            if (value.__typeName) {
+                if (value.__typeName === "SerializableArray") {
+                    value = SerializableArray.getOriginalArrayFromSerializableArray(value);
                 }
             }
             return value;

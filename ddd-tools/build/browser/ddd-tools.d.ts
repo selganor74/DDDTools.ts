@@ -111,19 +111,25 @@ declare namespace DDDTools.CommonInterfaces {
     }
 }
 declare namespace DDDTools.Serialization {
-    import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class SerializableDate implements ITypeTracking {
-        __typeName: string;
-        __typeVersion: string;
-        __dateAsString: string;
-        constructor(date: Date);
-        static getDateFromString(dateAsString: string): Date;
-        getDate(): Date;
+    interface IBaseTypeWrapper {
+        getOriginalValue(): object | Array<any> | RegExp | Date | null;
     }
 }
 declare namespace DDDTools.Serialization {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class SerializableRegExp implements ITypeTracking {
+    class SerializableDate implements ITypeTracking, IBaseTypeWrapper {
+        __typeName: string;
+        __typeVersion: string;
+        __dateAsString: string;
+        __objectInstanceId: string;
+        constructor(date: Date);
+        static getDateFromString(dateAsString: string): Date;
+        getOriginalValue(): Date;
+    }
+}
+declare namespace DDDTools.Serialization {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class SerializableRegExp implements ITypeTracking, IBaseTypeWrapper {
         __typeName: string;
         __typeVersion: string;
         __regularExpression: string;
@@ -134,14 +140,29 @@ declare namespace DDDTools.Serialization {
         /**
          * Get back a Regular Expression from the SerializableRegExp instance
          */
-        getRegExp(): RegExp;
+        getOriginalValue(): RegExp;
     }
 }
 declare namespace DDDTools.Serialization {
     import ITypeTracking = CommonInterfaces.ITypeTracking;
-    class SerializableNull implements ITypeTracking {
+    class SerializableNull implements ITypeTracking, IBaseTypeWrapper {
         __typeName: string;
         __typeVersion: string;
+        __objectInstanceId: string;
+        constructor();
+        getOriginalValue(): any;
+    }
+}
+declare namespace DDDTools.Serialization {
+    import ITypeTracking = CommonInterfaces.ITypeTracking;
+    class SerializableArray implements ITypeTracking, IBaseTypeWrapper {
+        __typeName: string;
+        __typeVersion: string;
+        __objectInstanceId: string;
+        __originalArray: Array<any>;
+        constructor(srcArray: Array<any>);
+        getOriginalValue(): any[];
+        static getOriginalArrayFromSerializableArray(src: SerializableArray): any[];
     }
 }
 declare namespace DDDTools.Serialization {
@@ -204,7 +225,7 @@ declare namespace DDDTools.Serialization {
         private static FakeRegExpDeserializer(value);
         /**
          * Manages Date Deserialization
-         * TODO: Find a way to move this responsibility to the SerializableRegExp
+         * TODO: Find a way to move this responsibility to the SerializableDate
          */
         private static FakeDateDeserializer(value);
         /**
@@ -212,6 +233,11 @@ declare namespace DDDTools.Serialization {
          * TODO: Find a way to move this responsibility to the SerializableNull
          */
         private static FakeNullDeserializer(value);
+        /**
+         * Manages Array Deserialization
+         * TODO: Find a way to move this responsibility to the SerializableArray
+         */
+        private static FakeArrayDeserializer(value);
     }
 }
 declare namespace DDDTools.Serialization {
