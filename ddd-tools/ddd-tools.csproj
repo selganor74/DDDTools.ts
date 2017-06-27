@@ -99,6 +99,8 @@
     <TypeScriptCompile Include="src\DDDTools\ValueObject\BaseValueObject.ts" />
     <TypeScriptCompile Include="src\DDDTools\ValueObject\IValueObject.ts" />
     <TypeScriptCompile Include="src\test\.baseDir.ts" />
+    <TypeScriptCompile Include="src\test\assets\bigObject1.ts" />
+    <Content Include="src\test\assets\bigObject2.js" />
     <TypeScriptCompile Include="src\test\DDDTools\BasePersistableObject-spec.ts" />
     <TypeScriptCompile Include="src\test\DDDTools\BaseStateMachine-spec.ts" />
     <TypeScriptCompile Include="src\test\DDDTools\BaseValueObject-spec.ts" />

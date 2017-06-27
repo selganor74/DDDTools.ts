@@ -1,5 +1,34 @@
 /// <reference path="../typings/browser.d.ts" />
 /// <reference path="../build/browser/ddd-tools.d.ts" />
+declare namespace Test.Assets {
+    let bigObject1: {
+        "id": string;
+        "index": number;
+        "guid": string;
+        "isActive": boolean;
+        "balance": string;
+        "picture": string;
+        "age": number;
+        "eyeColor": string;
+        "name": string;
+        "gender": string;
+        "company": string;
+        "email": string;
+        "phone": string;
+        "address": string;
+        "about": string;
+        "registered": string;
+        "latitude": number;
+        "longitude": number;
+        "tags": string[];
+        "friends": {
+            "id": number;
+            "name": string;
+        }[];
+        "greeting": string;
+        "favoriteFruit": string;
+    }[];
+}
 declare namespace CdC.Tests.BasePersistableObject.v2 {
     import BaseEntity = DDDTools.Entity.BaseEntity;
     import Guid = DDDTools.ValueObjects.Guid;
@@ -153,6 +182,7 @@ declare namespace CdC.Tests.ForDispatcher {
 }
 declare namespace CdC.Tests.ValueObjects.Money {
 }
+declare var bigObject2: any;
 declare namespace CdC.Tests.Serialization {
 }
 declare namespace CdC.Tests.ForUnitOfWork {

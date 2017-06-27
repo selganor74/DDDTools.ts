@@ -29,7 +29,7 @@ namespace DDDTools.PersistableObject {
             if (this.__typeVersion === "") {
                 Errors.throw(Errors.TypeVersionNotSet);
             }
-
+            
             var toReconstitute = Serializer.serialize(this);
             var reconstituted = Deserializer.deserialize(toReconstitute);
 

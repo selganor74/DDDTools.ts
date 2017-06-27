@@ -95,7 +95,8 @@ module.exports = function (grunt) {
                 options: {
                     vendor:
                     [
-                        "build-test/lib/*.js"
+                        "build-test/lib/*.js",
+                        "src/test/assets/*.js"
                     ],
                     specs: [
                         // "build-test/test/**/*-spec.js"
