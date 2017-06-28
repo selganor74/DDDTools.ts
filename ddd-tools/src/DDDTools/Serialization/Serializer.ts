@@ -4,10 +4,6 @@
 /// <reference path="./SerializableArray.ts" />
 /// <reference path="./Touch.ts" />
 
-// import {SerializableDate} from "./SerializableDate";
-// import {SerializableRegExp} from "./SerializableRegExp";
-// import {Touch} from "./Touch";
-
 namespace DDDTools.Serialization {
 
     export class Serializer {
