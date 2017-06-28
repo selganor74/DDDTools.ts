@@ -62,6 +62,7 @@ The package has the following dependencies:
 * Fixed some typos in README.md
 * Added Serialize/Deserialize performance test on a big object coming from app-easyoff.
 * Fixed some Serializer test spec.
+* Moved to gitflow.
 
 Performance tests are actually returning these values on an i7-6820HQ (8 cores) @ 2.70 GHz
 ```
