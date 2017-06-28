@@ -1,29 +1,22 @@
 /// <reference path="../Utils/SimpleGuid.ts" />
 /// <reference path="../CommonInterfaces/ITypeTracking.ts" />
-
-// import {ITypeTracking} from "../CommonInterfaces/ITypeTracking";
+/// <reference path="../Utils/SimpleGuid.ts" />
 
 namespace DDDTools.Serialization {
 
     import ITypeTracking = CommonInterfaces.ITypeTracking;
+    import SimpleGuid = Utils.SimpleGuid;
 
     export class Touch {
-
-        private static touchIndex = 1;
 
         /**
          * Prepares the id generator for a new run
          */
         public static resetTouchIndex() {
-            var sThis = Touch;
-            sThis.touchIndex = 1;
         }
 
         private static getNewIndex(): string {
-            // return SimpleGuid.generate()
-            var sThis = Touch;
-            sThis.touchIndex++;
-            return (sThis.touchIndex++ - 1).toString();
+            return SimpleGuid.generate()
         }
 
         /**

@@ -48,9 +48,11 @@ namespace CdC.Tests.Serialization {
 
                 let avgTimeToDeserialize: number = 0;
                 let avgTimeToSerialize: number = 0;
+                let avgRoundtripTime: number = 0;
 
                 let avgJsonSerializeTime: number = 0;
                 let avgJsonDeserializeTime: number = 0;
+                let avgJsonRoundtripTime: number = 0;
 
                 for (let idx = 1; idx <= numOfIterations; idx++) {
 
@@ -88,6 +90,9 @@ namespace CdC.Tests.Serialization {
                     avgTimeToDeserialize += (timeToDeserialize - avgTimeToDeserialize) / idx;
                 }
 
+                avgJsonRoundtripTime = avgJsonSerializeTime + avgJsonDeserializeTime;
+                avgRoundtripTime = avgTimeToSerialize + avgTimeToDeserialize;
+
                 let avgDeserializationToSerializationRatioPercent = Math.round((avgTimeToDeserialize / avgTimeToSerialize) * 100);
                 let avgDeserializationToSerializationRatio = Math.round((avgTimeToDeserialize / avgTimeToSerialize) * 100) / 100.;
 
@@ -100,15 +105,19 @@ namespace CdC.Tests.Serialization {
 
                 console.log("Average Time to serialize: " + (Math.round(avgTimeToSerialize * 100.) / 100.) + " ms");
                 console.log("Average Time to deserialize: " + (Math.round(avgTimeToDeserialize * 100.) / 100.) + " ms");
+                console.log("Average Time to roundtrip: " + (Math.round(avgRoundtripTime * 100.) / 100.) + " ms");
                 console.log("Average Deserialization to Serialization Percent: " + avgDeserializationToSerializationRatioPercent + " %");
                 console.log("Average Serialization to Deserialization Ratio: 1:" + avgDeserializationToSerializationRatio);
 
                 console.log("Average pure JSON.stringify time: " + (Math.round(avgJsonSerializeTime * 100.) / 100.) + " ms");
                 console.log("Average pure JSON.parse time: " + (Math.round(avgJsonDeserializeTime * 100.) / 100.) + " ms");
+                console.log("Average pure JSON.parse/JSON.stringify roundtrip time: " + (Math.round(avgJsonRoundtripTime * 100.) / 100.) + " ms");
                 console.log("Average pure JSON parse/stringify Ratio: 1:" + avgJsonDeserializationToSerializationRatio);
 
                 console.log("Serialization overhead over pure JSON.stringify percent: " + Math.round(avgTimeToSerialize / avgJsonSerializeTime * 100) + " %");
                 console.log("Deserialization overhead over pure JSON.parse percent: " + Math.round(avgTimeToDeserialize / avgJsonDeserializeTime * 100) + " %");
+                console.log("Roundtrip overhead over pure JOSN.stringify/JSON.parse percent: " + Math.round(avgRoundtripTime / avgJsonRoundtripTime * 100) + " %");
+
                 console.log("NOTE: average calculated over " + numOfIterations + " Serialization/Deserialization cycles");
 
                 expect(true).toBeTruthy();
@@ -145,7 +154,9 @@ namespace CdC.Tests.Serialization {
             expect(deserialized.anUndefinedValue).toBeUndefined("anUndefinedValue is not undefined");
         });
 
-        it("Two serializations of the same object must be exactly match", () => {
+        it("Two serializations of the same object must exactly match", () => {
+            pending("This test is no longer valid if using GUIDS as __objectReferenceId");
+
             var anObject = {
                 property1: "A Property",
                 property2: "Another Property",
@@ -162,7 +173,7 @@ namespace CdC.Tests.Serialization {
             expect(serialized1).toEqual(serialized2);
         });
 
-        it("Serialization + Deserialization must recreate the very same starting object", () => {
+        it("Serialization + Deserialization must recreate the very same starting object, excluding undefined values", () => {
             var anObject = {
                 property1: "A Property",
                 property2: "Another Property",
@@ -173,14 +184,12 @@ namespace CdC.Tests.Serialization {
                 anUndefinedValue: undefined
             }
 
-            var serialized1 = Serializer.serialize(anObject);
             var step1 = Serializer.serialize(anObject);
             // console.log("step1: " + step1);
             var step2 = Deserializer.deserialize(step1);
-            // console.log("step2: " + step2.aRegexp.toString() );
-            var serialized2 = Serializer.serialize(step2);
 
-            expect(serialized1).toEqual(serialized2);
+            delete anObject.anUndefinedValue;
+            expect(anObject).toEqual(step2);
         });
 
         it("serializeToObject must correctly manage Dates and Null and RegExp", () => {

@@ -56,9 +56,56 @@ The package has the following dependencies:
 
 ## Change log
 
+### 1.0.1 2017 06 28
+
+* Serializer now uses GUIDs as __objectIdReference tag to identify the same instance of an object in an object tree. This allows "manual" copy of objects from an aggregate to another. (ref. S.Silvestrini). Serializer performance is strangely not impacted in speed, but obviously size overhead increased.
+* Fixed some typos in README.md
+* Added Serialize/Deserialize performance test on a big object coming from app-easyoff.
+* Fixed some Serializer test spec.
+* Moved to gitflow.
+
+Performance tests are actually returning these values on an i7-6820HQ (8 cores) @ 2.70 GHz
+```
+bigObject stringify size: 89676
+serialized string size: 132316
+size Overhead: 42640
+size Overhead Percent: 48 %
+Average Time to serialize: 7.25 ms
+Average Time to deserialize: 31.68 ms
+Average Time to roundtrip: 38.93 ms
+Average Deserialization to Serialization Percent: 437 %
+Average Serialization to Deserialization Ratio: 1:4.37
+Average pure JSON.stringify time: 0.8 ms
+Average pure JSON.parse time: 1.13 ms
+Average pure JSON.parse/JSON.stringify roundtrip time: 1.93 ms
+Average pure JSON parse/stringify Ratio: 1:1.41
+Serialization overhead over pure JSON.stringify percent: 908 %
+Deserialization overhead over pure JSON.parse percent: 2811 %
+Roundtrip overhead over pure JOSN.stringify/JSON.parse percent: 2022 %
+NOTE: average calculated over 100 Serialization/Deserialization cycles
+
+bigObject stringify size: 10407776
+serialized string size: 10926208
+size Overhead: 518432
+size Overhead Percent: 5 %
+Average Time to serialize: 1091.39 ms
+Average Time to deserialize: 3873.86 ms
+Average Time to roundtrip: 4965.25 ms
+Average Deserialization to Serialization Percent: 355 %
+Average Serialization to Deserialization Ratio: 1:3.55
+Average pure JSON.stringify time: 102.07 ms
+Average pure JSON.parse time: 105.66 ms
+Average pure JSON.parse/JSON.stringify roundtrip time: 207.73 ms
+Average pure JSON parse/stringify Ratio: 1:1.04
+Serialization overhead over pure JSON.stringify percent: 1069 %
+Deserialization overhead over pure JSON.parse percent: 3666 %
+Roundtrip overhead over pure JOSN.stringify/JSON.parse percent: 2390 %
+NOTE: average calculated over 10 Serialization/Deserialization cycles
+```
+
 ### 1.0.0 2017 06 06
 
-* **BREAKING CHANGE** Fixed Array Instance reconstitution! Previos behavior was not to correctly reconstitute array instances, so the same array referenced by to variable was "duplicated" (one instance per reference) during the serialization/deserialization process.
+* **BREAKING CHANGE** Fixed Array Instance reconstitution! Previos behavior was not to correctly reconstitute array instances, so the same array referenced by two variables was "duplicated" (one new instance per reference) during the serialization/deserialization process.
 * **POTENTIALLY BREAKING CHANGE** revisionId steps from 0 to 1 at first save.
 * **POTENTIALLY BREAKING CHANGE** restored (when did it disappear?) check on saving of stale objects.
 * Moved to typescript 2.2

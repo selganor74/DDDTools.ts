@@ -167,7 +167,6 @@ declare namespace DDDTools.Serialization {
 }
 declare namespace DDDTools.Serialization {
     class Touch {
-        private static touchIndex;
         /**
          * Prepares the id generator for a new run
          */
